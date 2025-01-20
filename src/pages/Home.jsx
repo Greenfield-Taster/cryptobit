@@ -1,10 +1,16 @@
 import React from 'react'
 
+import AboutSection from "../components/Home/AboutSection"
+import ContactSection from "../components/Home/ContactSection";
+import TransactionSection from "../components/Home/TransactionSection";
+
 const Home = () => {
   return (
-    <div>
-      home page
-    </div>
+    <>
+      <AboutSection />
+      <TransactionSection />
+      <ContactSection />
+    </>
   )
 }
 
