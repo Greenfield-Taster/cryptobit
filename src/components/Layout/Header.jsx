@@ -3,36 +3,42 @@ import React from "react";
 import logo2 from "../../assets/images/logo2.png"
 import "../../scss/Header.scss";
 
-const Header = () => {
+const Header = ({ onNavigate }) => {
   return (
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <img src={logo2} />
+          <img src={logo2} alt="logo"/>
         </div>
 
         <nav className="header__nav">
           <ul className="header__nav-list">
             <li className="header__nav-item">
-              <a href="#home" className="header__nav-link">
+              <button
+                onClick={() => onNavigate("home")}
+                className="header__nav-link"
+              >
                 Home
-              </a>
+              </button>
             </li>
-            <li className="header__nav-item">
-              <a href="#about" className="header__nav-link">
-                About
-              </a>
-            </li>
-            <li className="header__nav-item">
-              <a href="#transaction" className="header__nav-link">
-                Transaction
-              </a>
-            </li>
-            <li className="header__nav-item">
-              <a href="#contact" className="header__nav-link">
-                Contact
-              </a>
-            </li>
+            <button
+              onClick={() => onNavigate("about")}
+              className="header__nav-link"
+            >
+              About
+            </button>
+            <button
+              onClick={() => onNavigate("transaction")}
+              className="header__nav-link"
+            >
+              Transaction
+            </button>
+            <button
+              onClick={() => onNavigate("contact")}
+              className="header__nav-link"
+            >
+              Contact
+            </button>
           </ul>
         </nav>
 
