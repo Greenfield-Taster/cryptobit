@@ -1,7 +1,14 @@
-import React from 'react'
+import React from "react";
 
-const ContactSection = () => {
-  return <div>ContactSection </div>;
+function Contact() {
+  return (
+    <section
+      style={{ height: "100vh", padding: "20px", background: "#dff0d8" }}
+    >
+      <h2>Contact</h2>
+      <p>This is the Contact section.</p>
+    </section>
+  );
 }
 
-export default ContactSection
+export default Contact;

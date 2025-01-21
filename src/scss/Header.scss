@@ -5,6 +5,10 @@
   background-color: #000000;
   padding: 1rem 0;
   font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   
   &__container {
     max-width: 1200px;
