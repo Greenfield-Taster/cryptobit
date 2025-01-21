@@ -6,5 +6,17 @@ body {
 
 #root {
   margin: 0;
-  height: 100vh;
+}
+
+.wrapper {
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 360px);
 }

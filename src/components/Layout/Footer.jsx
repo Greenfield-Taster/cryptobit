@@ -1,4 +1,3 @@
-// Footer.jsx
 import React from "react";
 import "../../scss/footer.scss";
 import logo2 from '../../assets/images/logo2.png'
@@ -14,8 +13,8 @@ const Footer = () => {
         <div className="footer__main">
           <div className="footer__logo"><img src={logo2} alt="logo"/></div>
           <div className="footer__links">
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms & Conditions</a>
+            <p>Privacy Policy</p>
+            <p>Terms & Conditions</p>
           </div>
         </div>
 
