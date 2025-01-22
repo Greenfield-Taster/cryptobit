@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Greenfield-Taster/cryptobit/static/css/main.991a9f80.css",
-    "main.js": "/Greenfield-Taster/cryptobit/static/js/main.92f32a9a.js",
+    "main.js": "/Greenfield-Taster/cryptobit/static/js/main.9d47fd2d.js",
     "static/media/main-img.png": "/Greenfield-Taster/cryptobit/static/media/main-img.641575cdeab25b9e62ad.png",
     "static/media/monobank-logo.png": "/Greenfield-Taster/cryptobit/static/media/monobank-logo.eee905e45a15b0f6e52e.png",
     "static/media/Privat24_Logo.png": "/Greenfield-Taster/cryptobit/static/media/Privat24_Logo.22e16fdcbd36b41e5877.png",
@@ -9,10 +9,10 @@
     "static/media/round.png": "/Greenfield-Taster/cryptobit/static/media/round.75e7221e9d5d0fc42565.png",
     "index.html": "/Greenfield-Taster/cryptobit/index.html",
     "main.991a9f80.css.map": "/Greenfield-Taster/cryptobit/static/css/main.991a9f80.css.map",
-    "main.92f32a9a.js.map": "/Greenfield-Taster/cryptobit/static/js/main.92f32a9a.js.map"
+    "main.9d47fd2d.js.map": "/Greenfield-Taster/cryptobit/static/js/main.9d47fd2d.js.map"
   },
   "entrypoints": [
     "static/css/main.991a9f80.css",
-    "static/js/main.92f32a9a.js"
+    "static/js/main.9d47fd2d.js"
   ]
 }
