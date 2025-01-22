@@ -1,8 +1,75 @@
 .section {
+  font-family: "Montserrat", sans-serif;
   &__home {
-    height: 100vh;
-    background: #5ca8ce;
+    height: 90vh;
+    background: #000000;
     padding: 20px;
+    position: relative;
+    overflow: hidden;
+
+    &-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+
+    &__content {
+      position: relative;
+      width: 50%;
+      z-index: 2;
+
+      &-oval {
+        position: absolute;
+        width: 280px;
+        height: 100px;
+        background: rgba(255, 165, 0, 0.2);
+        border-radius: 50%;
+        transform: rotate(-12deg);
+        top: -20px;
+        left: -20px;
+        z-index: -1;
+      }
+    }
+
+    &__title {
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    &__cryptobit {
+      display: inline-block;
+      margin: 1rem 0;
+
+      span {
+        padding: 0.5rem 1.5rem;
+        border: 2px solid #ffa500;
+        border-radius: 25px;
+        color: #ffffff;
+        font-size: 1.5rem;
+      }
+    }
+
+    &__description {
+      color: #808080;
+      max-width: 400px;
+      margin-top: 1.5rem;
+      line-height: 1.6;
+    }
+
+    &__visuals {
+      position: relative;
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
   &__transaction {
