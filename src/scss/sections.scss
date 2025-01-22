@@ -1,0 +1,25 @@
+.section {
+  &__home {
+    height: 100vh;
+    background: #5ca8ce;
+    padding: 20px;
+  }
+
+  &__transaction {
+    height: 60vh;
+    background: #8cb873;
+    padding: 20px;
+  }
+
+  &__about {
+    height: 70vh;
+    background: #966693;
+    padding: 20px;
+  }
+
+  &__contact {
+    height: 90vh;
+    background: #9b4e6b;
+    padding: 20px;
+  }
+}
