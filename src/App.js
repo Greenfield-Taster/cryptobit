@@ -40,7 +40,7 @@ function App() {
       <div className="content">
         <Routes>
           <Route
-            path="/"
+            path="/cryptobit"
             element={
               <Home
                 homeRef={homeRef}
