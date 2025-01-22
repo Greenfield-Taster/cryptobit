@@ -1,6 +1,12 @@
 import React from "react";
 import "../../scss/sections.scss";
 import mainImage from "../../assets/images/main-img.png";
+import roundImage from "../../assets/images/round.png";
+import lockedImage from "../../assets/images/style-1.png";
+import guarentedImage from "../../assets/images/style-2.png";
+import cross1 from "../../assets/images/cross.png";
+import cross2 from "../../assets/images/cross-2.png";
+import halfCircle from "../../assets/images/half-circle.png";
 
 function HomeSection() {
   return (
@@ -10,13 +16,11 @@ function HomeSection() {
           <div className="section__home__content">
             <div className="section__home__content-oval"></div>
             <h1 className="section__home__title">
-              Ability to buy & cash
-              <br />
-              cryptocurrency
+              Ability to buy & cash cryptocurrency
             </h1>
-            <div className="section__home__cryptobit">
+            {/* <div className="section__home__cryptobit">
               <span>Cryptobit</span>
-            </div>
+            </div> */}
             <p className="section__home__description">
               Cryptography, encryption process of transforming information
               referred to as plaintext using done.
@@ -24,8 +28,32 @@ function HomeSection() {
           </div>
 
           <div className="section__home__visuals">
-            <img src={mainImage} />
+            <div className="section__home__circle">
+              <img src={roundImage} alt="circle" />
+            </div>
+            <div className="section__home__image-wrapper">
+              <img
+                src={mainImage}
+                alt="Blockchain visualization"
+                className="section__home__image"
+              />
+              <div className="section__home__status section__home__status--locked">
+                <img src={lockedImage} alt="Locked" />
+              </div>
+              <div className="section__home__status section__home__status--guarented">
+                <img src={guarentedImage} alt="guarented" />
+              </div>
+            </div>
           </div>
+        </div>
+        <div className="section__home__dot section__home__dot--1">
+          <img src={halfCircle} />
+        </div>
+        <div className="section__home__dot section__home__dot--2">
+          <img src={cross2} />
+        </div>
+        <div className="section__home__dot section__home__dot--3">
+          <img src={cross1} />
         </div>
       </div>
     </section>
