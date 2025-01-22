@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import logo2 from "../../assets/images/logo2.png";
 import "../../scss/header.scss";
 
@@ -7,7 +8,9 @@ const Header = ({ onNavigate }) => {
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <img src={logo2} alt="logo" />
+          <Link to="/">
+            <img src={logo2} alt="logo" />
+          </Link>
         </div>
 
         <nav className="header__nav">
