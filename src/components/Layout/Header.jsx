@@ -1,14 +1,13 @@
-// Header.jsx
 import React from "react";
-import logo2 from "../../assets/images/logo2.png"
-import "../../scss/Header.scss";
+import logo2 from "../../assets/images/logo2.png";
+import "../../scss/header.scss";
 
 const Header = ({ onNavigate }) => {
   return (
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <img src={logo2} alt="logo"/>
+          <img src={logo2} alt="logo" />
         </div>
 
         <nav className="header__nav">
