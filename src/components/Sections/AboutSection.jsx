@@ -17,7 +17,7 @@ function About() {
             <div className="section__about__image">
               <div className="section__about__image-wrapper">
                 <div className="section__about__icon">
-                  <img src={aboutIconImage} />
+                  <img src={aboutIconImage} alt="about coin" />
                 </div>
                 <div className="section__about__coin">
                   <img src={aboutCoinImage} alt="about coin" />
