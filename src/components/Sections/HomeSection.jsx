@@ -47,13 +47,13 @@ function HomeSection() {
           </div>
         </div>
         <div className="section__home__dot section__home__dot--1">
-          <img src={halfCircle} />
+          <img src={halfCircle} alt="halfCircle" />
         </div>
         <div className="section__home__dot section__home__dot--2">
-          <img src={cross2} />
+          <img src={cross2} alt="cross2" />
         </div>
         <div className="section__home__dot section__home__dot--3">
-          <img src={cross1} />
+          <img src={cross1} alt="cross1" />
         </div>
       </div>
     </section>
