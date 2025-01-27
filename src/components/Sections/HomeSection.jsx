@@ -8,7 +8,7 @@ import cross1 from "../../assets/images/cross.png";
 import cross2 from "../../assets/images/cross-2.png";
 import halfCircle from "../../assets/images/half-circle.png";
 
-function HomeSection() {
+function HomeSection({ onNavigate }) {
   return (
     <section className="section">
       <div className="section__home">
@@ -18,13 +18,15 @@ function HomeSection() {
             <h1 className="section__home__title">
               Ability to buy & cash cryptocurrency
             </h1>
-            {/* <div className="section__home__cryptobit">
-              <span>Cryptobit</span>
-            </div> */}
             <p className="section__home__description">
               Cryptography, encryption process of transforming information
               referred to as plaintext using done.
             </p>
+            <div className="section__home__getStarted">
+              <button onClick={() => onNavigate("transaction")}>
+                Get Started Now
+              </button>
+            </div>
           </div>
 
           <div className="section__home__visuals">

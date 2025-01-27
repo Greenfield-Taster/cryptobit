@@ -42,21 +42,66 @@
       color: #ffffff;
       margin-bottom: 1.5rem;
       line-height: 1.2;
-      padding-bottom: 20px;
     }
 
-    // &__cryptobit {
-    //   display: inline-block;
-    //   margin: 1rem 0;
+    &__getStarted {
+      display: inline-block;
+      margin: 1rem 0;
+      position: absolute;
+      right: 10rem;
 
-    //   span {
-    //     padding: 0.5rem 1.5rem;
-    //     border: 2px solid #ffa500;
-    //     border-radius: 25px;
-    //     color: #ffffff;
-    //     font-size: 1.5rem;
-    //   }
-    // }
+      button {
+        font-size: 18px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: inline-block;
+        text-align: center;
+        font-weight: bold;
+        padding: 17px 34px;
+        border: 3px solid #ffbd00;
+        background-color: #ffbd00;
+        border-radius: 10px;
+        position: relative;
+        box-shadow: 0 2px 10px Orgba(0, 0, 0, 0.16),
+          0 3px 6px Orgba(0, 0, 0, 0.1);
+        color: #ffffff;
+        text-decoration: none;
+        transition: 0.5s ease all;
+        z-index: 1;
+        cursor: pointer;
+      }
+
+      button:before {
+        transition: 0.5s all ease;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        right: 50%;
+        bottom: 0;
+        opacity: 0;
+        content: "";
+        border-radius: 10px;
+        background-color: #ffffff;
+        z-index: -1;
+      }
+
+      button:hover,
+      button:focus {
+        color: #ffbd00;
+      }
+
+      button:hover:before,
+      button:focus:before {
+        transition: 0.5s all ease;
+        left: 0;
+        right: 0;
+        opacity: 1;
+      }
+
+      button:active {
+        transform: scale(0.9);
+      }
+    }
 
     &__description {
       color: #808080;
@@ -119,7 +164,7 @@
         animation-delay: 0s;
       }
       &--2 {
-        bottom: 14rem;
+        bottom: 10rem;
         left: 18rem;
         animation: dotMove2 3s ease-in-out infinite;
         animation-delay: 0.5s;
