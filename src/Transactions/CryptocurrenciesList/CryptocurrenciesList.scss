@@ -1,0 +1,105 @@
+.crypto-list-container {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  height: 400px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  .crypto-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+  }
+
+  .crypto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .crypto-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .number {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+      }
+
+      .crypto-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+
+      .crypto-details {
+        .name {
+          color: #fff;
+          font-size: 16px;
+          font-weight: 500;
+        }
+
+        .symbol {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 13px;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .crypto-price {
+      text-align: right;
+
+      .price-value {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+}
