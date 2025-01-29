@@ -1,5 +1,5 @@
 import React from "react";
-import "../../scss/sections.scss";
+import "../../scss/main.scss";
 import mainImage from "../../assets/images/main-img.png";
 import roundImage from "../../assets/images/round.png";
 import lockedImage from "../../assets/images/style-1.png";

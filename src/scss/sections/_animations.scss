@@ -1,0 +1,114 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dotMove1 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes dotMove2 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes dotMove3 {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes locked {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes guarented {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+}
+
+@keyframes aboutIcon {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes deliveryMan {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@media (max-width: 1200px) {
+  @keyframes deliveryMan {
+    0%,
+    100% {
+      transform: translateY(-10px);
+    }
+    50% {
+      transform: translateY(-35px);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes deliveryMan {
+    0%,
+    100% {
+      transform: translateY(-18px);
+    }
+    50% {
+      transform: translateY(-35px);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  @keyframes deliveryMan {
+    0%,
+    100% {
+      transform: translateY(-15px);
+    }
+    50% {
+      transform: translateY(-35px);
+    }
+  }
+}

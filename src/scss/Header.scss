@@ -89,15 +89,53 @@
   }
 }
 
-// Media queries for responsiveness
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .header {
-    &__nav {
-      display: none; // You might want to implement a mobile menu
+    &__container {
+      position: relative;
+      justify-content: space-between;
+      padding: 0 1rem;
+      gap: 1rem;
     }
 
+    &__nav {
+      display: none;
+    }
+
+    &__logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+
+      img {
+        height: 32px;
+        width: auto;
+      }
+    }
+
+    &__register-btn {
+      padding: 0.5rem 1rem;
+      font-size: 14px;
+      margin-left: auto;
+    }
+  }
+}
+
+@media (max-width: 380px) {
+  .header {
     &__container {
-      padding: 0 1.5rem;
+      padding: 0 0.5rem;
+    }
+
+    &__logo {
+      img {
+        height: 28px;
+      }
+    }
+
+    &__register-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 12px;
     }
   }
 }

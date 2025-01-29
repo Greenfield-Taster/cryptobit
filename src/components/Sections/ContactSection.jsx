@@ -1,5 +1,5 @@
 import React from "react";
-import "../../scss/sections.scss";
+import "../../scss/main.scss";
 import contactBGImage from "../../assets/images/cartoon-bg.png";
 import deliveryManImage from "../../assets/images/cartoon.png";
 import mainIcon from "../../assets/images/Contact-1.png";
@@ -15,11 +15,18 @@ function Contact() {
           </div>
 
           <div className="section__contact__content">
-            <div className="section__contact__image">
-              <img src={contactBGImage} alt="Contact illustration" />
-              <div className="section__contact__image__deliveryMan">
-                <img src={deliveryManImage} alt="deliveryManImage" />
-              </div>
+            <div className="section__contact__images">
+              <img
+                className="section__contact__images__post"
+                src={contactBGImage}
+                alt="Contact illustration"
+              />
+
+              <img
+                className="section__contact__images__deliveryMan"
+                src={deliveryManImage}
+                alt="deliveryManImage"
+              />
             </div>
 
             <div className="section__contact__form">

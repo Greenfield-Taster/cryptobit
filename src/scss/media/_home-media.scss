@@ -1,0 +1,99 @@
+@media (max-width: 768px) {
+  .section {
+    &__home {
+      height: 100vh;
+      padding: 1rem;
+
+      &-container {
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+        padding: 0 1rem;
+      }
+
+      &__content {
+        width: 100%;
+        text-align: center;
+      }
+
+      &__title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      &__description {
+        max-width: 100%;
+        margin: 1rem auto;
+      }
+
+      &__getStarted {
+        position: static;
+        display: block;
+        text-align: center;
+        margin: 2rem auto;
+        right: auto;
+      }
+
+      &__visuals {
+        display: none;
+      }
+
+      &__dot {
+        &--1 {
+          top: 10%;
+          left: 10%;
+        }
+        &--2 {
+          bottom: 28%;
+          left: 10%;
+        }
+        &--3 {
+          top: 80%;
+          right: 15%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    &__home {
+      &__title {
+        font-size: 2rem;
+      }
+
+      &__description {
+        font-size: 0.9rem;
+      }
+
+      &__getStarted {
+        button {
+          padding: 15px 30px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 320px) {
+  .section {
+    &__home {
+      &__title {
+        font-size: 1.8rem;
+      }
+
+      &__description {
+        font-size: 0.85rem;
+      }
+
+      &__getStarted {
+        button {
+          padding: 12px 25px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

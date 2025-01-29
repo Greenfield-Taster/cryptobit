@@ -1,0 +1,180 @@
+.section {
+  &__home {
+    height: 90vh;
+    background: #000000;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+
+    &-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 60px;
+      padding: 0 2rem;
+    }
+
+    &__content {
+      position: relative;
+      width: 50%;
+      z-index: 2;
+
+      &-oval {
+        position: absolute;
+        width: 280px;
+        height: 100px;
+        background: rgba(255, 165, 0, 0.2);
+        border-radius: 50%;
+        transform: rotate(-12deg);
+        top: -20px;
+        left: -20px;
+        z-index: -1;
+      }
+    }
+
+    &__title {
+      font-size: 3.5rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    &__getStarted {
+      display: inline-block;
+      margin: 1rem 0;
+      position: absolute;
+      right: 10rem;
+
+      button {
+        font-size: 18px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: inline-block;
+        text-align: center;
+        font-weight: bold;
+        padding: 17px 34px;
+        border: 3px solid #ffbd00;
+        background-color: #ffbd00;
+        border-radius: 10px;
+        position: relative;
+        box-shadow: 0 2px 10px Orgba(0, 0, 0, 0.16),
+          0 3px 6px Orgba(0, 0, 0, 0.1);
+        color: #ffffff;
+        text-decoration: none;
+        transition: 0.5s ease all;
+        z-index: 1;
+        cursor: pointer;
+      }
+
+      button:before {
+        transition: 0.5s all ease;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        right: 50%;
+        bottom: 0;
+        opacity: 0;
+        content: "";
+        border-radius: 10px;
+        background-color: #ffffff;
+        z-index: -1;
+      }
+
+      button:hover,
+      button:focus {
+        color: #ffbd00;
+      }
+
+      button:hover:before,
+      button:focus:before {
+        transition: 0.5s all ease;
+        left: 0;
+        right: 0;
+        opacity: 1;
+      }
+
+      button:active {
+        transform: scale(0.9);
+      }
+    }
+
+    &__description {
+      color: #808080;
+      max-width: 400px;
+      margin-top: 1.5rem;
+      line-height: 1.6;
+    }
+
+    &__visuals {
+      position: relative;
+      width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__circle {
+      position: absolute;
+      animation: spin 20s linear infinite;
+    }
+
+    &__image {
+      width: 100%;
+      height: auto;
+    }
+
+    &__status {
+      position: absolute;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      span {
+        font-weight: 600;
+      }
+
+      &--locked {
+        top: 3rem;
+        left: 2rem;
+        animation: locked 2.5s ease-in-out infinite;
+        animation-delay: 0s;
+      }
+
+      &--guarented {
+        top: 14rem;
+        right: 1rem;
+        animation: guarented 6s ease-in-out infinite;
+        animation-delay: 0.4s;
+      }
+    }
+
+    &__dot {
+      position: absolute;
+
+      &--1 {
+        top: 5rem;
+        left: 13rem;
+        animation: dotMove1 4s ease-in-out infinite;
+        animation-delay: 0s;
+      }
+      &--2 {
+        bottom: 10rem;
+        left: 18rem;
+        animation: dotMove2 3s ease-in-out infinite;
+        animation-delay: 0.5s;
+      }
+
+      &--3 {
+        top: 17%;
+        right: 49%;
+        animation: dotMove3 4s ease-in-out infinite;
+        animation-delay: 1s;
+      }
+    }
+  }
+}

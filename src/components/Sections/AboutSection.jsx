@@ -1,5 +1,5 @@
 import React from "react";
-import "../../scss/sections.scss";
+import "../../scss/main.scss";
 import aboutMainImage from "../../assets/images/about-main-img.png";
 import aboutCoinImage from "../../assets/images/about-coin.png";
 import aboutIconImage from "../../assets/images/about-icon.png";
@@ -16,13 +16,21 @@ function About() {
           <div className="section__about__content">
             <div className="section__about__image">
               <div className="section__about__image-wrapper">
-                <div className="section__about__icon">
-                  <img src={aboutIconImage} alt="about coin" />
-                </div>
-                <div className="section__about__coin">
-                  <img src={aboutCoinImage} alt="about coin" />
-                </div>
-                <img src={aboutMainImage} alt="Blockchain coins" />
+                <img
+                  className="section__about__image-wrapper__icon"
+                  src={aboutIconImage}
+                  alt="about coin"
+                />
+                <img
+                  className="section__about__image-wrapper__coin"
+                  src={aboutCoinImage}
+                  alt="about coin"
+                />
+                <img
+                  className="section__about__image-wrapper__main"
+                  src={aboutMainImage}
+                  alt="Blockchain coins"
+                />
               </div>
             </div>
 

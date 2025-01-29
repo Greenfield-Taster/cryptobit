@@ -1,0 +1,14 @@
+@import "sections/home";
+@import "sections/transaction";
+@import "sections/about";
+@import "sections/contact";
+@import "sections/animations";
+
+@import "media/home-media";
+@import "media/transaction-media";
+@import "media/about-media";
+@import "media/contact-media";
+
+.section {
+  font-family: "Montserrat", sans-serif;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../scss/sections.scss";
+import "../../scss/main.scss";
 import CryptocurrenciesList from "../../Transactions/CryptocurrenciesList/CryptocurrenciesList";
 import CryptoConverter from "../../Transactions/CryptoConverter/CryptoConverter";
 
