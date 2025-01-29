@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CryptoConverter.scss";
 
 const CryptoConverter = ({ cryptos, selectedFromList }) => {
@@ -13,6 +13,31 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   });
   const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
+
+  const fromDropdownRef = useRef(null);
+  const toDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        fromDropdownRef.current &&
+        !fromDropdownRef.current.contains(event.target)
+      ) {
+        setIsFromDropdownOpen(false);
+      }
+      if (
+        toDropdownRef.current &&
+        !toDropdownRef.current.contains(event.target)
+      ) {
+        setIsToDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (cryptos.length > 0) {
@@ -63,6 +88,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         <div className="container__converter--from">
           <div
             className="container__select"
+            ref={fromDropdownRef}
             onClick={() => setIsFromDropdownOpen(!isFromDropdownOpen)}
           >
             {formData.fromCrypto ? (
@@ -129,6 +155,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         <div className="container__converter--to">
           <div
             className="container__select"
+            ref={toDropdownRef}
             onClick={() => setIsToDropdownOpen(!isToDropdownOpen)}
           >
             {formData.toCrypto ? (
