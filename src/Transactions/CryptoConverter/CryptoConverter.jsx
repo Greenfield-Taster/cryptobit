@@ -15,13 +15,17 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
 
   useEffect(() => {
-    if (selectedFromList) {
+    if (cryptos.length > 0) {
+      const tether = cryptos.find((crypto) => crypto.id === "tether");
+      const defaultFromCrypto = selectedFromList || cryptos[0];
+
       setFormData((prev) => ({
         ...prev,
-        fromCrypto: selectedFromList,
+        fromCrypto: defaultFromCrypto,
+        toCrypto: tether,
       }));
     }
-  }, [selectedFromList]);
+  }, [cryptos, selectedFromList]);
 
   const handleInputChange = (field, value) => {
     const newFormData = {
