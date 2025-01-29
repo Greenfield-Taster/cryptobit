@@ -109,7 +109,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                 handleInputChange("senderWallet", e.target.value)
               }
             />
-            <label>
+            <label className="container__saveWallet">
               <input
                 type="checkbox"
                 checked={formData.saveFromWallet}
@@ -161,7 +161,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             type="text"
             value={calculateConversion()}
             readOnly
-            className="container__amountInput"
+            className="container__amountInput container__amountInput--spaceBottom"
           />
           <div className="container__walletInput">
             <input
@@ -172,7 +172,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                 handleInputChange("recipientWallet", e.target.value)
               }
             />
-            <label>
+            <label className="container__saveWallet">
               <input
                 type="checkbox"
                 checked={formData.saveToWallet}
