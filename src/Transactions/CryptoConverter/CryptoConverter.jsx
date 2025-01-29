@@ -77,24 +77,24 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             ) : (
               <span>Select cryptocurrency</span>
             )}
+            {isFromDropdownOpen && (
+              <div className="container__select__dropdown">
+                {cryptos.map((crypto) => (
+                  <div
+                    key={crypto.id}
+                    className="container__option"
+                    onClick={() => {
+                      handleInputChange("fromCrypto", crypto);
+                      setIsFromDropdownOpen(false);
+                    }}
+                  >
+                    <img src={crypto.image} alt={crypto.name} />
+                    <span>{crypto.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          {isFromDropdownOpen && (
-            <div className="container__dropdown">
-              {cryptos.map((crypto) => (
-                <div
-                  key={crypto.id}
-                  className="container__option"
-                  onClick={() => {
-                    handleInputChange("fromCrypto", crypto);
-                    setIsFromDropdownOpen(false);
-                  }}
-                >
-                  <img src={crypto.image} alt={crypto.name} />
-                  <span>{crypto.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
           <input
             type="number"
             value={formData.amount}
@@ -143,24 +143,24 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             ) : (
               <span>Select cryptocurrency</span>
             )}
+            {isToDropdownOpen && (
+              <div className="container__select__dropdown">
+                {cryptos.map((crypto) => (
+                  <div
+                    key={crypto.id}
+                    className="container__option"
+                    onClick={() => {
+                      handleInputChange("toCrypto", crypto);
+                      setIsToDropdownOpen(false);
+                    }}
+                  >
+                    <img src={crypto.image} alt={crypto.name} />
+                    <span>{crypto.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          {isToDropdownOpen && (
-            <div className="container__dropdown">
-              {cryptos.map((crypto) => (
-                <div
-                  key={crypto.id}
-                  className="container__option"
-                  onClick={() => {
-                    handleInputChange("toCrypto", crypto);
-                    setIsToDropdownOpen(false);
-                  }}
-                >
-                  <img src={crypto.image} alt={crypto.name} />
-                  <span>{crypto.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
           <input
             type="text"
             value={calculateConversion()}

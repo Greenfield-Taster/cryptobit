@@ -47,20 +47,41 @@
     &__arrow {
       margin-left: auto;
     }
-  }
 
-  &__dropdown {
-    position: absolute;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 5px;
+    &__dropdown {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      width: 200px;
+      background: rgb(71, 70, 70);
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      cursor: grab;
 
-    img {
-      width: 24px;
-      height: 24px;
+      img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+
+      &::-webkit-scrollbar {
+        width: 8px; // Ширина скроллбара
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05); // Цвет фона трека
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2); // Цвет полосы прокрутки
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3); // Цвет при наведении
+      }
     }
   }
 
