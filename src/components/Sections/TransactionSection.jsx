@@ -55,7 +55,7 @@ const TransactionSection = () => {
 
   useEffect(() => {
     fetchCryptos();
-    const interval = setInterval(fetchCryptos, 30000);
+    const interval = setInterval(fetchCryptos, 3000000);
     return () => clearInterval(interval);
   }, []);
 
