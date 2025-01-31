@@ -59,6 +59,10 @@
       border-radius: 1rem;
       max-width: 500px;
 
+      form {
+        width: 100%;
+      }
+
       h2 {
         color: white;
         margin-bottom: 2rem;
@@ -73,6 +77,8 @@
         padding: 1rem;
         color: white;
         margin-bottom: 1rem;
+        width: 100%;
+        box-sizing: border-box;
 
         &::placeholder {
           color: #6b7280;
@@ -88,7 +94,7 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 1rem;
-      max-width: calc(100% - 1rem);
+      width: 100%;
 
       input {
         width: 100%;
@@ -96,38 +102,43 @@
     }
 
     &__subject {
-      width: calc(100% - 1rem) !important;
+      width: 100% !important;
     }
 
     textarea {
-      width: calc(100% - 1rem) !important;
+      width: 100% !important;
       resize: none;
     }
 
     &__submit {
-      background: #6c5413;
-      color: #fff;
-      padding: 10px 35px;
-      border: 1px solid #ffd831;
-      border-radius: 30px;
       display: flex;
-      align-items: center;
-      text-align: center;
-      gap: 1rem;
-      font-weight: 500;
-      transition: background-color 0.3s ease;
-      width: fit-content;
-      margin-top: 1rem;
-      cursor: pointer;
+      justify-content: center;
 
-      &:hover {
-        box-shadow: 2px 1px 20px #ffbc00;
-        transition: 0.7s;
-      }
+      button {
+        background: #6c5413;
+        color: #fff;
+        padding: 10px 35px;
+        border: 1px solid #ffd831;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+        width: fit-content;
+        margin-top: 1rem;
+        cursor: pointer;
 
-      img {
-        width: 30px;
-        height: auto;
+        &:hover {
+          box-shadow: 2px 1px 20px #ffbc00;
+          transition: 0.7s;
+        }
+
+        img {
+          width: 30px;
+          height: auto;
+        }
       }
     }
   }

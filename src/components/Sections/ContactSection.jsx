@@ -46,10 +46,12 @@ function Contact() {
                   rows="6"
                   className="section__contact__subject"
                 ></textarea>
-                <button type="submit" className="section__contact__submit">
-                  <img src={mainIcon} alt="mail icon" />
-                  Send Message
-                </button>
+                <div className="section__contact__submit">
+                  <button type="submit">
+                    <img src={mainIcon} alt="mail icon" />
+                    Send Message
+                  </button>
+                </div>
               </form>
             </div>
           </div>
