@@ -1,0 +1,250 @@
+@media (max-width: 1200px) {
+  .components-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .components-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  .crypto-list-container {
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 550px;
+    height: auto;
+    min-height: 450px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .crypto-list-container {
+    width: 95%;
+    padding: 16px;
+    height: auto;
+    min-height: 350px;
+    max-height: 450px;
+  }
+
+  .crypto-list-container .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .crypto-list-container .crypto-list {
+    padding-right: 4px;
+  }
+
+  .crypto-list-container .crypto-list::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .crypto-list-container .crypto-item {
+    padding: 12px;
+    margin-bottom: 6px;
+  }
+
+  .crypto-list-container .crypto-info {
+    gap: 8px;
+  }
+
+  .crypto-list-container .crypto-info .number {
+    font-size: 12px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .name {
+    font-size: 14px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .symbol {
+    font-size: 11px;
+  }
+
+  .crypto-list-container .crypto-price .price-value {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 95%;
+    padding: 16px;
+  }
+
+  .container__converter {
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .container__converter--from,
+  .container__converter--to {
+    width: 100%;
+  }
+
+  .container__select {
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .container__amountInput,
+  .container__walletInput input {
+    width: 90%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 576px) {
+  .components-wrapper {
+    padding: 0.5rem;
+  }
+
+  .container__continue-button button {
+    width: 140px;
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 375px) {
+  .crypto-list-container {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .crypto-list-container .title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .crypto-list-container .crypto-item {
+    padding: 10px;
+  }
+
+  .crypto-list-container .crypto-info {
+    gap: 6px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .name {
+    font-size: 13px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .symbol {
+    font-size: 10px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .container__select {
+    width: 100%;
+    height: 28px;
+  }
+
+  .container__amountInput,
+  .container__walletInput input {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .container__continue-button button {
+    width: 130px;
+    height: 45px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 320px) {
+  .crypto-list-container {
+    padding: 8px;
+  }
+
+  .crypto-list-container .title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .crypto-list-container .crypto-item {
+    padding: 8px;
+    margin-bottom: 4px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .crypto-list-container .crypto-info .number {
+    font-size: 11px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .name {
+    font-size: 12px;
+  }
+
+  .crypto-list-container .crypto-info .crypto-details .symbol {
+    font-size: 9px;
+  }
+
+  .crypto-list-container .crypto-price .price-value {
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 8px;
+  }
+
+  .container__converter {
+    gap: 1rem;
+  }
+
+  .container__select {
+    height: 26px;
+    font-size: 14px;
+  }
+
+  .container__amountInput,
+  .container__walletInput input {
+    padding: 8px;
+    height: 22px;
+    font-size: 14px;
+  }
+
+  .container__continue-button button {
+    width: 120px;
+    height: 40px;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .container__minAmount {
+    font-size: 12px;
+  }
+
+  .container__saveWallet label {
+    font-size: 12px;
+  }
+}

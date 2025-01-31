@@ -60,9 +60,9 @@ const Home = ({ homeRef, aboutRef, contactRef, transactionRef }) => {
       <div ref={aboutRef}>
         <AboutSection />
       </div>
-      {/* <div ref={transactionRef}>
+      <div ref={transactionRef}>
         <TransactionSection />
-      </div> */}
+      </div>
       <div ref={contactRef}>
         <ContactSection />
       </div>

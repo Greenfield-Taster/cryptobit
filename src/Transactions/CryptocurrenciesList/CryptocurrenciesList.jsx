@@ -1,5 +1,6 @@
 import React from "react";
 import "./CryptocurrenciesList.scss";
+import "../media/CryptocurrenciesList.scss";
 
 const CryptocurrenciesList = ({ cryptos, loading, error, onCryptoSelect }) => {
   return (

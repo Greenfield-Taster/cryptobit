@@ -1,0 +1,159 @@
+@media screen and (max-width: 1200px) {
+  .section {
+    &__transaction {
+      &__header {
+        h2 {
+          font-size: 2.2rem;
+        }
+      }
+
+      &__content {
+        gap: 2rem;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1070px) {
+  .section {
+    &__transaction {
+      &__header {
+        h2 {
+          font-size: 2rem;
+        }
+      }
+
+      &__content {
+        flex-direction: column;
+        gap: 3rem;
+      }
+    }
+  }
+
+  .container {
+    width: 90%;
+    max-width: 550px;
+    height: auto;
+    min-height: 400px;
+    padding: 20px;
+
+    &__converter {
+      flex-direction: column;
+      gap: 2rem;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .section {
+    &__transaction {
+      padding: 15px;
+      min-height: auto;
+
+      &__header {
+        margin-bottom: 2rem;
+
+        h2 {
+          font-size: 1.8rem;
+        }
+      }
+    }
+  }
+
+  .container {
+    padding: 15px;
+
+    &__select {
+      width: 180px;
+
+      &__dropdown {
+        width: 180px;
+      }
+    }
+
+    &__amountInput,
+    &__walletInput input {
+      width: 180px;
+    }
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .section {
+    &__transaction {
+      padding: 10px;
+
+      &__header {
+        h3 {
+          font-size: 0.9rem;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+
+  .container {
+    width: 95%;
+    padding: 12px;
+
+    &__select {
+      width: 160px;
+      height: 28px;
+
+      &__dropdown {
+        width: 160px;
+      }
+    }
+
+    &__amountInput,
+    &__walletInput input {
+      width: 160px;
+      height: 22px;
+      font-size: 15px;
+    }
+
+    &__continue-button {
+      button {
+        width: 140px;
+        height: 45px;
+        font-size: 15px;
+      }
+    }
+
+    &__saveWallet {
+      label {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .section {
+    &__transaction {
+      &__header {
+        h2 {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+
+  .container {
+    &__select {
+      width: 140px;
+
+      &__dropdown {
+        width: 140px;
+      }
+    }
+
+    &__amountInput,
+    &__walletInput input {
+      width: 140px;
+    }
+  }
+}

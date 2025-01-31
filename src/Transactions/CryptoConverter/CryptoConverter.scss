@@ -125,7 +125,8 @@
     flex-direction: column;
     align-items: center;
 
-    input {
+    &--sendersWallet,
+    &--recipientWallet {
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 30px;
       padding: 14px 10px;
@@ -143,18 +144,15 @@
   &__saveWallet {
     margin-top: 12px;
     display: flex;
-    flex-direction: row;
     gap: 5px;
     align-items: center;
     color: #ffffff;
+    margin-top: 5px;
+    font-size: 14px;
+    width: 100px;
 
-    input {
-      width: 10px;
-    }
-
-    label {
-      margin-top: 5px;
-      font-size: 14px;
+    &__checkbox {
+      width: 5px;
     }
   }
 

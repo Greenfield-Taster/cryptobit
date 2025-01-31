@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./CryptoConverter.scss";
+import "../media/CryptoConverter.scss";
 
 const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const [formData, setFormData] = useState({
@@ -134,6 +135,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             <input
               type="text"
               placeholder="Sender's wallet"
+              className="container__walletInput--sendersWallet"
               value={formData.senderWallet}
               onChange={(e) =>
                 handleInputChange("senderWallet", e.target.value)
@@ -143,6 +145,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               <input
                 type="checkbox"
                 checked={formData.saveFromWallet}
+                className="container__saveWallet__checkbox"
                 onChange={(e) =>
                   handleInputChange("saveFromWallet", e.target.checked)
                 }
@@ -199,6 +202,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               type="text"
               placeholder="Recipient's wallet"
               value={formData.recipientWallet}
+              className="container__walletInput--recipientWallet"
               onChange={(e) =>
                 handleInputChange("recipientWallet", e.target.value)
               }
@@ -206,6 +210,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             <label className="container__saveWallet">
               <input
                 type="checkbox"
+                className="container__saveWallet__checkbox"
                 checked={formData.saveToWallet}
                 onChange={(e) =>
                   handleInputChange("saveToWallet", e.target.checked)

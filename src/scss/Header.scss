@@ -94,7 +94,7 @@
     &__container {
       position: relative;
       justify-content: space-between;
-      padding: 0 1rem;
+      // padding: 0 1rem;
       gap: 1rem;
     }
 
@@ -108,7 +108,7 @@
       transform: translateX(-50%);
 
       img {
-        height: 32px;
+        height: 50px;
         width: auto;
       }
     }
@@ -121,15 +121,37 @@
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 530px) {
   .header {
     &__container {
-      padding: 0 0.5rem;
+      // padding: 0 0.5rem;
     }
 
     &__logo {
       img {
-        height: 28px;
+        height: 39px;
+        width: auto;
+      }
+    }
+
+    &__register-btn {
+      padding: 0.5rem 0.7rem;
+      font-size: 14px;
+      margin-left: auto;
+    }
+  }
+}
+
+@media (max-width: 380px) {
+  .header {
+    &__container {
+      // padding: 0 0.5rem;
+    }
+
+    &__logo {
+      img {
+        height: 32px;
+        width: auto;
       }
     }
 
