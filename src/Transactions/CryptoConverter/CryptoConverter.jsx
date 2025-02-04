@@ -84,145 +84,186 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   };
 
   return (
-    <div className="container">
-      <div className="container__converter">
-        <div className="container__converter--from">
+    <div className="crypto-converter">
+      <div className="crypto-converter__form">
+        {/* From Section */}
+        <div className="crypto-converter__section">
           <div
-            className="container__select"
+            className="crypto-selector"
             ref={fromDropdownRef}
             onClick={() => setIsFromDropdownOpen(!isFromDropdownOpen)}
           >
-            {formData.fromCrypto ? (
-              <>
-                <img
-                  src={formData.fromCrypto.image}
-                  alt={formData.fromCrypto.name}
-                />
-                <span>{formData.fromCrypto.name}</span>
-                <span className="container__select__arrow">▼</span>
-              </>
-            ) : (
-              <span>Select cryptocurrency</span>
-            )}
+            <div className="crypto-selector__selected">
+              {formData.fromCrypto ? (
+                <>
+                  <img
+                    className="crypto-selector__icon"
+                    src={formData.fromCrypto.image}
+                    alt={formData.fromCrypto.name}
+                  />
+                  <span className="crypto-selector__name">
+                    {formData.fromCrypto.name}
+                  </span>
+                  <span className="crypto-selector__arrow">▼</span>
+                </>
+              ) : (
+                <span className="crypto-selector__placeholder">
+                  Select cryptocurrency
+                </span>
+              )}
+            </div>
+
             {isFromDropdownOpen && (
-              <div className="container__select__dropdown">
+              <div className="crypto-selector__dropdown crypto-selector__dropdown--from">
                 {cryptos.map((crypto) => (
                   <div
                     key={crypto.id}
-                    className="container__option"
+                    className="crypto-selector__option"
                     onClick={() => {
                       handleInputChange("fromCrypto", crypto);
                       setIsFromDropdownOpen(false);
                     }}
                   >
-                    <img src={crypto.image} alt={crypto.name} />
-                    <span>{crypto.name}</span>
+                    <img
+                      className="crypto-selector__option-icon"
+                      src={crypto.image}
+                      alt={crypto.name}
+                    />
+                    <span className="crypto-selector__option-name">
+                      {crypto.name}
+                    </span>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          <input
-            type="number"
-            value={formData.amount}
-            onChange={(e) => handleInputChange("amount", e.target.value)}
-            className="container__amountInput"
-            min="0"
-            step="any"
-          />
-          <div className="container__minAmount">Min: 25$</div>
-          <div className="container__walletInput">
+
+          <div className="crypto-converter__amount">
+            <input
+              type="number"
+              className="crypto-converter__amount-input"
+              value={formData.amount}
+              onChange={(e) => handleInputChange("amount", e.target.value)}
+              min="0"
+              step="any"
+            />
+            <div className="crypto-converter__min-amount">Min: 25$</div>
+          </div>
+
+          <div className="wallet-input">
             <input
               type="text"
+              className="wallet-input__field"
               placeholder="Sender's wallet"
-              className="container__walletInput--sendersWallet"
               value={formData.senderWallet}
               onChange={(e) =>
                 handleInputChange("senderWallet", e.target.value)
               }
             />
-            <label className="container__saveWallet">
+            <label className="wallet-input__save">
               <input
                 type="checkbox"
+                className="wallet-input__checkbox"
                 checked={formData.saveFromWallet}
-                className="container__saveWallet__checkbox"
                 onChange={(e) =>
                   handleInputChange("saveFromWallet", e.target.checked)
                 }
               />
-              Save wallet
+              <span className="wallet-input__save-text">Save wallet</span>
             </label>
           </div>
         </div>
 
-        <div className="container__converter--to">
+        {/* To Section */}
+        <div className="crypto-converter__section">
           <div
-            className="container__select"
+            className="crypto-selector"
             ref={toDropdownRef}
             onClick={() => setIsToDropdownOpen(!isToDropdownOpen)}
           >
-            {formData.toCrypto ? (
-              <>
-                <img
-                  src={formData.toCrypto.image}
-                  alt={formData.toCrypto.name}
-                />
-                <span>{formData.toCrypto.name}</span>
-                <span className="container__select__arrow">▼</span>
-              </>
-            ) : (
-              <span>Select cryptocurrency</span>
-            )}
+            <div className="crypto-selector__selected">
+              {formData.toCrypto ? (
+                <>
+                  <img
+                    className="crypto-selector__icon"
+                    src={formData.toCrypto.image}
+                    alt={formData.toCrypto.name}
+                  />
+                  <span className="crypto-selector__name">
+                    {formData.toCrypto.name}
+                  </span>
+                  <span className="crypto-selector__arrow">▼</span>
+                </>
+              ) : (
+                <span className="crypto-selector__placeholder">
+                  Select cryptocurrency
+                </span>
+              )}
+            </div>
+
             {isToDropdownOpen && (
-              <div className="container__select__dropdown">
+              <div className="crypto-selector__dropdown crypto-selector__dropdown--to">
                 {cryptos.map((crypto) => (
                   <div
                     key={crypto.id}
-                    className="container__option"
+                    className="crypto-selector__option"
                     onClick={() => {
                       handleInputChange("toCrypto", crypto);
                       setIsToDropdownOpen(false);
                     }}
                   >
-                    <img src={crypto.image} alt={crypto.name} />
-                    <span>{crypto.name}</span>
+                    <img
+                      className="crypto-selector__option-icon"
+                      src={crypto.image}
+                      alt={crypto.name}
+                    />
+                    <span className="crypto-selector__option-name">
+                      {crypto.name}
+                    </span>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          <input
-            type="text"
-            value={calculateConversion()}
-            readOnly
-            className="container__amountInput container__amountInput--spaceBottom"
-          />
-          <div className="container__walletInput">
+
+          <div className="crypto-converter__amount">
             <input
               type="text"
+              className="crypto-converter__amount-input crypto-converter__amount-input--readonly"
+              value={calculateConversion()}
+              readOnly
+            />
+          </div>
+
+          <div className="wallet-input">
+            <input
+              type="text"
+              className="wallet-input__field"
               placeholder="Recipient's wallet"
               value={formData.recipientWallet}
-              className="container__walletInput--recipientWallet"
               onChange={(e) =>
                 handleInputChange("recipientWallet", e.target.value)
               }
             />
-            <label className="container__saveWallet">
+            <label className="wallet-input__save">
               <input
                 type="checkbox"
-                className="container__saveWallet__checkbox"
+                className="wallet-input__checkbox"
                 checked={formData.saveToWallet}
                 onChange={(e) =>
                   handleInputChange("saveToWallet", e.target.checked)
                 }
               />
-              Save wallet
+              <span className="wallet-input__save-text">Save wallet</span>
             </label>
           </div>
         </div>
       </div>
-      <div className="container__continue-button">
-        <button onClick={handleContinue}>Continue</button>
+
+      <div className="crypto-converter__footer">
+        <button className="crypto-converter__submit" onClick={handleContinue}>
+          Continue
+        </button>
       </div>
     </div>
   );

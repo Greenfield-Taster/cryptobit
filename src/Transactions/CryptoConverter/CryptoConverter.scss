@@ -1,4 +1,4 @@
-.container {
+.crypto-converter {
   flex: 1;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -11,20 +11,81 @@
   align-items: center;
   justify-content: center;
 
-  &__converter {
+  &__form {
     display: flex;
     flex-direction: row;
     gap: 3rem;
+    width: 100%;
+    justify-content: center;
+  }
 
-    &--from,
-    &--to {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+  &__section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 220px;
+  }
+
+  &__amount {
+    margin-top: 20px;
+    width: 100%;
+
+    &-input {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: center;
+      font-size: 17px;
+      box-sizing: border-box;
+
+      &--readonly {
+        margin-bottom: 26px;
+      }
     }
   }
 
-  &__select {
+  &__min-amount {
+    padding-top: 6px;
+    color: #cecece;
+    text-align: center;
+    width: 100%;
+  }
+
+  &__footer {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__submit {
+    width: 160px;
+    height: 55px;
+    background-color: #ffc107;
+    color: #000000;
+    border: none;
+    border-radius: 20px;
+    padding: 14px;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #ffcd38;
+    }
+  }
+}
+
+.crypto-selector {
+  width: 100%;
+  box-sizing: border-box;
+
+  &__selected {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 30px;
@@ -33,55 +94,59 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    width: 200px;
-    height: 30px;
+    height: 50px;
     color: #fff;
-    position: relative;
+    box-sizing: border-box;
+  }
 
-    img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-right: 10px;
+  &__icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  &__arrow {
+    margin-left: auto;
+  }
+
+  &__dropdown {
+    position: absolute;
+    width: 220px;
+    background: rgb(71, 70, 70);
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    cursor: grab;
+    z-index: 1000;
+    box-sizing: border-box;
+    color: #fff;
+
+    &--from {
+      // top: 112px;
+      // left: 65px;
     }
 
-    &__arrow {
-      margin-left: auto;
+    &--to {
+      // top: 112px;
+      // right: 65px;
     }
 
-    &__dropdown {
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      width: 200px;
-      background: rgb(71, 70, 70);
-      border-radius: 10px;
-      max-height: 200px;
-      overflow-y: auto;
-      cursor: grab;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
 
-      img {
-        width: 24px;
-        height: 24px;
-        margin-right: 10px;
-      }
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
 
-      &::-webkit-scrollbar {
-        width: 8px; // Ширина скроллбара
-      }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
 
-      &::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05); // Цвет фона трека
-        border-radius: 4px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2); // Цвет полосы прокрутки
-        border-radius: 4px;
-      }
-
-      &::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.3); // Цвет при наведении
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
       }
     }
   }
@@ -91,92 +156,55 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    box-sizing: border-box;
+
     &:hover {
       background: rgba(255, 255, 255, 0.2);
     }
-  }
 
-  &__amountInput {
-    margin-top: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    &-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+  }
+}
+
+.wallet-input {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+
+  &__field {
+    width: 100%;
+    height: 50px;
+    border: none;
     border-radius: 30px;
     padding: 14px 10px;
-    border: none;
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
     text-align: center;
-    width: 200px;
-    height: 25px;
     font-size: 17px;
-
-    &--spaceBottom {
-      margin-bottom: 26px;
-    }
+    box-sizing: border-box;
   }
 
-  &__minAmount {
-    padding-top: 6px;
-    color: #cecece;
-  }
-
-  &__walletInput {
-    margin-top: 22px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    &--sendersWallet,
-    &--recipientWallet {
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 30px;
-      padding: 14px 10px;
-      border: none;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      text-align: center;
-      width: 200px;
-      height: 25px;
-      font-size: 17px;
-    }
-  }
-
-  &__saveWallet {
+  &__save {
     margin-top: 12px;
     display: flex;
     gap: 5px;
     align-items: center;
+    justify-content: center;
     color: #ffffff;
-    margin-top: 5px;
     font-size: 14px;
-    width: 100px;
-
-    &__checkbox {
-      width: 5px;
-    }
+    width: 100%;
   }
 
-  &__continue-button {
-    margin-top: 1rem;
-
-    button {
-      width: 160px;
-      height: 55px;
-      background-color: #ffc107;
-      color: #000000;
-      border: none;
-      border-radius: 20px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      font-size: 17px;
-      font-weight: 500;
-
-      &:hover {
-        background-color: #ffcd38;
-      }
-    }
+  &__checkbox {
+    width: 16px;
+    height: 16px;
   }
 }

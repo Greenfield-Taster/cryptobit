@@ -25,21 +25,21 @@
 
       &__content {
         flex-direction: column;
-        gap: 3rem;
+        gap: 2rem;
+        width: 100%;
+
+        &__cryptocurrencies {
+          display: flex;
+          justify-content: center;
+        }
+
+        &__exchangeForm {
+          width: 100%;
+          flex: 1 1 auto;
+          display: flex;
+          justify-content: center;
+        }
       }
-    }
-  }
-
-  .container {
-    width: 90%;
-    max-width: 550px;
-    height: auto;
-    min-height: 400px;
-    padding: 20px;
-
-    &__converter {
-      flex-direction: column;
-      gap: 2rem;
     }
   }
 }
@@ -47,7 +47,6 @@
 @media screen and (max-width: 768px) {
   .section {
     &__transaction {
-      padding: 15px;
       min-height: auto;
 
       &__header {
@@ -57,23 +56,6 @@
           font-size: 1.8rem;
         }
       }
-    }
-  }
-
-  .container {
-    padding: 15px;
-
-    &__select {
-      width: 180px;
-
-      &__dropdown {
-        width: 180px;
-      }
-    }
-
-    &__amountInput,
-    &__walletInput input {
-      width: 180px;
     }
   }
 }
@@ -94,41 +76,6 @@
       }
     }
   }
-
-  .container {
-    width: 95%;
-    padding: 12px;
-
-    &__select {
-      width: 160px;
-      height: 28px;
-
-      &__dropdown {
-        width: 160px;
-      }
-    }
-
-    &__amountInput,
-    &__walletInput input {
-      width: 160px;
-      height: 22px;
-      font-size: 15px;
-    }
-
-    &__continue-button {
-      button {
-        width: 140px;
-        height: 45px;
-        font-size: 15px;
-      }
-    }
-
-    &__saveWallet {
-      label {
-        font-size: 12px;
-      }
-    }
-  }
 }
 
 @media screen and (max-width: 400px) {
@@ -139,21 +86,6 @@
           font-size: 1.3rem;
         }
       }
-    }
-  }
-
-  .container {
-    &__select {
-      width: 140px;
-
-      &__dropdown {
-        width: 140px;
-      }
-    }
-
-    &__amountInput,
-    &__walletInput input {
-      width: 140px;
     }
   }
 }
