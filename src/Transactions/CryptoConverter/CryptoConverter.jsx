@@ -41,33 +41,63 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   }, []);
 
   useEffect(() => {
-    if (cryptos.length > 0) {
-      const tether = cryptos.find((crypto) => crypto.id === "tether");
+    if (cryptos && cryptos.length > 0) {
       const defaultFromCrypto = selectedFromList || cryptos[0];
+      const tether = cryptos.find((crypto) => crypto.id === "tether");
+
+      const defaultToCrypto =
+        defaultFromCrypto.id === tether.id
+          ? cryptos.find((crypto) => crypto.id !== tether.id)
+          : tether;
 
       setFormData((prev) => ({
         ...prev,
         fromCrypto: defaultFromCrypto,
-        toCrypto: tether,
+        toCrypto: defaultToCrypto,
       }));
     }
   }, [cryptos, selectedFromList]);
 
+  const getAvailableToOptions = () => {
+    return cryptos.filter((crypto) => crypto.id !== formData.fromCrypto?.id);
+  };
+
   const handleInputChange = (field, value) => {
-    const newFormData = {
-      ...formData,
-      [field]: value,
-    };
-    setFormData(newFormData);
-    console.log("Updated Form Data:", newFormData);
+    if (field === "fromCrypto") {
+      const tether = cryptos.find((crypto) => crypto.id === "tether");
+      const newToCrypto =
+        value.id === tether.id
+          ? cryptos.find((crypto) => crypto.id !== tether.id)
+          : tether;
+
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+        toCrypto: newToCrypto,
+      }));
+    } else {
+      const newFormData = {
+        ...formData,
+        [field]: value,
+      };
+      setFormData(newFormData);
+      console.log("Updated Form Data:", newFormData);
+    }
   };
 
   const calculateConversion = () => {
     if (!formData.fromCrypto || !formData.toCrypto || !formData.amount)
       return "0";
-    const rate =
-      formData.fromCrypto.current_price / formData.toCrypto.current_price;
-    return (parseFloat(formData.amount) * rate).toFixed(8);
+
+    const toPrice = formData.toCrypto.current_price;
+    if (!toPrice) return "0";
+
+    const rate = formData.fromCrypto.current_price / toPrice;
+    const amount = parseFloat(formData.amount);
+
+    if (isNaN(amount)) return "0";
+
+    return (amount * rate).toFixed(8);
   };
 
   const handleContinue = () => {
@@ -144,7 +174,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               className="crypto-converter__amount-input"
               value={formData.amount}
               onChange={(e) => handleInputChange("amount", e.target.value)}
-              min="0"
+              min="25"
               step="any"
             />
             <div className="crypto-converter__min-amount">Min: 25$</div>
@@ -203,7 +233,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
             {isToDropdownOpen && (
               <div className="crypto-selector__dropdown crypto-selector__dropdown--to">
-                {cryptos.map((crypto) => (
+                {getAvailableToOptions().map((crypto) => (
                   <div
                     key={crypto.id}
                     className="crypto-selector__option"
