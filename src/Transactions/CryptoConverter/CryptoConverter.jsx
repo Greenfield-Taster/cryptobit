@@ -15,6 +15,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
 
+  const [errors, setErrors] = useState({
+    amount: "",
+    senderWallet: "",
+    recipientWallet: "",
+  });
+
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
 
@@ -100,7 +106,28 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     return (amount * rate).toFixed(8);
   };
 
+  const validateAmount = (value) => {
+    if (!value) return true;
+    return parseFloat(value) < 25;
+  };
+
+  const validateWallet = (value) => {
+    return !value || value.trim() === "";
+  };
+
   const handleContinue = async () => {
+    const newErrors = {
+      amount: validateAmount(formData.amount),
+      senderWallet: validateWallet(formData.senderWallet),
+      recipientWallet: validateWallet(formData.recipientWallet),
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error)) {
+      return;
+    }
+
     const submissionData = {
       fromCrypto: formData.fromCrypto?.name,
       toCrypto: formData.toCrypto?.name,
@@ -135,12 +162,17 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           fromCrypto: prev.fromCrypto,
           toCrypto: prev.toCrypto,
         }));
+
+        setErrors({
+          amount: false,
+          senderWallet: false,
+          recipientWallet: false,
+        });
       } else {
-        alert("Произошла ошибка при отправке");
+        console.error("Ошибка!");
       }
     } catch (error) {
       console.error("Ошибка:", error);
-      alert("Произошла ошибка при отправке");
     }
   };
 
@@ -207,19 +239,32 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               min="25"
               step="any"
             />
-            <div className="crypto-converter__min-amount">Min: 25$</div>
+            <div
+              className={`crypto-converter__min-amount ${
+                errors.amount ? "crypto-converter__min-amount--error" : ""
+              }`}
+            >
+              Min: 25$
+            </div>
           </div>
 
           <div className="wallet-input">
             <input
               type="text"
-              className="wallet-input__field"
+              className={`wallet-input__field ${
+                errors.senderWallet ? "wallet-input__field--error" : ""
+              }`}
               placeholder="Sender's wallet"
               value={formData.senderWallet}
               onChange={(e) =>
                 handleInputChange("senderWallet", e.target.value)
               }
             />
+            {errors.senderWallet && (
+              <div className="wallet-input__error">
+                Sender wallet is required
+              </div>
+            )}
             <label className="wallet-input__save">
               <input
                 type="checkbox"
@@ -297,13 +342,20 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           <div className="wallet-input">
             <input
               type="text"
-              className="wallet-input__field"
+              className={`wallet-input__field ${
+                errors.recipientWallet ? "wallet-input__field--error" : ""
+              }`}
               placeholder="Recipient's wallet"
               value={formData.recipientWallet}
               onChange={(e) =>
                 handleInputChange("recipientWallet", e.target.value)
               }
             />
+            {errors.recipientWallet && (
+              <div className="wallet-input__error">
+                Recipient wallet is required
+              </div>
+            )}
             <label className="wallet-input__save">
               <input
                 type="checkbox"

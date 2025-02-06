@@ -53,6 +53,10 @@
     color: #cecece;
     text-align: center;
     width: 100%;
+
+    &--error {
+      color: #ff4d4f;
+    }
   }
 
   &__footer {
@@ -190,6 +194,18 @@
     text-align: center;
     font-size: 17px;
     box-sizing: border-box;
+
+    &--error {
+      border: 1px solid #ff4d4f;
+    }
+  }
+
+  &__error {
+    color: #ff4d4f;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
   }
 
   &__save {
