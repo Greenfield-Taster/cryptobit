@@ -100,8 +100,8 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     return (amount * rate).toFixed(8);
   };
 
-  const handleContinue = () => {
-    console.log("Form Submission:", {
+  const handleContinue = async () => {
+    const submissionData = {
       fromCrypto: formData.fromCrypto?.name,
       toCrypto: formData.toCrypto?.name,
       amount: formData.amount,
@@ -110,13 +110,43 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       recipientWallet: formData.recipientWallet,
       saveFromWallet: formData.saveFromWallet,
       saveToWallet: formData.saveToWallet,
-    });
+    };
+    console.log(submissionData);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/send-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submissionData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          amount: "1",
+          senderWallet: "",
+          recipientWallet: "",
+          saveFromWallet: true,
+          saveToWallet: true,
+          fromCrypto: prev.fromCrypto,
+          toCrypto: prev.toCrypto,
+        }));
+      } else {
+        alert("Произошла ошибка при отправке");
+      }
+    } catch (error) {
+      console.error("Ошибка:", error);
+      alert("Произошла ошибка при отправке");
+    }
   };
 
   return (
     <div className="crypto-converter">
       <div className="crypto-converter__form">
-        {/* From Section */}
         <div className="crypto-converter__section">
           <div
             className="crypto-selector"
@@ -204,7 +234,6 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           </div>
         </div>
 
-        {/* To Section */}
         <div className="crypto-converter__section">
           <div
             className="crypto-selector"
