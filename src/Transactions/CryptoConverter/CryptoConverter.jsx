@@ -119,7 +119,6 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     const newErrors = {
       amount: validateAmount(formData.amount),
       senderWallet: validateWallet(formData.senderWallet),
-      recipientWallet: validateWallet(formData.recipientWallet),
     };
 
     setErrors(newErrors);
@@ -129,25 +128,32 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     }
 
     const submissionData = {
-      fromCrypto: formData.fromCrypto?.name,
-      toCrypto: formData.toCrypto?.name,
-      amount: formData.amount,
-      calculatedAmount: calculateConversion(),
+      fromCrypto: formData.fromCrypto?.name || "",
+      toCrypto: formData.toCrypto?.name || "",
+      amount: parseFloat(formData.amount),
+      calculatedAmount: parseFloat(calculateConversion()),
       senderWallet: formData.senderWallet,
       recipientWallet: formData.recipientWallet,
-      saveFromWallet: formData.saveFromWallet,
-      saveToWallet: formData.saveToWallet,
+      saveFromWallet: Boolean(formData.saveFromWallet),
+      saveToWallet: Boolean(formData.saveToWallet),
     };
-    console.log(submissionData);
 
     try {
-      const response = await fetch("http://localhost:5000/api/send-form", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submissionData),
-      });
+      const response = await fetch(
+        "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api/send-form",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(submissionData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Network response was not ok");
+      }
 
       const data = await response.json();
 
@@ -163,16 +169,17 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           toCrypto: prev.toCrypto,
         }));
 
+        // Сброс ошибок
         setErrors({
           amount: false,
           senderWallet: false,
           recipientWallet: false,
         });
       } else {
-        console.error("Ошибка!");
+        throw new Error(data.message || "Ошибка при отправке данных");
       }
     } catch (error) {
-      console.error("Ошибка:", error);
+      console.error("Error submitting form:", error);
     }
   };
 
