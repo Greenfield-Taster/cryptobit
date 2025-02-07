@@ -16,7 +16,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
 
   const [errors, setErrors] = useState({
-    amount: "",
+    calculatedAmount: false,
     senderWallet: "",
     recipientWallet: "",
   });
@@ -87,7 +87,6 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         [field]: value,
       };
       setFormData(newFormData);
-      console.log("Updated Form Data:", newFormData);
     }
   };
 
@@ -106,9 +105,10 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     return (amount * rate).toFixed(8);
   };
 
-  const validateAmount = (value) => {
+  const validateCalculatedAmount = (value) => {
     if (!value) return true;
-    return parseFloat(value) < 25;
+    const calculatedValue = parseFloat(calculateConversion());
+    return calculatedValue < 25;
   };
 
   const validateWallet = (value) => {
@@ -117,8 +117,9 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
   const handleContinue = async () => {
     const newErrors = {
-      amount: validateAmount(formData.amount),
+      calculatedAmount: validateCalculatedAmount(formData.amount),
       senderWallet: validateWallet(formData.senderWallet),
+      recipientWallet: validateWallet(formData.recipientWallet),
     };
 
     setErrors(newErrors);
@@ -169,9 +170,8 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           toCrypto: prev.toCrypto,
         }));
 
-        // Сброс ошибок
         setErrors({
-          amount: false,
+          calculatedAmount: false,
           senderWallet: false,
           recipientWallet: false,
         });
@@ -243,12 +243,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               className="crypto-converter__amount-input"
               value={formData.amount}
               onChange={(e) => handleInputChange("amount", e.target.value)}
-              min="25"
               step="any"
             />
             <div
               className={`crypto-converter__min-amount ${
-                errors.amount ? "crypto-converter__min-amount--error" : ""
+                errors.calculatedAmount
+                  ? "crypto-converter__min-amount--error"
+                  : ""
               }`}
             >
               Min: 25$
@@ -340,7 +341,11 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           <div className="crypto-converter__amount">
             <input
               type="text"
-              className="crypto-converter__amount-input crypto-converter__amount-input--readonly"
+              className={`crypto-converter__amount-input crypto-converter__amount-input--readonly ${
+                errors.calculatedAmount
+                  ? "crypto-converter__amount-input--error"
+                  : ""
+              }`}
               value={calculateConversion()}
               readOnly
             />
