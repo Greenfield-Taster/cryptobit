@@ -1,6 +1,7 @@
 @media (max-width: 1200px) {
   .section {
     &__about {
+      min-height: 60vh;
       &__content {
         flex-direction: column;
         gap: 3rem;

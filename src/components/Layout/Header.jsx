@@ -24,16 +24,28 @@ const Header = ({ onNavigate }) => {
               </button>
             </li>
             <button
+              onClick={() => onNavigate("transaction")}
+              className="header__nav-link"
+            >
+              Transaction
+            </button>
+            <button
               onClick={() => onNavigate("about")}
               className="header__nav-link"
             >
               About
             </button>
             <button
-              onClick={() => onNavigate("transaction")}
+              onClick={() => onNavigate("testimonial")}
               className="header__nav-link"
             >
-              Transaction
+              Testimonial
+            </button>
+            <button
+              onClick={() => onNavigate("frequentlyQA")}
+              className="header__nav-link"
+            >
+              Frequently Q/A
             </button>
             <button
               onClick={() => onNavigate("contact")}

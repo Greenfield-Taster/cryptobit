@@ -2,12 +2,16 @@
 @import "sections/transaction";
 @import "sections/about";
 @import "sections/contact";
+@import "sections/testimonial";
+@import "sections/frequentlyQA";
 @import "sections/animations";
 
 @import "media/home-media";
 @import "media/transaction-media";
 @import "media/about-media";
 @import "media/contact-media";
+@import "media/testimonial-media";
+@import "media/frequentlyQA-media";
 
 .section {
   font-family: "Montserrat", sans-serif;

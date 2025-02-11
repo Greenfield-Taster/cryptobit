@@ -12,6 +12,8 @@ function App() {
   const contactRef = useRef(null);
   const transactionRef = useRef(null);
   const homeRef = useRef(null);
+  const testimonialRef = useRef(null);
+  const frequentlyQARef = useRef(null);
 
   const handleScroll = (ref) => {
     if (ref.current) {
@@ -35,6 +37,8 @@ function App() {
           if (section === "contact") handleScroll(contactRef);
           if (section === "transaction") handleScroll(transactionRef);
           if (section === "home") handleScroll(homeRef);
+          if (section === "testimonial") handleScroll(testimonialRef);
+          if (section === "frequentlyQA") handleScroll(frequentlyQARef);
         }}
       />
       <div className="content">
@@ -47,6 +51,8 @@ function App() {
                 aboutRef={aboutRef}
                 contactRef={contactRef}
                 transactionRef={transactionRef}
+                testimonialRef={testimonialRef}
+                frequentlyQARef={frequentlyQARef}
               />
             }
           />
