@@ -69,7 +69,7 @@ const Testimonial = () => {
           <div className="testimonials">
             <div className="testimonials__stats">
               <div className="stats-box">
-                <img src={testiBack} alt="testiImage" />
+                <img src={testiBack} alt="Statistics background" />
                 <h3 className="stats-number">3120 +</h3>
                 <p className="stats-text">
                   Our All Customers
@@ -80,40 +80,41 @@ const Testimonial = () => {
             </div>
 
             <div className="testimonials__content">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={testimonial.id}
-                  className={`testimonial ${
-                    index === currentSlide
-                      ? "active"
-                      : index ===
-                        (currentSlide - 1 + testimonials.length) %
-                          testimonials.length
-                      ? "previous"
-                      : ""
-                  }`}
-                >
-                  <div className="testimonial__header">
-                    <div className="testimonial__avatar">
-                      <img
-                        src={images[testimonial.image]}
-                        alt={testimonial.name}
-                      />
+              <div className="testimonials__slides">
+                {testimonials.map((testimonial, index) => (
+                  <div
+                    key={testimonial.id}
+                    className={`testimonial ${
+                      index === currentSlide ? "active" : ""
+                    }`}
+                  >
+                    <div className="testimonial__content">
+                      <div className="testimonial__header">
+                        <div className="testimonial__avatar">
+                          <img
+                            src={images[testimonial.image]}
+                            alt={testimonial.name}
+                          />
+                        </div>
+                        <div className="testimonial__info">
+                          <h3 className="testimonial__name">
+                            {testimonial.name}
+                            <span className="testimonial__rating">
+                              {renderStars(testimonial.rating)}
+                            </span>
+                          </h3>
+                          <p className="testimonial__role">
+                            {testimonial.role}
+                          </p>
+                        </div>
+                        <span className="quote-icon">❝</span>
+                      </div>
+                      <p className="testimonial__text">{testimonial.text}</p>
                     </div>
-                    <div className="testimonial__info">
-                      <h3 className="testimonial__name">
-                        {testimonial.name}
-                        <span className="testimonial__rating">
-                          {renderStars(testimonial.rating)}
-                        </span>
-                      </h3>
-                      <p className="testimonial__role">{testimonial.role}</p>
-                    </div>
-                    <span className="quote-icon">❝</span>
                   </div>
-                  <p className="testimonial__text">{testimonial.text}</p>
-                </div>
-              ))}
+                ))}
+              </div>
+
               <div className="testimonials__navigation">
                 {testimonials.map((_, index) => (
                   <button
@@ -122,6 +123,7 @@ const Testimonial = () => {
                       index === currentSlide ? "active" : ""
                     }`}
                     onClick={() => setCurrentSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
               </div>
