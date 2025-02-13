@@ -1,0 +1,128 @@
+.section {
+  &__frequentlyQA {
+    min-height: 77vh;
+    background-color: #050603;
+    padding: 60px 20px;
+  }
+}
+
+.faq-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-subtitle {
+  color: #ffb800;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.faq-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.faq-description {
+  color: #b3b3b3;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.faq-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.accordion-item {
+  border: 1px solid #333333;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: #242424;
+
+  &.active {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+  }
+}
+
+.accordion-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #2a2a2a;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0;
+  }
+}
+
+.accordion-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+
+  .active & {
+    transform: rotate(180deg);
+  }
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+
+  &.show {
+    max-height: 300px;
+  }
+
+  p {
+    padding: 20px;
+    margin: 0;
+    color: #b3b3b3;
+    line-height: 1.6;
+  }
+}
+
+.faq-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    object-fit: contain;
+    animation: float 3s ease-in-out infinite;
+  }
+}
