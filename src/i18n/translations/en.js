@@ -36,6 +36,30 @@ const enTranslations = {
     selectCrypto: "Select cryptocurrency",
     continue: "Continue",
   },
+  about: {
+    title: "TRANSACTIONS",
+    aboutTitle: {
+      line1: "Secure way of exchange",
+      line2: "Exchange profitably",
+    },
+    description:
+      "Fast cashing and buying cryptocurrency is what this platform prides itself on. Privacy guarantees, data retention and fast transactions.",
+    block1: "Exchange Value",
+    block2: "User Security",
+    block3: "User Dashboard",
+    block4: "Asset Registries",
+  },
+  testimonial: {
+    label: "CLIENT STORY",
+    title: {
+      line1: "Cryptobit Clients",
+      line2: "Testimonials",
+    },
+    text: {
+      line1: "Our All Customers",
+      line2: "Satisfactions",
+    },
+  },
 };
 
 export default enTranslations;

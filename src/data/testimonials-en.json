@@ -1,0 +1,36 @@
+{
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "David Alexon",
+      "role": "Cryptobit App User",
+      "rating": 4.5,
+      "image": "team1",
+      "text": "The Cryptobit platform has completely transformed how I handle cryptocurrency transactions. The interface is incredibly intuitive, and the 24/7 security measures give me peace of mind. I've been particularly impressed with the speed of transactions and the responsive customer support team."
+    },
+    {
+      "id": 2,
+      "name": "Sarah Mitchell",
+      "role": "Cryptobit App User",
+      "rating": 5,
+      "image": "team2",
+      "text": "As a long-term crypto investor, I've tried many platforms, but Cryptobit stands out for its reliability and user-friendly features. The dashboard provides all the essential information at a glance, and the exchange rates are consistently competitive. The automated security features are a game-changer."
+    },
+    {
+      "id": 3,
+      "name": "Michael Chang",
+      "role": "Cryptobit App User",
+      "rating": 4.5,
+      "image": "team3",
+      "text": "What impressed me most about Cryptobit is their commitment to user security while maintaining fast transaction speeds. The platform's interface is clean and professional, making it easy to manage multiple cryptocurrencies. Their customer service team is always ready to help with any questions."
+    },
+    {
+      "id": 4,
+      "name": "Emma Wilson",
+      "role": "Cryptobit App User",
+      "rating": 5,
+      "image": "team4",
+      "text": "The efficiency of Cryptobit's platform is outstanding. From quick transactions to detailed analytics, everything is designed with the user in mind. I particularly appreciate the asset registry feature and the ability to track my investment performance in real-time. Definitely the best crypto platform I've used."
+    }
+  ]
+}

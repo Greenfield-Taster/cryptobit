@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
-import testimonialData from "../../data/testimonials.json";
+import testimonialDataEn from "../../data/testimonials-en.json";
+import testimonialDataRu from "../../data/testimonials-ru.json";
 import team1 from "../../assets/images/testi/team1.png";
 import team2 from "../../assets/images/testi/team2.png";
 import team3 from "../../assets/images/testi/team3.png";
@@ -14,9 +16,18 @@ const images = {
   team4,
 };
 
+const testimonialsByLang = {
+  en: testimonialDataEn,
+  ru: testimonialDataRu,
+};
+
 const Testimonial = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { testimonials } = testimonialData;
+
+  const { t, i18n } = useTranslation();
+  const testimonials =
+    testimonialsByLang[i18n.language]?.testimonials ||
+    testimonialsByLang.en.testimonials;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -59,11 +70,11 @@ const Testimonial = () => {
     <div className="section">
       <div className="section__testimonial">
         <div className="client-story">
-          <h4 className="client-story__label">CLIENT STORY</h4>
+          <h4 className="client-story__label">{t("testimonial.label")}</h4>
           <h2 className="client-story__title">
-            Cryptobit Clients
+            {t("testimonial.title.line1")}
             <br />
-            Testimonials
+            {t("testimonial.title.line2")}
           </h2>
 
           <div className="testimonials">
@@ -72,9 +83,9 @@ const Testimonial = () => {
                 <img src={testiBack} alt="Statistics background" />
                 <h3 className="stats-number">3120 +</h3>
                 <p className="stats-text">
-                  Our All Customers
+                  {t("testimonial.text.line1")}
                   <br />
-                  Satisfactions
+                  {t("testimonial.text.line2")}
                 </p>
               </div>
             </div>
