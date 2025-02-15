@@ -1,9 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import logo2 from "../../assets/images/logo2.png";
 import "../../scss/header.scss";
 
 const Header = ({ onNavigate }) => {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <header className="header">
       <div className="header__container">
@@ -20,43 +27,48 @@ const Header = ({ onNavigate }) => {
                 onClick={() => onNavigate("home")}
                 className="header__nav-link"
               >
-                Home
+                {t("header.home")}
               </button>
             </li>
             <button
               onClick={() => onNavigate("transaction")}
               className="header__nav-link"
             >
-              Transaction
+              {t("header.transaction")}
             </button>
             <button
               onClick={() => onNavigate("about")}
               className="header__nav-link"
             >
-              About
+              {t("header.about")}
             </button>
             <button
               onClick={() => onNavigate("testimonial")}
               className="header__nav-link"
             >
-              Testimonial
+              {t("header.testimonial")}
             </button>
             <button
               onClick={() => onNavigate("frequentlyQA")}
               className="header__nav-link"
             >
-              Frequently Q/A
+              {t("header.frequentlyQA")}
             </button>
             <button
               onClick={() => onNavigate("contact")}
               className="header__nav-link"
             >
-              Contact
+              {t("header.contact")}
             </button>
           </ul>
         </nav>
 
-        <button className="header__register-btn">Register</button>
+        <button className="header__register-btn">{t("header.register")}</button>
+      </div>
+
+      <div className="language-switcher">
+        <button onClick={() => changeLanguage("en")}>EN</button>
+        <button onClick={() => changeLanguage("ru")}>RU</button>
       </div>
     </header>
   );
