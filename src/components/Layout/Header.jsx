@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import logo2 from "../../assets/images/logo2.png";
@@ -6,10 +6,30 @@ import "../../scss/header.scss";
 
 const Header = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const langSwitcherRef = useRef(null);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    setIsLangOpen(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        langSwitcherRef.current &&
+        !langSwitcherRef.current.contains(event.target)
+      ) {
+        setIsLangOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="header">
@@ -63,12 +83,22 @@ const Header = ({ onNavigate }) => {
           </ul>
         </nav>
 
-        <button className="header__register-btn">{t("header.register")}</button>
-      </div>
+        <div className="language-switcher" ref={langSwitcherRef}>
+          <button
+            className="language-switcher__current"
+            onClick={() => setIsLangOpen(!isLangOpen)}
+          >
+            {i18n.language.toUpperCase()}
+          </button>
+          {isLangOpen && (
+            <div className="language-switcher__dropdown">
+              <button onClick={() => changeLanguage("en")}>English</button>
+              <button onClick={() => changeLanguage("ru")}>Русский</button>
+            </div>
+          )}
+        </div>
 
-      <div className="language-switcher">
-        <button onClick={() => changeLanguage("en")}>EN</button>
-        <button onClick={() => changeLanguage("ru")}>RU</button>
+        <button className="header__register-btn">{t("header.register")}</button>
       </div>
     </header>
   );
