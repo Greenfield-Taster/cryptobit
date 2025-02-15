@@ -1,14 +1,17 @@
 import React from "react";
 import "./CryptocurrenciesList.scss";
+import { useTranslation } from "react-i18next";
 
 const CryptocurrenciesList = ({ cryptos, loading, error, onCryptoSelect }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="crypto-list-container">
-      <h1 className="title">Cryptocurrencies</h1>
+      <h1 className="title">{t("transaction.cryptocurrencies")}</h1>
       {error && <div className="error">{error}</div>}
 
       {loading ? (
-        <div className="loader">Loading...</div>
+        <div className="loader">{t("transaction.loader")}</div>
       ) : (
         <div className="crypto-list">
           {cryptos.map((crypto, index) => (

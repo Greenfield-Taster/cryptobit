@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
 
@@ -23,6 +24,8 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -207,7 +210,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                 </>
               ) : (
                 <span className="crypto-selector__placeholder">
-                  Select cryptocurrency
+                  {t("transaction.selectCrypto")}
                 </span>
               )}
             </div>
@@ -252,7 +255,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                   : ""
               }`}
             >
-              Min: 25$
+              {t("transaction.minCount")}: 25$
             </div>
           </div>
 
@@ -262,7 +265,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               className={`wallet-input__field ${
                 errors.senderWallet ? "wallet-input__field--error" : ""
               }`}
-              placeholder="Sender's wallet"
+              placeholder={t("transaction.senderWalletPlaceholder")}
               value={formData.senderWallet}
               onChange={(e) =>
                 handleInputChange("senderWallet", e.target.value)
@@ -270,7 +273,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             />
             {errors.senderWallet && (
               <div className="wallet-input__error">
-                Sender wallet is required
+                {t("transaction.senderWalletRequired")}
               </div>
             )}
             <label className="wallet-input__save">
@@ -282,7 +285,9 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                   handleInputChange("saveFromWallet", e.target.checked)
                 }
               />
-              <span className="wallet-input__save-text">Save wallet</span>
+              <span className="wallet-input__save-text">
+                {t("transaction.saveWallet")}
+              </span>
             </label>
           </div>
         </div>
@@ -308,7 +313,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                 </>
               ) : (
                 <span className="crypto-selector__placeholder">
-                  Select cryptocurrency
+                  {t("transaction.selectCrypto")}
                 </span>
               )}
             </div>
@@ -357,7 +362,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               className={`wallet-input__field ${
                 errors.recipientWallet ? "wallet-input__field--error" : ""
               }`}
-              placeholder="Recipient's wallet"
+              placeholder={t("transaction.recipientWalletPlaceholder")}
               value={formData.recipientWallet}
               onChange={(e) =>
                 handleInputChange("recipientWallet", e.target.value)
@@ -365,7 +370,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             />
             {errors.recipientWallet && (
               <div className="wallet-input__error">
-                Recipient wallet is required
+                {t("transaction.recipientWalletRequired")}
               </div>
             )}
             <label className="wallet-input__save">
@@ -377,7 +382,9 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
                   handleInputChange("saveToWallet", e.target.checked)
                 }
               />
-              <span className="wallet-input__save-text">Save wallet</span>
+              <span className="wallet-input__save-text">
+                {t("transaction.saveWallet")}
+              </span>
             </label>
           </div>
         </div>
@@ -385,7 +392,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
       <div className="crypto-converter__footer">
         <button className="crypto-converter__submit" onClick={handleContinue}>
-          Continue
+          {t("transaction.continue")}
         </button>
       </div>
     </div>

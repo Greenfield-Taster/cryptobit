@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import CryptocurrenciesList from "../../Transactions/CryptocurrenciesList/CryptocurrenciesList";
 import CryptoConverter from "../../Transactions/CryptoConverter/CryptoConverter";
@@ -25,6 +26,7 @@ const TransactionSection = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedFromListCrypto, setSelectedFromListCrypto] = useState(null);
+  const { t } = useTranslation();
 
   const fetchCryptos = async () => {
     setLoading(true);
@@ -67,9 +69,10 @@ const TransactionSection = () => {
     <section className="section">
       <div className="section__transaction">
         <div className="section__transaction__header">
-          <h3>Cryptobit features</h3>
+          <h3>{t("transaction.title")}</h3>
           <h2>
-            Secure way of exchange <br /> Exchange profitably
+            {t("transaction.exchangeTitle.line1")} <br />
+            {t("transaction.exchangeTitle.line2")}
           </h2>
         </div>
         <div className="section__transaction__content">
