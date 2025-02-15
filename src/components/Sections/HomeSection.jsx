@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import mainImage from "../../assets/images/main-img.png";
 import roundImage from "../../assets/images/round.png";
@@ -9,22 +10,21 @@ import cross2 from "../../assets/images/cross-2.png";
 import halfCircle from "../../assets/images/half-circle.png";
 
 function HomeSection({ onNavigate }) {
+  const { t } = useTranslation();
+
   return (
     <section className="section">
       <div className="section__home">
         <div className="section__home-container">
           <div className="section__home__content">
             <div className="section__home__content-oval"></div>
-            <h1 className="section__home__title">
-              Ability to buy & cash cryptocurrency
-            </h1>
+            <h1 className="section__home__title">{t("home.title")}</h1>
             <p className="section__home__description">
-              Cryptography, encryption process of transforming information
-              referred to as plaintext using done.
+              {t("home.description")}
             </p>
             <div className="section__home__getStarted">
               <button onClick={() => onNavigate("transaction")}>
-                Get Started Now
+                {t("home.getStarted")}
               </button>
             </div>
           </div>

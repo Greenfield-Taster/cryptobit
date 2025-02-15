@@ -13,6 +13,12 @@ const enTranslations = {
     termsAndConditions: "Terms & Conditions",
     developedBy: "Developed by",
   },
+  home: {
+    title: "Ability to buy & cash cryptocurrency",
+    description:
+      " Secure cryptocurrency operations: buy, sell and exchange using modern encryption technologies.",
+    getStarted: "Get Started Now",
+  },
   //   crypto: {
   //     converter: {
   //       title: "Crypto Converter",
