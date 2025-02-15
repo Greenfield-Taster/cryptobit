@@ -60,6 +60,22 @@ const ruTranslations = {
       line2: "Довольны сервисом",
     },
   },
+  frequentlyQA: {
+    subtitle: "Вопросы и Ответы",
+    title: "Часто задаваемые вопросы",
+    description:
+      "Глобальная сеть с передовыми технологиями и эффективным взаимодействием между пользователями",
+  },
+  contact: {
+    subtitle: "Контактная информация",
+    title: "Напишите нам",
+    getInTouch: "Свяжитесь с нами",
+    name: "Ваше имя",
+    email: "Введите E-Mail",
+    subject: "Тема",
+    message: "Сообщение",
+    sendMessage: "Отправить сообщение",
+  },
 };
 
 export default ruTranslations;

@@ -1,25 +1,14 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import faqBg from "../../assets/images/faq1.png";
+import faqDataEn from "../../data/FAQ_DATA-en.json";
+import faqDataRu from "../../data/FAQ_DATA-ru.json";
 
-const FAQ_DATA = [
-  {
-    id: 1,
-    question: "What is Blockchain?",
-    answer:
-      "Globally network emerging action items with best-of-breed core Efficiently build end-to-end mindshare cultivate top-line web-readiness before 24/7 scenarios",
-  },
-  {
-    id: 2,
-    question: "Can I Transactions Using Tokens?",
-    answer: "Answer about transactions using tokens would go here.",
-  },
-  {
-    id: 3,
-    question: "How can I create a crypto-wallet?",
-    answer: "Information about creating a crypto-wallet would go here.",
-  },
-];
+const faqDataByLang = {
+  en: faqDataEn,
+  ru: faqDataRu,
+};
 
 const FrequentlyQA = () => {
   const [activeId, setActiveId] = useState(1);
@@ -28,20 +17,21 @@ const FrequentlyQA = () => {
     setActiveId(activeId === id ? null : id);
   };
 
+  const { t, i18n } = useTranslation();
+  const faqData =
+    faqDataByLang[i18n.language]?.faqData || faqDataByLang.en.faqData;
+
   return (
     <div className="section">
       <div className="section__frequentlyQA">
         <div className="faq-container">
-          <h4 className="faq-subtitle">FAQ</h4>
-          <h2 className="faq-title">Frequently Q/A</h2>
-          <p className="faq-description">
-            Globally network emerging action items with best-of-breed core
-            Efficiently build end-to-end mindshare
-          </p>
+          <h4 className="faq-subtitle">{t("frequentlyQA.subtitle")}</h4>
+          <h2 className="faq-title">{t("frequentlyQA.title")}</h2>
+          <p className="faq-description">{t("frequentlyQA.description")}</p>
 
           <div className="faq-content">
             <div className="accordion">
-              {FAQ_DATA.map((item) => (
+              {faqData.map((item) => (
                 <div
                   key={item.id}
                   className={`accordion-item ${

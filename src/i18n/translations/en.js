@@ -60,6 +60,22 @@ const enTranslations = {
       line2: "Satisfactions",
     },
   },
+  frequentlyQA: {
+    subtitle: "Questions & Answers",
+    title: "Frequently Questions / Answers",
+    description:
+      "Globally network emerging action items with best-of-breed core Efficiently build end-to-end mindshare",
+  },
+  contact: {
+    subtitle: "Contact Info",
+    title: "Write Us Something",
+    getInTouch: "Get In Touch",
+    name: "Your Name",
+    email: "Enter E-Mail",
+    subject: "Subject",
+    message: "Message",
+    sendMessage: "Send Message",
+  },
 };
 
 export default enTranslations;

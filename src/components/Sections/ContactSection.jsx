@@ -1,17 +1,20 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import contactBGImage from "../../assets/images/cartoon-bg.png";
 import deliveryManImage from "../../assets/images/cartoon.png";
 import mainIcon from "../../assets/images/Contact-1.png";
 
 function Contact() {
+  const { t } = useTranslation();
+
   return (
     <section className="section">
       <div className="section__contact">
         <div className="section__contact__container">
           <div className="section__contact__header">
-            <h3>Contact Info</h3>
-            <h2>Write Us Something</h2>
+            <h3>{t("contact.subtitle")}</h3>
+            <h2>{t("contact.title")}</h2>
           </div>
 
           <div className="section__contact__content">
@@ -30,26 +33,26 @@ function Contact() {
             </div>
 
             <div className="section__contact__form">
-              <h2>Get In Touch</h2>
+              <h2>{t("contact.getInTouch")}</h2>
               <form>
                 <div className="section__contact__form-row">
-                  <input type="text" placeholder="Your Name" />
-                  <input type="email" placeholder="Enter E-Mail" />
+                  <input type="text" placeholder={t("contact.name")} />
+                  <input type="email" placeholder={t("contact.email")} />
                 </div>
                 <input
                   type="text"
-                  placeholder="Subject"
+                  placeholder={t("contact.subject")}
                   className="section__contact__subject"
                 />
                 <textarea
-                  placeholder="Message"
+                  placeholder={t("contact.message")}
                   rows="6"
                   className="section__contact__subject"
                 ></textarea>
                 <div className="section__contact__submit">
                   <button type="submit">
                     <img src={mainIcon} alt="mail icon" />
-                    Send Message
+                    {t("contact.sendMessage")}
                   </button>
                 </div>
               </form>

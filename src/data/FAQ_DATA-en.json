@@ -1,0 +1,19 @@
+{
+  "faqData": [
+    {
+      "id": 1,
+      "question": "What is Cryptobit?",
+      "answer": "Cryptobit is a decentralized digital ledger that securely records all transactions across a network of computers. This innovative technology enables safe, transparent, and efficient operations with cryptocurrencies and digital assets."
+    },
+    {
+      "id": 2,
+      "question": "Can I Transactions Using Tokens?",
+      "answer": "Yes, you can perform transactions using tokens on our platform. Our system supports various token standards and ensures secure, fast, and cost-effective token transfers with real-time transaction tracking."
+    },
+    {
+      "id": 3,
+      "question": "How can I create a crypto-wallet?",
+      "answer": "Creating a crypto-wallet is simple. Download our secure wallet application, follow the registration process, safely store your private keys, and you're ready to start. We provide detailed guides and 24/7 support to help you get started."
+    }
+  ]
+}
