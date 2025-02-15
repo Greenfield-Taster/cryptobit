@@ -4,9 +4,11 @@ import "../../scss/main.scss";
 import faqBg from "../../assets/images/faq1.png";
 import faqDataEn from "../../data/FAQ_DATA-en.json";
 import faqDataRu from "../../data/FAQ_DATA-ru.json";
+import faqDataUa from "../../data/FAQ_DATA-ua.json";
 
 const faqDataByLang = {
   en: faqDataEn,
+  ua: faqDataUa,
   ru: faqDataRu,
 };
 

@@ -1,6 +1,6 @@
 .section {
   &__frequentlyQA {
-    min-height: 77vh;
+    min-height: 94vh;
     background-color: #050603;
     padding: 60px 20px;
   }
@@ -66,6 +66,7 @@
   align-items: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  gap: 15px; /* Добавляем отступ между текстом и иконкой */
 
   &:hover {
     background-color: #2a2a2a;
@@ -76,10 +77,13 @@
     font-weight: 500;
     color: #ffffff;
     margin: 0;
+    flex: 1; /* Позволяем тексту занимать доступное пространство */
   }
 }
 
 .accordion-icon {
+  min-width: 24px; /* Добавляем минимальную ширину */
+  min-height: 24px; /* Добавляем минимальную высоту */
   width: 24px;
   height: 24px;
   background-color: #ffd700;
@@ -90,6 +94,7 @@
   color: #1a1a1a;
   font-weight: bold;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 
   .active & {
     transform: rotate(180deg);

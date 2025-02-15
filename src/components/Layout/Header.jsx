@@ -93,6 +93,7 @@ const Header = ({ onNavigate }) => {
           {isLangOpen && (
             <div className="language-switcher__dropdown">
               <button onClick={() => changeLanguage("en")}>English</button>
+              <button onClick={() => changeLanguage("ua")}>Українська</button>
               <button onClick={() => changeLanguage("ru")}>Русский</button>
             </div>
           )}
