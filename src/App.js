@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
+import Payment from "./pages/Payment";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 import "./scss/app.scss";
 
@@ -56,6 +58,8 @@ function App() {
               />
             }
           />
+          <Route path="/payment/:orderId" element={<Payment />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="*" element={<NotFound />} />;
         </Routes>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
@@ -9,7 +10,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     toCrypto: null,
     amount: "1",
     senderWallet: "",
-    recipientWallet: "",
+    recipientWallet: "vlad`s-wallet",
     saveFromWallet: true,
     saveToWallet: true,
   });
@@ -19,13 +20,14 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const [errors, setErrors] = useState({
     calculatedAmount: false,
     senderWallet: "",
-    recipientWallet: "",
   });
 
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
 
   const { t } = useTranslation();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -115,14 +117,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   };
 
   const validateWallet = (value) => {
-    return !value || value.trim() === "";
+    return !value || value.trim() === "" || value.trim().length < 26;
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     const newErrors = {
       calculatedAmount: validateCalculatedAmount(formData.amount),
       senderWallet: validateWallet(formData.senderWallet),
-      recipientWallet: validateWallet(formData.recipientWallet),
     };
 
     setErrors(newErrors);
@@ -131,7 +132,9 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       return;
     }
 
-    const submissionData = {
+    const orderId = Math.floor(100000000 + Math.random() * 900000000);
+
+    const paymentData = {
       fromCrypto: formData.fromCrypto?.name || "",
       toCrypto: formData.toCrypto?.name || "",
       amount: parseFloat(formData.amount),
@@ -139,51 +142,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       senderWallet: formData.senderWallet,
       recipientWallet: formData.recipientWallet,
       saveFromWallet: Boolean(formData.saveFromWallet),
-      saveToWallet: Boolean(formData.saveToWallet),
     };
 
-    try {
-      const response = await fetch(
-        "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api/send-form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(submissionData),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Network response was not ok");
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setFormData((prev) => ({
-          ...prev,
-          amount: "1",
-          senderWallet: "",
-          recipientWallet: "",
-          saveFromWallet: true,
-          saveToWallet: true,
-          fromCrypto: prev.fromCrypto,
-          toCrypto: prev.toCrypto,
-        }));
-
-        setErrors({
-          calculatedAmount: false,
-          senderWallet: false,
-          recipientWallet: false,
-        });
-      } else {
-        throw new Error(data.message || "Ошибка при отправке данных");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
+    navigate(`/payment/${orderId}`, {
+      state: paymentData,
+    });
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -273,7 +237,9 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             />
             {errors.senderWallet && (
               <div className="wallet-input__error">
-                {t("transaction.senderWalletRequired")}
+                {formData.senderWallet.trim() === ""
+                  ? t("transaction.senderWalletRequired")
+                  : t("transaction.senderWalletMinLength")}
               </div>
             )}
             <label className="wallet-input__save">
@@ -359,33 +325,14 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           <div className="wallet-input">
             <input
               type="text"
-              className={`wallet-input__field ${
-                errors.recipientWallet ? "wallet-input__field--error" : ""
-              }`}
+              className="wallet-input__field crypto-converter__amount-input--readonly"
               placeholder={t("transaction.recipientWalletPlaceholder")}
               value={formData.recipientWallet}
+              readOnly
               onChange={(e) =>
                 handleInputChange("recipientWallet", e.target.value)
               }
             />
-            {errors.recipientWallet && (
-              <div className="wallet-input__error">
-                {t("transaction.recipientWalletRequired")}
-              </div>
-            )}
-            <label className="wallet-input__save">
-              <input
-                type="checkbox"
-                className="wallet-input__checkbox"
-                checked={formData.saveToWallet}
-                onChange={(e) =>
-                  handleInputChange("saveToWallet", e.target.checked)
-                }
-              />
-              <span className="wallet-input__save-text">
-                {t("transaction.saveWallet")}
-              </span>
-            </label>
           </div>
         </div>
       </div>

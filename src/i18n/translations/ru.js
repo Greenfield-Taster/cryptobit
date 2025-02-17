@@ -29,6 +29,7 @@ const ruTranslations = {
     cryptocurrencies: "Криптовалюты",
     minCount: "Мин",
     senderWalletRequired: "Необходимо указать кошелек отправителя",
+    senderWalletMinLength: "Минимальная длина кошелька 26 символов",
     senderWalletPlaceholder: "Кошелек отправителя",
     recipientWalletRequired: "Необходимо указать кошелек получателя",
     recipientWalletPlaceholder: "Кошелек получателя",

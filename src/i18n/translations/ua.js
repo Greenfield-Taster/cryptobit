@@ -29,6 +29,7 @@ const uaTranslations = {
     cryptocurrencies: "Криптовалюти",
     minCount: "Мін",
     senderWalletRequired: "Потрібен гаманець відправника",
+    senderWalletMinLength: "Мінімальна довжина гаманця 26 символів",
     senderWalletPlaceholder: "Гаманець відправника",
     recipientWalletRequired: "Потрібен гаманець отримувача",
     recipientWalletPlaceholder: "Гаманець отримувача",

@@ -29,6 +29,7 @@ const enTranslations = {
     cryptocurrencies: "Cryptocurrencies",
     minCount: "Min",
     senderWalletRequired: "Sender wallet is required",
+    senderWalletMinLength: "Minimum wallet length is 26 characters",
     senderWalletPlaceholder: "Sender's wallet",
     recipientWalletRequired: "Recipient wallet is required",
     recipientWalletPlaceholder: "Recipient's wallet",
