@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../scss/payment.scss";
 
 function PaymentSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
   const { orderId } = location.state || {};
+  const { t } = useTranslation();
 
   useEffect(() => {
     const paymentStatus = sessionStorage.getItem(`payment_${orderId}`);
@@ -22,18 +24,17 @@ function PaymentSuccess() {
     <div className="payment-success">
       <div className="payment__container">
         <div className="payment__content">
-          <h2>Payment Successful!</h2>
-          <p>Your transaction has been processed successfully.</p>
-          <p>Order ID: #{orderId}</p>
-          <div className="status-message">
-            Transaction is being processed. Please wait 10-15 minutes for the
-            funds to be credited.
-          </div>
+          <h2>{t("paymentSuccess.title")}</h2>
+          <p>{t("paymentSuccess.description")}</p>
+          <p>
+            {t("paymentSuccess.orderId")} #{orderId}
+          </p>
+          <div className="status-message">{t("paymentSuccess.status")}</div>
           <button
             className="btn-primary mt-4"
             onClick={() => navigate("/cryptobit", { replace: true })}
           >
-            Return to Home
+            {t("paymentSuccess.returnHome")}
           </button>
         </div>
       </div>

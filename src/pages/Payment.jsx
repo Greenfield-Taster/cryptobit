@@ -92,8 +92,8 @@ function Payment() {
   if (!paymentData) {
     return (
       <div className="payment-error-page">
-        <h2>No payment data available</h2>
-        <p>Please initiate a new payment request.</p>
+        <h2>{t("payment.titleError")}</h2>
+        <p>{t("payment.textError")}</p>
         <button
           className="btn-primary"
           onClick={() => navigate("/cryptobit", { replace: true })}
@@ -109,12 +109,11 @@ function Payment() {
       <div className="payment__container">
         <div className="payment__content">
           <div className="payment__header">
-            <h1>Payment on request #{orderId}</h1>
-            <p className="processing-info">
-              After Payment, The Application Is Sent For Processing, Which Takes
-              10-15 Minutes, After The Funds Are Credited To Your Wallet.
-            </p>
-            <p className="commission-info">Commission Is 1$</p>
+            <h1>
+              {t("payment.title")} #{orderId}
+            </h1>
+            <p className="processing-info">{t("payment.info")}</p>
+            <p className="commission-info">{t("payment.commission")}</p>
           </div>
 
           <div className="payment__exchange">
@@ -123,7 +122,7 @@ function Payment() {
                 <img src={walletIcon} alt="Give away" />
               </div>
               <div className="exchange-details">
-                <span className="exchange-label">Give away</span>
+                <span className="exchange-label">{t("payment.label")}</span>
                 <span className="exchange-value">
                   {paymentData.amount} {paymentData.fromCrypto}
                 </span>
@@ -135,7 +134,7 @@ function Payment() {
                 <img src={walletIcon} alt="You receive" />
               </div>
               <div className="exchange-details">
-                <span className="exchange-label">You receive</span>
+                <span className="exchange-label">{t("payment.receive")}</span>
                 <span className="exchange-value">
                   {paymentData.calculatedAmount} {paymentData.toCrypto}
                 </span>
@@ -144,15 +143,15 @@ function Payment() {
           </div>
 
           <div className="payment__form">
-            <h2>Make a payment to a crypto wallet</h2>
+            <h2>{t("payment.formTitle")}</h2>
 
             <div className="form-group">
-              <label>Wallet network</label>
+              <label>{t("payment.formLabel")}</label>
               <div className="form-value">TRC20</div>
             </div>
 
             <div className="form-group">
-              <label>Wallet (hash)</label>
+              <label>{t("payment.formWallet")}</label>
               <div
                 className="form-value"
                 onClick={() =>
@@ -179,19 +178,19 @@ function Payment() {
             </div>
 
             <div className="form-group">
-              <label>Cryptocurrency</label>
+              <label>{t("payment.cryptocurrency")}</label>
               <div className="form-value">{paymentData.fromCrypto}</div>
             </div>
 
             <div className="form-group">
-              <label>Request number</label>
+              <label>{t("payment.request")}</label>
               <div className="form-value">#{orderId}</div>
             </div>
 
             <div className="form-status">
-              <h3>Request status</h3>
-              <p>After you pay for the application, click the "Paid" button</p>
-              <div className="status-value">Payment expected</div>
+              <h3>{t("payment.status")}</h3>
+              <p>{t("payment.formDescription")}</p>
+              <div className="status-value">{t("payment.paymentExpected")}</div>
             </div>
 
             {error && <div className="form-error">{error}</div>}
@@ -204,14 +203,14 @@ function Payment() {
                   window.scrollTo(0, 0);
                 }}
               >
-                Close request
+                {t("payment.closeRequest")}
               </button>
               <button
                 className="btn-primary"
                 onClick={handleSubmit}
                 disabled={isLoading}
               >
-                {isLoading ? "Processing..." : "Paid"}
+                {isLoading ? t("payment.processing") : t("payment.paid")}
               </button>
             </div>
           </div>

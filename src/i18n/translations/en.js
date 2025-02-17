@@ -77,6 +77,35 @@ const enTranslations = {
     message: "Message",
     sendMessage: "Send Message",
   },
+  payment: {
+    titleError: "No payment data available",
+    textError: "Please initiate a new payment request.",
+    title: "Payment on request",
+    info: "After Payment, The Application Is Sent For Processing, Which Takes 10-15 Minutes, After The Funds Are Credited To Your Wallet.",
+    commission: "Commission Is 1$",
+    label: "Give away",
+    receive: "You receive",
+    formTitle: "Make a payment to a crypto wallet",
+    formLabel: "Wallet network",
+    formWallet: "Wallet (hash)",
+    cryptocurrency: "Cryptocurrency",
+    request: "Request number",
+    status: "Request status",
+    formDescription:
+      "After you pay for the application, click the 'Paid' button",
+    paymentExpected: "Payment expected",
+    closeRequest: "Close request",
+    paid: "Paid",
+    processing: "Processing...",
+  },
+  paymentSuccess: {
+    title: "Payment Successful!",
+    description: "Your transaction has been processed successfully.",
+    orderId: "Order ID:",
+    status:
+      "Transaction is being processed. Please wait 10-15 minutes for the funds to be credited.",
+    returnHome: "Return to Home",
+  },
 };
 
 export default enTranslations;
