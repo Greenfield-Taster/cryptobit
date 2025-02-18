@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import "../../scss/footer.scss";
+import "../../scss/main.scss";
 import logo2 from "../../assets/images/logo2.png";
 import bybitLogo from "../../assets/images/Bybit-Logo.png";
 import privatLogo from "../../assets/images/Privat24_Logo.png";

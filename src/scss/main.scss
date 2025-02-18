@@ -6,12 +6,18 @@
 @import "sections/frequentlyQA";
 @import "sections/animations";
 
-@import "media/home-media";
-@import "media/transaction-media";
-@import "media/about-media";
-@import "media/contact-media";
-@import "media/testimonial-media";
-@import "media/frequentlyQA-media";
+@import "media/sections/about-media";
+@import "media/sections/contact-media";
+@import "media/sections/frequentlyQA-media";
+@import "media/sections/home-media";
+@import "media/sections/testimonial-media";
+@import "media/sections/transaction-media";
+
+@import "header.scss";
+@import "media/header";
+
+@import "footer.scss";
+@import "media/footer";
 
 .section {
   font-family: "Montserrat", sans-serif;

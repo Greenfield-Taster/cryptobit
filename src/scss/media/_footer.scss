@@ -1,0 +1,28 @@
+@media (max-width: 768px) {
+  .footer {
+    &__main {
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    &__links {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+
+    &__bottom {
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    &__copyright {
+      text-align: center;
+    }
+
+    &__payments {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+}

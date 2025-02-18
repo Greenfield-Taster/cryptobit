@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import logo2 from "../../assets/images/logo2.png";
-import "../../scss/header.scss";
+import "../../scss/main.scss";
 
 const Header = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();

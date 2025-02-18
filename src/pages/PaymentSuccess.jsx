@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import "../scss/payment.scss";
+import "../scss/pages/payment.scss";
 
 function PaymentSuccess() {
   const location = useLocation();
