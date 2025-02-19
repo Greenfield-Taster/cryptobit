@@ -19,6 +19,10 @@
 @import "footer.scss";
 @import "media/footer";
 
+@import "./auth/auth.scss";
+@import "./auth/login-form";
+@import "./auth/register-form";
+
 .section {
   font-family: "Montserrat", sans-serif;
 }

@@ -1,0 +1,57 @@
+.login-form {
+  width: 100%;
+
+  .form-links {
+    display: flex;
+    justify-content: center;
+
+    .link-button {
+      font-weight: 500;
+      position: relative;
+
+      &:after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: 0;
+        left: 50%;
+        background-color: #fbbf24;
+        transition: all 0.25s ease;
+      }
+
+      &:hover:after {
+        width: 100%;
+        left: 0;
+      }
+    }
+  }
+
+  .submit-button {
+    position: relative;
+    overflow: hidden;
+
+    &:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.5s ease-out;
+      z-index: 0;
+    }
+
+    &:hover:before {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    span {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}

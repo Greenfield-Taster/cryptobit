@@ -1,0 +1,49 @@
+.register-form {
+  width: 100%;
+
+  .form-group {
+    position: relative;
+
+    &:focus-within label {
+      color: #fbbf24;
+      transform: translateY(-2px);
+      transition: color 0.25s ease, transform 0.25s ease;
+    }
+  }
+
+  input[type="tel"]::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .submit-button {
+    background: linear-gradient(45deg, #fbbf24, #f59e0b);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(45deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+  }
+
+  .form-links {
+    p {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .link-button {
+      padding: 0;
+      background: none;
+      border: none;
+      color: #fbbf24;
+      font-weight: 500;
+      transition: color 0.25s ease;
+
+      &:hover {
+        color: #f59e0b;
+      }
+    }
+  }
+}

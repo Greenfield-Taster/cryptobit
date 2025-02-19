@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from "../auth/components/LoginForm";
 import RegisterForm from "../auth/components/RegisterForm";
 import authService from "../auth/services/auth.service";
+import "../scss/main.scss";
 
 const Auth = () => {
   const { t } = useTranslation();
