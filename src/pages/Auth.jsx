@@ -1,29 +1,29 @@
-// src/pages/Auth.jsx
-
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../store/slices/authSlice";
 import LoginForm from "../auth/components/LoginForm";
 import RegisterForm from "../auth/components/RegisterForm";
-import authService from "../auth/services/auth.service";
 import "../scss/main.scss";
 
 const Auth = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
   const [activeForm, setActiveForm] = useState(1);
 
-  // Проверяем, авторизован ли пользователь
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   useEffect(() => {
-    if (authService.isAuthenticated()) {
+    if (isAuthenticated) {
       navigate("/profile");
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleSwitchForm = (formId) => {
     setActiveForm(formId);
   };
+
   const getFormTitle = () => {
     return activeForm === 1 ? t("auth.register.title") : t("auth.login.title");
   };

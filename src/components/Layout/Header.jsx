@@ -2,14 +2,30 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  selectIsAuthenticated,
+  selectUser,
+  checkAuthState,
+} from "../../store/slices/authSlice";
 import logo2 from "../../assets/images/logo2.png";
 import "../../scss/main.scss";
 
 const Header = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Получаем состояние авторизации и данные пользователя из Redux
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
+
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langSwitcherRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(checkAuthState());
+  }, [dispatch]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -35,6 +51,17 @@ const Header = ({ onNavigate }) => {
 
   const registration = () => {
     navigate("/auth");
+  };
+
+  const goToProfile = () => {
+    navigate("/profile");
+  };
+
+  const getAvatarLetter = () => {
+    if (user && user.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return "U";
   };
 
   return (
@@ -105,14 +132,22 @@ const Header = ({ onNavigate }) => {
           )}
         </div>
 
-        <button
-          className="header__register-btn"
-          onClick={() => {
-            registration();
-          }}
-        >
-          {t("header.register")}
-        </button>
+        {isAuthenticated ? (
+          <button className="header__profile-btn" onClick={goToProfile}>
+            <div className="header__profile-avatar">
+              <span>{getAvatarLetter()}</span>
+            </div>
+          </button>
+        ) : (
+          <button
+            className="header__register-btn"
+            onClick={() => {
+              registration();
+            }}
+          >
+            {t("header.register")}
+          </button>
+        )}
       </div>
     </header>
   );

@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import authService from "../services/auth.service";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  login,
+  selectAuthStatus,
+  selectAuthError,
+} from "../../store/slices/authSlice";
 
 const LoginForm = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Получаем состояние авторизации из Redux
+  const authStatus = useSelector(selectAuthStatus);
+  const authError = useSelector(selectAuthError);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -13,8 +23,16 @@ const LoginForm = (props) => {
   });
 
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+
+  // Отслеживаем изменения состояния авторизации
+  useEffect(() => {
+    if (authStatus === "succeeded") {
+      navigate("/profile");
+    } else if (authStatus === "failed" && authError) {
+      setServerError(authError);
+    }
+  }, [authStatus, authError, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,27 +73,19 @@ const LoginForm = (props) => {
       return;
     }
 
-    setIsLoading(true);
     setServerError("");
 
-    try {
-      const response = await authService.login(
-        formData.email,
-        formData.password
-      );
-
-      if (response.success) {
-        navigate("/profile");
-      } else {
-        setServerError(response.message || t("auth.errors.loginFailed"));
-      }
-    } catch (error) {
-      setServerError(t("auth.errors.serverError"));
-      console.error("Login error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    // Используем Redux action для авторизации
+    dispatch(
+      login({
+        email: formData.email,
+        password: formData.password,
+      })
+    );
   };
+
+  // Определяем, загружаются ли данные
+  const isLoading = authStatus === "loading";
 
   return (
     <div className="login-form">
