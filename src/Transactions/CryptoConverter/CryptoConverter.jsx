@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../../store/slices/authSlice";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
 
@@ -16,18 +18,18 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   });
   const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const fromDropdownRef = useRef(null);
+  const toDropdownRef = useRef(null);
+  const authModalRef = useRef(null);
 
   const [errors, setErrors] = useState({
     calculatedAmount: false,
     senderWallet: "",
   });
-
-  const fromDropdownRef = useRef(null);
-  const toDropdownRef = useRef(null);
-
-  const { t } = useTranslation();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,6 +44,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         !toDropdownRef.current.contains(event.target)
       ) {
         setIsToDropdownOpen(false);
+      }
+      if (
+        authModalRef.current &&
+        !authModalRef.current.contains(event.target)
+      ) {
+        setShowAuthModal(false);
       }
     };
 
@@ -71,6 +79,11 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
   const getAvailableToOptions = () => {
     return cryptos.filter((crypto) => crypto.id !== formData.fromCrypto?.id);
+  };
+
+  const handleRedirectToAuth = () => {
+    navigate("/auth");
+    window.scrollTo(0, 0);
   };
 
   const handleInputChange = (field, value) => {
@@ -121,6 +134,11 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   };
 
   const handleContinue = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
     const newErrors = {
       calculatedAmount: validateCalculatedAmount(formData.amount),
       senderWallet: validateWallet(formData.senderWallet),
@@ -336,6 +354,39 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           </div>
         </div>
       </div>
+
+      {showAuthModal && (
+        <div className="auth-modal-overlay">
+          <div className="auth-modal" ref={authModalRef}>
+            <div className="auth-modal__header">
+              <h3>{t("auth.required")}</h3>
+              <button
+                className="auth-modal__close"
+                onClick={() => setShowAuthModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="auth-modal__body">
+              <p>{t("transaction.authRequired")}</p>
+            </div>
+            <div className="auth-modal__footer">
+              <button
+                className="auth-modal__cancel"
+                onClick={() => setShowAuthModal(false)}
+              >
+                {t("auth.common.cancel")}
+              </button>
+              <button
+                className="auth-modal__action"
+                onClick={handleRedirectToAuth}
+              >
+                {t("auth.login.title")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="crypto-converter__footer">
         <button className="crypto-converter__submit" onClick={handleContinue}>

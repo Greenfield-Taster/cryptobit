@@ -36,6 +36,8 @@ const uaTranslations = {
     saveWallet: "Зберегти гаманець",
     selectCrypto: "Оберіть криптовалюту",
     continue: "Продовжити",
+    authRequired:
+      "Для продовження оплати необхідно увійти в обліковий запис або зареєструватися",
   },
   about: {
     title: "ТРАНЗАКЦІЇ",
@@ -104,6 +106,47 @@ const uaTranslations = {
     status:
       "Транзакція обробляється. Будь ласка, зачекайте 10-15 хвилин для зарахування коштів.",
     returnHome: "Повернутися на головну",
+  },
+  auth: {
+    login: {
+      pageTitle: "Вхід у систему",
+      title: "Вхід в обліковий запис",
+      tabTitle: "Вхід",
+      emailLabel: "Email",
+      passwordLabel: "Пароль",
+      submitButton: "Увійти",
+      registerLink: "Зареєструватися",
+      forgotPasswordLink: "Забули пароль?",
+    },
+    register: {
+      pageTitle: "Реєстрація",
+      title: "Створити обліковий запис",
+      tabTitle: "Реєстрація",
+      emailLabel: "Email",
+      passwordLabel: "Пароль",
+      nameLabel: "Ім'я",
+      phoneLabel: "Номер телефону",
+      submitButton: "Зареєструватися",
+      alreadyHaveAccount: "Вже маєте обліковий запис?",
+      loginLink: "Увійти",
+    },
+    errors: {
+      emailRequired: "Email обов'язковий",
+      invalidEmail: "Некоректний формат email",
+      passwordRequired: "Пароль обов'язковий",
+      passwordTooShort: "Пароль повинен містити щонайменше 6 символів",
+      nameRequired: "Ім'я обов'язкове",
+      phoneRequired: "Номер телефону обов'язковий",
+      invalidPhone: "Некоректний формат номера телефону",
+      loginFailed: "Невірний email або пароль",
+      registrationFailed: "Помилка реєстрації",
+      serverError: "Помилка сервера. Спробуйте пізніше",
+    },
+    common: {
+      loading: "Завантаження...",
+      cancel: "Скасувати",
+    },
+    required: "Потрібна авторизація",
   },
 };
 
