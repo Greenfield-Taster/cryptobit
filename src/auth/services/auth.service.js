@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL =
+  "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api/auth";
 
 class AuthService {
   async register(email, password, name, phone) {
