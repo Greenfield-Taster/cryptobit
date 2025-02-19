@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import logo2 from "../../assets/images/logo2.png";
 import "../../scss/main.scss";
 
 const Header = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langSwitcherRef = useRef(null);
 
@@ -30,6 +32,10 @@ const Header = ({ onNavigate }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const registration = () => {
+    navigate("/auth");
+  };
 
   return (
     <header className="header">
@@ -99,7 +105,14 @@ const Header = ({ onNavigate }) => {
           )}
         </div>
 
-        <button className="header__register-btn">{t("header.register")}</button>
+        <button
+          className="header__register-btn"
+          onClick={() => {
+            registration();
+          }}
+        >
+          {t("header.register")}
+        </button>
       </div>
     </header>
   );

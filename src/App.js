@@ -6,6 +6,8 @@ import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import Profile from "./pages/Profile";
+import Auth from "./pages/Auth";
 
 import "./scss/app.scss";
 
@@ -60,6 +62,9 @@ function App() {
           />
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/auth" element={<Auth />} />
+          {/* <Route path="/profile/:userId" element={<Profile />} /> */}
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />;
         </Routes>
       </div>

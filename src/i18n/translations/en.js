@@ -106,6 +106,45 @@ const enTranslations = {
       "Transaction is being processed. Please wait 10-15 minutes for the funds to be credited.",
     returnHome: "Return to Home",
   },
+  auth: {
+    login: {
+      pageTitle: "Вход в систему",
+      title: "Вход в аккаунт",
+      tabTitle: "Вход",
+      emailLabel: "Email",
+      passwordLabel: "Пароль",
+      submitButton: "Войти",
+      registerLink: "Зарегистрироваться",
+      forgotPasswordLink: "Забыли пароль?",
+    },
+    register: {
+      pageTitle: "Регистрация",
+      title: "Создать аккаунт",
+      tabTitle: "Регистрация",
+      emailLabel: "Email",
+      passwordLabel: "Пароль",
+      nameLabel: "Имя",
+      phoneLabel: "Номер телефона",
+      submitButton: "Зарегистрироваться",
+      alreadyHaveAccount: "Уже есть аккаунт?",
+      loginLink: "Войти",
+    },
+    errors: {
+      emailRequired: "Email обязателен",
+      invalidEmail: "Некорректный формат email",
+      passwordRequired: "Пароль обязателен",
+      passwordTooShort: "Пароль должен содержать минимум 6 символов",
+      nameRequired: "Имя обязательно",
+      phoneRequired: "Номер телефона обязателен",
+      invalidPhone: "Некорректный формат номера телефона",
+      loginFailed: "Неверный email или пароль",
+      registrationFailed: "Ошибка регистрации",
+      serverError: "Ошибка сервера. Попробуйте позже",
+    },
+    common: {
+      loading: "Загрузка...",
+    },
+  },
 };
 
 export default enTranslations;
