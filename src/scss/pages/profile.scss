@@ -1,0 +1,250 @@
+.profile-page {
+  min-height: 100vh;
+  background-color: #050603;
+  background-image: radial-gradient(
+      circle at 10% 20%,
+      rgba(251, 191, 36, 0.03) 0%,
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(251, 191, 36, 0.03) 0%,
+      transparent 20%
+    );
+  padding: 40px 20px 60px;
+}
+
+.profile-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  padding: 40px 30px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+
+.profile-title {
+  font-size: 28px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.profile-content {
+  padding: 30px;
+}
+
+.profile-section {
+  margin-bottom: 40px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.profile-section-title {
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.profile-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-info-label {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.profile-info-value {
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #2a2a2a;
+  padding: 12px 16px;
+  border-radius: 8px;
+  word-break: break-all;
+}
+
+.wallets-list,
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wallet-item,
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: #2a2a2a;
+  padding: 16px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background-color: #333333;
+  }
+}
+
+.wallet-icon,
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #1a1a1a;
+  flex-shrink: 0;
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+}
+
+.wallet-details,
+.transaction-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-currency,
+.transaction-date {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.wallet-address,
+.transaction-description {
+  font-size: 14px;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaction-status {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.completed {
+    background-color: #10b981;
+  }
+
+  &.pending {
+    background-color: #f59e0b;
+  }
+
+  &.failed {
+    background-color: #ef4444;
+  }
+}
+
+.no-wallets-message,
+.no-transactions-message {
+  color: #9ca3af;
+  text-align: center;
+  padding: 30px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.edit-profile-btn,
+.logout-btn {
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+.edit-profile-btn {
+  background-color: #fbbf24;
+  color: #0d0d0d;
+  flex: 1;
+
+  &:hover {
+    background-color: #f59e0b;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+  }
+}
+
+.logout-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}

@@ -148,6 +148,28 @@ const uaTranslations = {
     },
     required: "Потрібна авторизація",
   },
+  profile: {
+    title: "Профіль користувача",
+    loading: "Завантаження профілю...",
+    personalInfo: "Особиста інформація",
+    email: "Email",
+    name: "Ім'я",
+    phone: "Телефон",
+    memberSince: "Дата реєстрації",
+    notProvided: "Не вказано",
+    savedWallets: "Збережені гаманці",
+    noSavedWallets:
+      "У вас ще немає збережених гаманців. Коли ви зробите транзакцію з опцією 'Зберегти гаманець', він з'явиться тут.",
+    recentTransactions: "Останні транзакції",
+    noTransactions: "Ви ще не робили транзакцій.",
+    editProfile: "Редагувати профіль",
+    logout: "Вийти",
+    statuses: {
+      completed: "Завершено",
+      pending: "В обробці",
+      failed: "Помилка",
+    },
+  },
 };
 
 export default uaTranslations;

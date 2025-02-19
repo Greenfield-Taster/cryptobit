@@ -3,10 +3,6 @@
   background: #0d0d0d;
   padding: 40px 20px;
 
-  @media (max-width: 768px) {
-    padding: 20px 16px;
-  }
-
   &__container {
     max-width: 1200px;
     margin: 0 auto;
@@ -18,20 +14,11 @@
     border-radius: 16px;
     padding: 32px;
     color: #ffffff;
-
-    @media (max-width: 768px) {
-      padding: 24px 16px;
-      border-radius: 12px;
-    }
   }
 
   &__header {
     margin-bottom: 32px;
     text-align: center;
-
-    @media (max-width: 768px) {
-      margin-bottom: 24px;
-    }
 
     h1 {
       font-size: 2rem;
@@ -40,34 +27,17 @@
       background: linear-gradient(to right, #fbbf24, #f59e0b);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-
-      @media (max-width: 768px) {
-        font-size: 1.5rem;
-        margin-bottom: 12px;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 1.25rem;
-      }
     }
 
     .processing-info {
       color: #9ca3af;
       margin-bottom: 8px;
       font-size: 1rem;
-
-      @media (max-width: 480px) {
-        font-size: 0.875rem;
-      }
     }
 
     .commission-info {
       color: #fbbf24;
       font-weight: 500;
-
-      @media (max-width: 480px) {
-        font-size: 0.875rem;
-      }
     }
   }
 
@@ -80,13 +50,6 @@
     background: #262626;
     border-radius: 12px;
 
-    @media (max-width: 768px) {
-      flex-direction: column;
-      gap: 24px;
-      padding: 20px;
-      margin-bottom: 32px;
-    }
-
     .exchange-item {
       display: flex;
       align-items: center;
@@ -94,15 +57,6 @@
       gap: 16px;
       flex: 1;
       padding: 20px;
-
-      @media (max-width: 768px) {
-        width: 100%;
-        padding: 12px;
-      }
-
-      @media (max-width: 480px) {
-        gap: 12px;
-      }
 
       .exchange-icon {
         width: 48px;
@@ -113,19 +67,9 @@
         align-items: center;
         justify-content: center;
 
-        @media (max-width: 480px) {
-          width: 40px;
-          height: 40px;
-        }
-
         img {
           width: 24px;
           height: 24px;
-
-          @media (max-width: 480px) {
-            width: 20px;
-            height: 20px;
-          }
         }
       }
 
@@ -137,19 +81,11 @@
           color: #9ca3af;
           font-size: 0.875rem;
           margin-bottom: 4px;
-
-          @media (max-width: 480px) {
-            font-size: 0.75rem;
-          }
         }
 
         .exchange-value {
           font-weight: 600;
           font-size: 1.125rem;
-
-          @media (max-width: 480px) {
-            font-size: 1rem;
-          }
         }
       }
     }
@@ -163,30 +99,16 @@
       font-size: 1.5rem;
       margin-bottom: 24px;
       color: #ffffff;
-
-      @media (max-width: 768px) {
-        font-size: 1.25rem;
-        margin-bottom: 20px;
-      }
     }
 
     .form-group {
       margin-bottom: 24px;
-
-      @media (max-width: 768px) {
-        margin-bottom: 20px;
-      }
 
       label {
         display: block;
         color: #9ca3af;
         margin-bottom: 8px;
         font-size: 0.875rem;
-
-        @media (max-width: 480px) {
-          font-size: 0.75rem;
-          margin-bottom: 6px;
-        }
       }
 
       .form-value {
@@ -194,14 +116,6 @@
         padding: 16px;
         border-radius: 8px;
         word-break: break-all;
-
-        @media (max-width: 768px) {
-          padding: 12px;
-        }
-
-        @media (max-width: 480px) {
-          font-size: 0.875rem;
-        }
       }
     }
 
@@ -209,27 +123,14 @@
       margin-top: 32px;
       text-align: center;
 
-      @media (max-width: 768px) {
-        margin-top: 24px;
-      }
-
       h3 {
         font-size: 1.25rem;
         margin-bottom: 8px;
-
-        @media (max-width: 768px) {
-          font-size: 1.125rem;
-        }
       }
 
       p {
         color: #9ca3af;
         margin-bottom: 16px;
-
-        @media (max-width: 480px) {
-          font-size: 0.875rem;
-          margin-bottom: 12px;
-        }
       }
 
       .status-value {
@@ -237,14 +138,6 @@
         padding: 16px;
         border-radius: 8px;
         font-weight: 500;
-
-        @media (max-width: 768px) {
-          padding: 12px;
-        }
-
-        @media (max-width: 480px) {
-          font-size: 0.875rem;
-        }
       }
     }
 
@@ -255,15 +148,6 @@
       border: 1px solid #dc2626;
       color: #dc2626;
       border-radius: 8px;
-
-      @media (max-width: 768px) {
-        margin: 20px 0;
-        padding: 12px;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 0.875rem;
-      }
     }
 
     .form-actions {
@@ -271,15 +155,6 @@
       gap: 16px;
       margin-top: 32px;
       justify-content: center;
-
-      @media (max-width: 768px) {
-        margin-top: 24px;
-        gap: 12px;
-      }
-
-      @media (max-width: 480px) {
-        flex-direction: column;
-      }
 
       button {
         padding: 14px 36px;
@@ -293,16 +168,6 @@
           0 2px 4px -1px rgba(0, 0, 0, 0.06);
         position: relative;
         overflow: hidden;
-
-        @media (max-width: 768px) {
-          padding: 12px 28px;
-          font-size: 0.875rem;
-        }
-
-        @media (max-width: 480px) {
-          width: 100%;
-          padding: 14px 20px;
-        }
 
         &::before {
           content: "";
@@ -382,27 +247,11 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
 
-    @media (max-width: 768px) {
-      padding: 24px;
-    }
-
-    @media (max-width: 480px) {
-      padding: 20px;
-    }
-
     h2 {
       color: #ffb800;
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 24px;
-
-      @media (max-width: 768px) {
-        font-size: 28px;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 24px;
-      }
     }
 
     p {
@@ -410,14 +259,6 @@
       font-size: 18px;
       line-height: 1.5;
       margin-bottom: 16px;
-
-      @media (max-width: 768px) {
-        font-size: 16px;
-      }
-
-      @media (max-width: 480px) {
-        font-size: 15px;
-      }
     }
 
     .status-message {
@@ -429,17 +270,6 @@
       font-size: 16px;
       line-height: 1.5;
       border-left: 4px solid #ffb800;
-
-      @media (max-width: 768px) {
-        padding: 16px;
-        font-size: 15px;
-      }
-
-      @media (max-width: 480px) {
-        padding: 12px;
-        font-size: 14px;
-        margin: 16px 0;
-      }
     }
 
     .btn-primary {
@@ -463,19 +293,6 @@
       &:active {
         transform: translateY(1px);
       }
-
-      @media (max-width: 768px) {
-        padding: 12px 28px;
-        font-size: 15px;
-        min-width: 180px;
-      }
-
-      @media (max-width: 480px) {
-        padding: 10px 24px;
-        font-size: 14px;
-        min-width: 160px;
-        width: 100%;
-      }
     }
   }
 }
@@ -495,28 +312,12 @@
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 16px;
-
-    @media (max-width: 768px) {
-      font-size: 24px;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 20px;
-    }
   }
 
   p {
     color: #ffffff;
     font-size: 16px;
     margin-bottom: 24px;
-
-    @media (max-width: 768px) {
-      font-size: 15px;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 14px;
-    }
   }
 
   .btn-primary {
@@ -536,13 +337,6 @@
 
     &:active {
       transform: translateY(1px);
-    }
-
-    @media (max-width: 480px) {
-      padding: 10px 24px;
-      font-size: 14px;
-      width: 100%;
-      max-width: 280px;
     }
   }
 }

@@ -1,0 +1,113 @@
+@media (max-width: 768px) {
+  .payment {
+    padding: 20px 16px;
+  }
+
+  .payment__content {
+    padding: 24px 16px;
+    border-radius: 12px;
+  }
+
+  .payment__header {
+    margin-bottom: 24px;
+  }
+
+  .payment__header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .payment__exchange {
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+
+  .payment__exchange .exchange-item {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .payment-success .payment__content {
+    padding: 24px;
+  }
+
+  .payment-success h2 {
+    font-size: 28px;
+  }
+
+  .payment-success p {
+    font-size: 16px;
+  }
+
+  .status-message {
+    padding: 16px;
+    font-size: 15px;
+    margin: 20px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment__header h1 {
+    font-size: 1.25rem;
+  }
+
+  .payment__exchange .exchange-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .payment__exchange .exchange-icon img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .payment__form h2 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+  }
+
+  .payment__form .form-group {
+    margin-bottom: 20px;
+  }
+
+  .payment__form .form-value {
+    padding: 12px;
+    font-size: 0.875rem;
+  }
+
+  .payment__form .form-status p {
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+  }
+
+  .payment__form .form-actions {
+    flex-direction: column;
+  }
+
+  .payment__form .form-actions button {
+    width: 100%;
+    padding: 14px 20px;
+  }
+
+  .payment-success h2 {
+    font-size: 24px;
+  }
+
+  .payment-success p {
+    font-size: 15px;
+  }
+
+  .payment-success .status-message {
+    padding: 12px;
+    font-size: 14px;
+    margin: 16px 0;
+  }
+
+  .payment-success .btn-primary {
+    padding: 10px 24px;
+    font-size: 14px;
+    width: 100%;
+  }
+}

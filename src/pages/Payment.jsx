@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import "../scss/pages/payment.scss";
+import "../scss/main.scss";
 import walletIcon from "../assets/images/wallet.png";
 import copyIcon from "../assets/images/copy.png";
 

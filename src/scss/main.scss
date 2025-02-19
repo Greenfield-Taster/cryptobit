@@ -23,6 +23,12 @@
 @import "./auth/login-form";
 @import "./auth/register-form";
 
+@import "./pages/profile.scss";
+@import "./media//pages/profile-media";
+
+@import "./pages/payment.scss";
+@import "./media//pages/payment-media";
+
 .section {
   font-family: "Montserrat", sans-serif;
 }

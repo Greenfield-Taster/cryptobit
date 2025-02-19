@@ -148,6 +148,28 @@ const ruTranslations = {
     },
     required: "Требуется авторизация",
   },
+  profile: {
+    title: "Профиль пользователя",
+    loading: "Загрузка профиля...",
+    personalInfo: "Личная информация",
+    email: "Email",
+    name: "Имя",
+    phone: "Телефон",
+    memberSince: "Дата регистрации",
+    notProvided: "Не указано",
+    savedWallets: "Сохраненные кошельки",
+    noSavedWallets:
+      "У вас еще нет сохраненных кошельков. Когда вы совершите транзакцию с опцией 'Сохранить кошелек', он появится здесь.",
+    recentTransactions: "Недавние транзакции",
+    noTransactions: "Вы еще не совершали транзакций.",
+    editProfile: "Редактировать профиль",
+    logout: "Выйти",
+    statuses: {
+      completed: "Завершено",
+      pending: "В обработке",
+      failed: "Ошибка",
+    },
+  },
 };
 
 export default ruTranslations;

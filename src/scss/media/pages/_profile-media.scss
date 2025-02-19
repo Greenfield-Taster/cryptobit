@@ -1,0 +1,94 @@
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 20px 16px 40px;
+  }
+
+  .profile-container {
+    border-radius: 12px;
+  }
+
+  .profile-header {
+    padding: 30px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+
+  .profile-title {
+    font-size: 24px;
+  }
+
+  .profile-content {
+    padding: 20px 16px;
+  }
+
+  .profile-section {
+    margin-bottom: 30px;
+  }
+
+  .profile-section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .wallet-item,
+  .transaction-item {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .wallet-icon,
+  .transaction-icon {
+    width: 36px;
+    height: 36px;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .wallet-currency,
+  .transaction-date {
+    font-size: 15px;
+  }
+
+  .wallet-address,
+  .transaction-description {
+    font-size: 13px;
+  }
+
+  .transaction-status {
+    font-size: 13px;
+    padding: 5px 10px;
+    min-width: 70px;
+  }
+
+  .no-wallets-message,
+  .no-transactions-message {
+    padding: 20px;
+  }
+
+  .edit-profile-btn,
+  .logout-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

@@ -148,6 +148,28 @@ const enTranslations = {
     },
     required: "Authorization required",
   },
+  profile: {
+    title: "User Profile",
+    loading: "Loading profile...",
+    personalInfo: "Personal Information",
+    email: "Email",
+    name: "Name",
+    phone: "Phone",
+    memberSince: "Member Since",
+    notProvided: "Not provided",
+    savedWallets: "Saved Wallets",
+    noSavedWallets:
+      "You don't have any saved wallets yet. When you make a transaction with the 'Save wallet' option, it will appear here.",
+    recentTransactions: "Recent Transactions",
+    noTransactions: "You haven't made any transactions yet.",
+    editProfile: "Edit Profile",
+    logout: "Logout",
+    statuses: {
+      completed: "Completed",
+      pending: "Pending",
+      failed: "Failed",
+    },
+  },
 };
 
 export default enTranslations;
