@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../../store/slices/authSlice";
+import AuthModal from "./components/AuthModal";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
 
@@ -355,38 +356,11 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         </div>
       </div>
 
-      {showAuthModal && (
-        <div className="auth-modal-overlay">
-          <div className="auth-modal" ref={authModalRef}>
-            <div className="auth-modal__header">
-              <h3>{t("auth.required")}</h3>
-              <button
-                className="auth-modal__close"
-                onClick={() => setShowAuthModal(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="auth-modal__body">
-              <p>{t("transaction.authRequired")}</p>
-            </div>
-            <div className="auth-modal__footer">
-              <button
-                className="auth-modal__cancel"
-                onClick={() => setShowAuthModal(false)}
-              >
-                {t("auth.common.cancel")}
-              </button>
-              <button
-                className="auth-modal__action"
-                onClick={handleRedirectToAuth}
-              >
-                {t("auth.login.title")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onConfirm={handleRedirectToAuth}
+      />
 
       <div className="crypto-converter__footer">
         <button className="crypto-converter__submit" onClick={handleContinue}>
