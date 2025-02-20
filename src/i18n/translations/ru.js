@@ -25,7 +25,7 @@ const ruTranslations = {
       line1: "Безопасный способ обмена",
       line2: "Выгодный обмен",
     },
-    loader: "Загрузка...",
+    loading: "Загрузка...",
     cryptocurrencies: "Криптовалюты",
     minCount: "Мин",
     senderWalletRequired: "Необходимо указать кошелек отправителя",
@@ -98,6 +98,8 @@ const ruTranslations = {
     closeRequest: "Закрыть запрос",
     paid: "Оплачено",
     processing: "Обработка...",
+    goHome: "Вернуться к Главной",
+    copy: "Скопировано",
   },
   paymentSuccess: {
     title: "Оплата успешно выполнена!",
@@ -149,7 +151,7 @@ const ruTranslations = {
     required: "Требуется авторизация",
   },
   profile: {
-    title: "Профиль пользователя",
+    title: "Профиль",
     loading: "Загрузка профиля...",
     personalInfo: "Личная информация",
     email: "Email",

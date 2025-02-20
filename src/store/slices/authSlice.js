@@ -1,18 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AuthService from "../../auth/services/auth.service";
 
-const token = localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user"));
-
 const initialState = {
-  isAuthenticated: !!token,
-  user: user || null,
-  token: token || null,
+  isAuthenticated: !!localStorage.getItem("token"),
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  token: localStorage.getItem("token") || null,
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
 
-// Асинхронные thunks
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
@@ -48,11 +44,25 @@ export const logout = createAsyncThunk("auth/logout", async () => {
   return null;
 });
 
+export const getUserOrders = createAsyncThunk(
+  "auth/getUserOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await AuthService.getUserOrders();
+      if (!response.success) {
+        return rejectWithValue(response.message || "Failed to get orders");
+      }
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to get orders");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Синхронные actions
     checkAuthState: (state) => {
       const token = AuthService.getToken();
       const user = AuthService.getCurrentUser();
@@ -62,7 +72,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Обработка login
+    // Login
     builder
       .addCase(login.pending, (state) => {
         state.status = "loading";
@@ -80,7 +90,7 @@ const authSlice = createSlice({
         state.error = action.payload || "Login failed";
       });
 
-    // Обработка register
+    // Register
     builder
       .addCase(register.pending, (state) => {
         state.status = "loading";
@@ -98,7 +108,7 @@ const authSlice = createSlice({
         state.error = action.payload || "Registration failed";
       });
 
-    // Обработка logout
+    // Logout
     builder.addCase(logout.fulfilled, (state) => {
       state.isAuthenticated = false;
       state.user = null;
@@ -106,6 +116,31 @@ const authSlice = createSlice({
       state.status = "idle";
       state.error = null;
     });
+
+    // Get user orders
+    builder
+      .addCase(getUserOrders.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getUserOrders.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Если данные приходят в action.payload
+        const orders = action.payload.data || action.payload;
+
+        // Сохраняем заказы в пользователе, если он существует
+        if (state.user) {
+          state.user = {
+            ...state.user,
+            orders: orders,
+          };
+        }
+
+        state.orders = orders;
+      })
+      .addCase(getUserOrders.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
   },
 });
 
@@ -116,5 +151,7 @@ export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectUser = (state) => state.auth.user;
 export const selectAuthStatus = (state) => state.auth.status;
 export const selectAuthError = (state) => state.auth.error;
+export const selectUserOrders = (state) =>
+  state.auth.orders || state.auth.user?.orders || [];
 
 export default authSlice.reducer;

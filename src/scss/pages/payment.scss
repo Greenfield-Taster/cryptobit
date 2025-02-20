@@ -109,6 +109,7 @@
         color: #9ca3af;
         margin-bottom: 8px;
         font-size: 0.875rem;
+        font-weight: 500;
       }
 
       .form-value {
@@ -116,6 +117,44 @@
         padding: 16px;
         border-radius: 8px;
         word-break: break-all;
+      }
+
+      .wallet-field {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .wallet-address {
+          font-family: monospace;
+          color: #e5e7eb;
+          font-size: 0.9375rem;
+          max-width: 85%;
+        }
+
+        .copy-icon {
+          width: 18px;
+          height: 18px;
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+
+          &:hover {
+            opacity: 1;
+          }
+        }
+
+        .copy-notification {
+          position: absolute;
+          right: 16px;
+          top: -24px;
+          background: #3b82f6;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          animation: fadeIn 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+          z-index: 1;
+        }
       }
     }
 
@@ -227,7 +266,7 @@
 }
 
 .payment-success {
-  min-height: calc(100vh - 330px);
+  min-height: calc(100vh - 230px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -338,5 +377,27 @@
     &:active {
       transform: translateY(1px);
     }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-5px);
   }
 }

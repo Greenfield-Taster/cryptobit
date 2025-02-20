@@ -155,12 +155,17 @@
   flex-direction: column;
 }
 
+.transaction-id {
+  margin-bottom: 6px;
+  color: #f59e0b;
+}
+
 .wallet-currency,
 .transaction-date {
   font-size: 16px;
   font-weight: 500;
   color: #ffffff;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .wallet-address,

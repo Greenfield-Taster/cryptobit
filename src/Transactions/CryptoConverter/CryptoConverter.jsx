@@ -1,13 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectIsAuthenticated } from "../../store/slices/authSlice";
+import {
+  setCurrentExchange,
+  selectCurrentExchange,
+  selectExchangeStatus,
+  selectExchangeError,
+} from "../../store/slices/exchangeSlice";
 import AuthModal from "./components/AuthModal";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
 
 const CryptoConverter = ({ cryptos, selectedFromList }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const currentExchange = useSelector(selectCurrentExchange) || null;
+  const exchangeStatus = useSelector(selectExchangeStatus) || "idle";
+  const exchangeError = useSelector(selectExchangeError) || null;
+
+  // Локальное состояние
   const [formData, setFormData] = useState({
     fromCrypto: null,
     toCrypto: null,
@@ -19,18 +35,15 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   });
   const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const fromDropdownRef = useRef(null);
-  const toDropdownRef = useRef(null);
-  const authModalRef = useRef(null);
-
   const [errors, setErrors] = useState({
     calculatedAmount: false,
     senderWallet: "",
   });
+
+  const fromDropdownRef = useRef(null);
+  const toDropdownRef = useRef(null);
+  const authModalRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -63,11 +76,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   useEffect(() => {
     if (cryptos && cryptos.length > 0) {
       const defaultFromCrypto = selectedFromList || cryptos[0];
-      const tether = cryptos.find((crypto) => crypto.id === "tether");
+      const tether =
+        cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
 
       const defaultToCrypto =
-        defaultFromCrypto.id === tether.id
-          ? cryptos.find((crypto) => crypto.id !== tether.id)
+        defaultFromCrypto.id === (tether?.id || "")
+          ? cryptos.find((crypto) => crypto.id !== (tether?.id || "")) ||
+            cryptos[0]
           : tether;
 
       setFormData((prev) => ({
@@ -79,6 +94,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   }, [cryptos, selectedFromList]);
 
   const getAvailableToOptions = () => {
+    if (!formData.fromCrypto || !cryptos) return [];
     return cryptos.filter((crypto) => crypto.id !== formData.fromCrypto?.id);
   };
 
@@ -88,11 +104,14 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   };
 
   const handleInputChange = (field, value) => {
-    if (field === "fromCrypto") {
-      const tether = cryptos.find((crypto) => crypto.id === "tether");
+    if (field === "fromCrypto" && cryptos?.length > 0) {
+      const tether =
+        cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
+
       const newToCrypto =
-        value.id === tether.id
-          ? cryptos.find((crypto) => crypto.id !== tether.id)
+        value.id === (tether?.id || "")
+          ? cryptos.find((crypto) => crypto.id !== (tether?.id || "")) ||
+            cryptos[0]
           : tether;
 
       setFormData((prev) => ({
@@ -101,11 +120,10 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         toCrypto: newToCrypto,
       }));
     } else {
-      const newFormData = {
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         [field]: value,
-      };
-      setFormData(newFormData);
+      }));
     }
   };
 
@@ -113,10 +131,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     if (!formData.fromCrypto || !formData.toCrypto || !formData.amount)
       return "0";
 
-    const toPrice = formData.toCrypto.current_price;
-    if (!toPrice) return "0";
+    const fromPrice = formData.fromCrypto.current_price || 0;
+    const toPrice = formData.toCrypto.current_price || 0;
 
-    const rate = formData.fromCrypto.current_price / toPrice;
+    if (toPrice === 0) return "0";
+
+    const rate = fromPrice / toPrice;
     const amount = parseFloat(formData.amount);
 
     if (isNaN(amount)) return "0";
@@ -134,7 +154,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     return !value || value.trim() === "" || value.trim().length < 26;
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
@@ -153,7 +173,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
     const orderId = Math.floor(100000000 + Math.random() * 900000000);
 
-    const paymentData = {
+    const exchangeData = {
       fromCrypto: formData.fromCrypto?.name || "",
       toCrypto: formData.toCrypto?.name || "",
       amount: parseFloat(formData.amount),
@@ -161,12 +181,19 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       senderWallet: formData.senderWallet,
       recipientWallet: formData.recipientWallet,
       saveFromWallet: Boolean(formData.saveFromWallet),
+      orderId: orderId.toString(),
     };
 
-    navigate(`/payment/${orderId}`, {
-      state: paymentData,
-    });
-    window.scrollTo(0, 0);
+    try {
+      dispatch(setCurrentExchange(exchangeData));
+
+      navigate(`/payment/${orderId}`, {
+        state: exchangeData,
+      });
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error("Error saving exchange data:", error);
+    }
   };
 
   return (
@@ -198,7 +225,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               )}
             </div>
 
-            {isFromDropdownOpen && (
+            {isFromDropdownOpen && cryptos && (
               <div className="crypto-selector__dropdown crypto-selector__dropdown--from">
                 {cryptos.map((crypto) => (
                   <div
@@ -356,15 +383,27 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         </div>
       </div>
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onConfirm={handleRedirectToAuth}
-      />
+      <div ref={authModalRef}>
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onConfirm={handleRedirectToAuth}
+        />
+      </div>
+
+      {exchangeError && (
+        <div className="crypto-converter__error">{exchangeError}</div>
+      )}
 
       <div className="crypto-converter__footer">
-        <button className="crypto-converter__submit" onClick={handleContinue}>
-          {t("transaction.continue")}
+        <button
+          className="crypto-converter__submit"
+          onClick={handleContinue}
+          disabled={exchangeStatus === "loading"}
+        >
+          {exchangeStatus === "loading"
+            ? t("transaction.loading")
+            : t("transaction.continue")}
         </button>
       </div>
     </div>

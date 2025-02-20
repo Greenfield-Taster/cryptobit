@@ -53,6 +53,14 @@ class AuthService {
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("userWallets");
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("wallet_") || key.startsWith("payment_")) {
+        localStorage.removeItem(key);
+      }
+    }
   }
 
   getCurrentUser() {
@@ -66,6 +74,34 @@ class AuthService {
 
   getToken() {
     return localStorage.getItem("token");
+  }
+
+  async getUserOrders() {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        return { success: false, message: "Not authenticated" };
+      }
+
+      const userId = this.getCurrentUser()?.id;
+      if (!userId) {
+        return { success: false, message: "User ID not found" };
+      }
+
+      const response = await fetch(`${API_URL}/user/${userId}/orders`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log("Orders API response:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      return { success: false, message: error.message };
+    }
   }
 }
 

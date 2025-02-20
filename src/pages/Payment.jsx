@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  createExchangeRequest,
+  clearCurrentExchange,
+  selectCurrentExchange,
+  selectExchangeStatus,
+  selectExchangeError,
+  selectRequestId,
+} from "../store/slices/exchangeSlice";
 import "../scss/main.scss";
 import walletIcon from "../assets/images/wallet.png";
 import copyIcon from "../assets/images/copy.png";
@@ -10,13 +19,31 @@ function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
-  const [paymentData] = useState(location.state);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [localError, setLocalError] = useState(null);
+
+  const currentExchange = useSelector(selectCurrentExchange);
+  const exchangeStatus = useSelector(selectExchangeStatus);
+  const exchangeError = useSelector(selectExchangeError);
+  const requestId = useSelector(selectRequestId);
+
+  const paymentData =
+    location.state ||
+    JSON.parse(localStorage.getItem(`payment_data_${orderId}`));
 
   useEffect(() => {
-    const paymentStatus = sessionStorage.getItem(`payment_${orderId}`);
+    if (location.state) {
+      localStorage.setItem(
+        `payment_data_${orderId}`,
+        JSON.stringify(location.state)
+      );
+    }
+  }, [location.state, orderId]);
+
+  useEffect(() => {
+    const paymentStatus = localStorage.getItem(`payment_${orderId}`);
     if (paymentStatus === "completed") {
       navigate("/payment-success", {
         state: {
@@ -29,47 +56,47 @@ function Payment() {
     }
   }, [orderId, navigate, paymentData]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(clearCurrentExchange());
+    };
+  }, [dispatch]);
+
+  const handleCopyWallet = async () => {
+    try {
+      await navigator.clipboard.writeText(paymentData.recipientWallet);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      setLocalError(t("payment.copyError"));
+      setTimeout(() => setLocalError(null), 3000);
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!orderId) {
-      setError("Order ID is missing");
+    if (!orderId || !paymentData) {
+      setLocalError(t("payment.missingData"));
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    const submissionData = {
-      orderId: orderId,
-      fromCrypto: paymentData.fromCrypto,
-      toCrypto: paymentData.toCrypto,
-      amount: paymentData.amount,
-      calculatedAmount: paymentData.calculatedAmount,
-      senderWallet: paymentData.senderWallet,
-      recipientWallet: paymentData.recipientWallet,
-      saveFromWallet: paymentData.saveFromWallet,
-    };
-
     try {
-      const response = await fetch(
-        "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api/send-form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(submissionData),
-        }
+      const submissionData = {
+        orderId: orderId,
+        fromCrypto: paymentData.fromCrypto,
+        toCrypto: paymentData.toCrypto,
+        amount: paymentData.amount,
+        calculatedAmount: paymentData.calculatedAmount,
+        senderWallet: paymentData.senderWallet,
+        recipientWallet: paymentData.recipientWallet,
+        saveFromWallet: paymentData.saveFromWallet || false,
+      };
+
+      const resultAction = await dispatch(
+        createExchangeRequest(submissionData)
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Network response was not ok");
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        sessionStorage.setItem(`payment_${orderId}`, "completed");
+      if (createExchangeRequest.fulfilled.match(resultAction)) {
+        localStorage.setItem(`payment_${orderId}`, "completed");
 
         navigate("/payment-success", {
           state: {
@@ -78,14 +105,10 @@ function Payment() {
             amount: paymentData.amount,
           },
         });
-      } else {
-        throw new Error(data.message || "Error sending data");
+        window.scrollTo(0, 0);
       }
     } catch (error) {
-      setError(error.message);
-      console.error("Error submitting form:", error);
-    } finally {
-      setIsLoading(false);
+      setLocalError(error.message || t("payment.unknownError"));
     }
   };
 
@@ -98,7 +121,7 @@ function Payment() {
           className="btn-primary"
           onClick={() => navigate("/cryptobit", { replace: true })}
         >
-          Go to Home
+          {t("payment.goHome")}
         </button>
       </div>
     );
@@ -153,27 +176,16 @@ function Payment() {
             <div className="form-group">
               <label>{t("payment.formWallet")}</label>
               <div
-                className="form-value"
-                onClick={() =>
-                  navigator.clipboard.writeText(paymentData.recipientWallet)
-                }
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
+                className="form-value wallet-field"
+                onClick={handleCopyWallet}
               >
-                {paymentData.recipientWallet}
-                <img
-                  src={copyIcon}
-                  alt="copy"
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    marginLeft: "8px",
-                  }}
-                />
+                <span className="wallet-address">
+                  {paymentData.recipientWallet}
+                </span>
+                <img src={copyIcon} alt="copy" className="copy-icon" />
+                {copied && (
+                  <span className="copy-notification">{t("payment.copy")}</span>
+                )}
               </div>
             </div>
 
@@ -193,7 +205,9 @@ function Payment() {
               <div className="status-value">{t("payment.paymentExpected")}</div>
             </div>
 
-            {error && <div className="form-error">{error}</div>}
+            {(exchangeError || localError) && (
+              <div className="form-error">{localError || exchangeError}</div>
+            )}
 
             <div className="form-actions">
               <button
@@ -202,15 +216,22 @@ function Payment() {
                   navigate("/cryptobit");
                   window.scrollTo(0, 0);
                 }}
+                disabled={exchangeStatus === "loading"}
               >
                 {t("payment.closeRequest")}
               </button>
               <button
                 className="btn-primary"
                 onClick={handleSubmit}
-                disabled={isLoading}
+                disabled={exchangeStatus === "loading"}
               >
-                {isLoading ? t("payment.processing") : t("payment.paid")}
+                {exchangeStatus === "loading" ? (
+                  <span className="loading-spinner">
+                    {t("payment.processing")}
+                  </span>
+                ) : (
+                  t("payment.paid")
+                )}
               </button>
             </div>
           </div>

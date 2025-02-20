@@ -25,7 +25,7 @@ const uaTranslations = {
       line1: "Безпечний спосіб обміну",
       line2: "Вигідний обмін",
     },
-    loader: "Завантаження...",
+    loading: "Завантаження...",
     cryptocurrencies: "Криптовалюти",
     minCount: "Мін",
     senderWalletRequired: "Потрібен гаманець відправника",
@@ -98,6 +98,8 @@ const uaTranslations = {
     closeRequest: "Закрити запит",
     paid: "Оплачено",
     processing: "Обробка...",
+    goHome: "Повернутися назад до Головна",
+    copy: "Скопійовано",
   },
   paymentSuccess: {
     title: "Оплату успішно виконано!",
@@ -149,7 +151,7 @@ const uaTranslations = {
     required: "Потрібна авторизація",
   },
   profile: {
-    title: "Профіль користувача",
+    title: "Профіль",
     loading: "Завантаження профілю...",
     personalInfo: "Особиста інформація",
     email: "Email",

@@ -25,7 +25,7 @@ const enTranslations = {
       line1: "Secure way of exchange",
       line2: "Exchange profitably",
     },
-    loader: "Loading...",
+    loading: "Loading...",
     cryptocurrencies: "Cryptocurrencies",
     minCount: "Min",
     senderWalletRequired: "Sender wallet is required",
@@ -98,6 +98,8 @@ const enTranslations = {
     closeRequest: "Close request",
     paid: "Paid",
     processing: "Processing...",
+    goHome: "Go to Home",
+    copy: "Copied",
   },
   paymentSuccess: {
     title: "Payment Successful!",
@@ -149,7 +151,7 @@ const enTranslations = {
     required: "Authorization required",
   },
   profile: {
-    title: "User Profile",
+    title: "User",
     loading: "Loading profile...",
     personalInfo: "Personal Information",
     email: "Email",
