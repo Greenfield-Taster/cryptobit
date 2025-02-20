@@ -5,10 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   createExchangeRequest,
   clearCurrentExchange,
-  selectCurrentExchange,
   selectExchangeStatus,
   selectExchangeError,
-  selectRequestId,
 } from "../store/slices/exchangeSlice";
 import "../scss/main.scss";
 import walletIcon from "../assets/images/wallet.png";
@@ -24,10 +22,8 @@ function Payment() {
   const [copied, setCopied] = useState(false);
   const [localError, setLocalError] = useState(null);
 
-  const currentExchange = useSelector(selectCurrentExchange);
   const exchangeStatus = useSelector(selectExchangeStatus);
   const exchangeError = useSelector(selectExchangeError);
-  const requestId = useSelector(selectRequestId);
 
   const paymentData =
     location.state ||
@@ -104,6 +100,7 @@ function Payment() {
             fromCrypto: paymentData.fromCrypto,
             amount: paymentData.amount,
           },
+          replace: true,
         });
         window.scrollTo(0, 0);
       }

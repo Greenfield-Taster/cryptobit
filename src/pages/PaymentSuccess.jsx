@@ -10,7 +10,7 @@ function PaymentSuccess() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const paymentStatus = sessionStorage.getItem(`payment_${orderId}`);
+    const paymentStatus = localStorage.getItem(`payment_${orderId}`);
     if (!paymentStatus || paymentStatus !== "completed") {
       navigate("/cryptobit", { replace: true });
     }
