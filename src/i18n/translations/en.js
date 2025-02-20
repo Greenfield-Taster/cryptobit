@@ -171,6 +171,7 @@ const enTranslations = {
       pending: "Pending",
       failed: "Failed",
     },
+    loadMore: "Load more",
   },
 };
 

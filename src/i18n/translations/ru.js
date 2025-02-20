@@ -171,6 +171,7 @@ const ruTranslations = {
       pending: "В обработке",
       failed: "Ошибка",
     },
+    loadMore: "Загрузить больше",
   },
 };
 

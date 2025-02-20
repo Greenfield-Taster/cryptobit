@@ -171,6 +171,7 @@ const uaTranslations = {
       pending: "В обробці",
       failed: "Помилка",
     },
+    loadMore: "Показати ще",
   },
 };
 

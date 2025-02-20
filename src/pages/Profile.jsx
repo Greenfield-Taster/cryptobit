@@ -25,6 +25,7 @@ const Profile = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [savedWallets, setSavedWallets] = useState([]);
+  const [displayCount, setDisplayCount] = useState(3); // Начальное количество отображаемых транзакций
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -92,6 +93,10 @@ const Profile = () => {
     window.scrollTo(0, 0);
   };
 
+  const loadMoreTransactions = () => {
+    setDisplayCount((prevCount) => prevCount + 4);
+  };
+
   if (isLoading || authStatus === "loading") {
     return (
       <div className="profile-loading">
@@ -112,7 +117,16 @@ const Profile = () => {
     );
   }
 
-  const orders = Array.isArray(userOrders) ? userOrders : [];
+  const orders = Array.isArray(userOrders)
+    ? [...userOrders].sort((a, b) => {
+        const dateA = new Date(a.createdAt || a.telegramSentAt || 0);
+        const dateB = new Date(b.createdAt || b.telegramSentAt || 0);
+        return dateB - dateA;
+      })
+    : [];
+
+  const displayedOrders = orders.slice(0, displayCount);
+  const hasMoreOrders = orders.length > displayCount;
 
   return (
     <div className="profile-page">
@@ -197,39 +211,53 @@ const Profile = () => {
               {t("profile.recentTransactions")}
             </h2>
             {orders && orders.length > 0 ? (
-              <div className="transactions-list">
-                {orders.map((order) => (
-                  <div
-                    key={order.orderId || order._id}
-                    className="transaction-item"
-                  >
-                    <div className="transaction-icon">
-                      <span
-                        className={`status-dot ${
-                          order.sentToTelegram ? "processing" : "pending"
-                        }`}
-                      ></span>
+              <>
+                <div className="transactions-list">
+                  {displayedOrders.map((order) => (
+                    <div
+                      key={order.orderId || order._id}
+                      className="transaction-item"
+                    >
+                      <div className="transaction-icon">
+                        <span
+                          className={`status-dot ${
+                            order.sentToTelegram ? "processing" : "pending"
+                          }`}
+                        ></span>
+                      </div>
+                      <div className="transaction-details">
+                        <span className="transaction-id">#{order.orderId}</span>
+                        <span className="transaction-date">
+                          {new Date(
+                            order.createdAt ||
+                              order.telegramSentAt ||
+                              new Date()
+                          ).toLocaleString()}
+                        </span>
+                        <span className="transaction-description">
+                          {order.amount} {order.fromCrypto} →{" "}
+                          {order.calculatedAmount} {order.toCrypto}
+                        </span>
+                      </div>
+                      <div className="transaction-status">
+                        {order.sentToTelegram
+                          ? t("profile.statuses.completed")
+                          : t("profile.statuses.pending")}
+                      </div>
                     </div>
-                    <div className="transaction-details">
-                      <span className="transaction-id">#{order.orderId}</span>
-                      <span className="transaction-date">
-                        {new Date(
-                          order.createdAt || order.telegramSentAt || new Date()
-                        ).toLocaleString()}
-                      </span>
-                      <span className="transaction-description">
-                        {order.amount} {order.fromCrypto} →{" "}
-                        {order.calculatedAmount} {order.toCrypto}
-                      </span>
-                    </div>
-                    <div className="transaction-status">
-                      {order.sentToTelegram
-                        ? t("profile.statuses.completed")
-                        : t("profile.statuses.pending")}
-                    </div>
+                  ))}
+                </div>
+                {hasMoreOrders && (
+                  <div className="load-more-container">
+                    <button
+                      className="load-more-btn"
+                      onClick={loadMoreTransactions}
+                    >
+                      {t("profile.loadMore")}
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className="no-transactions-message">
                 {t("profile.noTransactions")}
