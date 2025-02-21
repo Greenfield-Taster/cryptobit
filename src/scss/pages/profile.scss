@@ -179,30 +179,32 @@
 
 .transaction-status {
   font-size: 14px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background-color: #1a1a1a;
-  color: #ffffff;
   text-align: center;
   min-width: 80px;
 }
 
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  display: inline-block;
+.status-badge {
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: #1a1a1a;
+  font-weight: 500;
+  text-align: center;
 
-  &.completed {
-    background-color: #10b981;
+  &--pending {
+    color: #fbbf24;
   }
 
-  &.pending {
-    background-color: #f59e0b;
+  &--processing {
+    color: #3b82f6;
   }
 
-  &.failed {
-    background-color: #ef4444;
+  &--completed {
+    color: #22c55e;
+  }
+
+  &--failed {
+    color: #ef4444;
   }
 }
 

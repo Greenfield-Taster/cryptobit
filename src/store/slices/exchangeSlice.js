@@ -67,6 +67,29 @@ export const getExchangeRequest = createAsyncThunk(
   }
 );
 
+export const getExchangeStatus = createAsyncThunk(
+  "exchange/getStatus",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const token = AuthService.getToken();
+      const response = await fetch(`${API_URL}/request/${orderId}/status`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get status");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   currentExchange: null,
   requestStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -116,6 +139,13 @@ const exchangeSlice = createSlice({
         state.requestStatus = "failed";
         state.error = action.payload;
       });
+
+    builder.addCase(getExchangeStatus.fulfilled, (state, action) => {
+      if (state.currentExchange) {
+        state.currentExchange.status = action.payload.status;
+        state.currentExchange.completedAt = action.payload.completedAt;
+      }
+    });
   },
 });
 

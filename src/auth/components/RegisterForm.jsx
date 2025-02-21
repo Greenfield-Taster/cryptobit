@@ -27,7 +27,6 @@ const RegisterForm = (props) => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
 
-  // Отслеживаем изменения состояния авторизации
   useEffect(() => {
     if (authStatus === "succeeded") {
       navigate("/profile");
@@ -70,9 +69,7 @@ const RegisterForm = (props) => {
       newErrors.name = t("auth.errors.nameRequired");
     }
 
-    if (!formData.phone) {
-      newErrors.phone = t("auth.errors.phoneRequired");
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ""))) {
+    if (formData.phone && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ""))) {
       newErrors.phone = t("auth.errors.invalidPhone");
     }
 

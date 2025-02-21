@@ -11,7 +11,7 @@ function PaymentSuccess() {
 
   useEffect(() => {
     const paymentStatus = localStorage.getItem(`payment_${orderId}`);
-    if (!paymentStatus || paymentStatus !== "completed") {
+    if (!paymentStatus || paymentStatus !== "processing") {
       navigate("/cryptobit", { replace: true });
     }
   }, [orderId, navigate]);
@@ -32,9 +32,9 @@ function PaymentSuccess() {
           <div className="status-message">{t("paymentSuccess.status")}</div>
           <button
             className="btn-primary mt-4"
-            onClick={() => navigate("/cryptobit", { replace: true })}
+            onClick={() => navigate("/profile", { replace: true })}
           >
-            {t("paymentSuccess.returnHome")}
+            {t("paymentSuccess.returnProfile")}
           </button>
         </div>
       </div>

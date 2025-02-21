@@ -107,7 +107,7 @@ const enTranslations = {
     orderId: "Order ID:",
     status:
       "Transaction is being processed. Please wait 10-15 minutes for the funds to be credited.",
-    returnHome: "Return to Home",
+    returnProfile: "Move to Profile",
   },
   auth: {
     login: {
@@ -127,7 +127,7 @@ const enTranslations = {
       emailLabel: "Email",
       passwordLabel: "Password",
       nameLabel: "Name",
-      phoneLabel: "Phone number",
+      phoneLabel: "Phone number *",
       submitButton: "Register",
       alreadyHaveAccount: "Already have an account?",
       loginLink: "Sign In",
@@ -167,8 +167,9 @@ const enTranslations = {
     editProfile: "Edit Profile",
     logout: "Logout",
     statuses: {
-      completed: "Completed",
       pending: "Pending",
+      processing: "Processing",
+      completed: "Completed",
       failed: "Failed",
     },
     loadMore: "Load more",

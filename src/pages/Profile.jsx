@@ -25,7 +25,26 @@ const Profile = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [savedWallets, setSavedWallets] = useState([]);
-  const [displayCount, setDisplayCount] = useState(3); // Начальное количество отображаемых транзакций
+  const [displayCount, setDisplayCount] = useState(3);
+
+  const statusConfig = {
+    pending: {
+      color: "yellow",
+      text: "В ожидании",
+    },
+    processing: {
+      color: "blue",
+      text: "В обработке",
+    },
+    completed: {
+      color: "green",
+      text: "Завершено",
+    },
+    failed: {
+      color: "red",
+      text: "Ошибка",
+    },
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -240,9 +259,13 @@ const Profile = () => {
                         </span>
                       </div>
                       <div className="transaction-status">
-                        {order.sentToTelegram
-                          ? t("profile.statuses.completed")
-                          : t("profile.statuses.pending")}
+                        <div
+                          className={`status-badge status-badge--${
+                            order.status || "pending"
+                          }`}
+                        >
+                          {t(`profile.statuses.${order.status || "pending"}`)}
+                        </div>
                       </div>
                     </div>
                   ))}

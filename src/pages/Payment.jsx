@@ -92,7 +92,7 @@ function Payment() {
       );
 
       if (createExchangeRequest.fulfilled.match(resultAction)) {
-        localStorage.setItem(`payment_${orderId}`, "completed");
+        localStorage.setItem(`payment_${orderId}`, "processing");
 
         navigate("/payment-success", {
           state: {

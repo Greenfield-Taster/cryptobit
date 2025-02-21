@@ -107,7 +107,7 @@ const uaTranslations = {
     orderId: "Номер замовлення:",
     status:
       "Транзакція обробляється. Будь ласка, зачекайте 10-15 хвилин для зарахування коштів.",
-    returnHome: "Повернутися на головну",
+    returnProfile: "Повернутися в Профіль",
   },
   auth: {
     login: {
@@ -127,7 +127,7 @@ const uaTranslations = {
       emailLabel: "Email",
       passwordLabel: "Пароль",
       nameLabel: "Ім'я",
-      phoneLabel: "Номер телефону",
+      phoneLabel: "Номер телефону *",
       submitButton: "Зареєструватися",
       alreadyHaveAccount: "Вже маєте обліковий запис?",
       loginLink: "Увійти",
@@ -167,8 +167,9 @@ const uaTranslations = {
     editProfile: "Редагувати профіль",
     logout: "Вийти",
     statuses: {
-      completed: "Завершено",
       pending: "В обробці",
+      processing: "Оброблюється",
+      completed: "Завершено",
       failed: "Помилка",
     },
     loadMore: "Показати ще",

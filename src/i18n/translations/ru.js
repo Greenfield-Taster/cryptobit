@@ -107,7 +107,7 @@ const ruTranslations = {
     orderId: "Номер заказа:",
     status:
       "Транзакция обрабатывается. Пожалуйста, подождите 10-15 минут для зачисления средств.",
-    returnHome: "Вернуться на главную",
+    returnProfile: "Вернуться на Профиль",
   },
   auth: {
     login: {
@@ -127,7 +127,7 @@ const ruTranslations = {
       emailLabel: "Email",
       passwordLabel: "Пароль",
       nameLabel: "Имя",
-      phoneLabel: "Номер телефона",
+      phoneLabel: "Номер телефона *",
       submitButton: "Зарегистрироваться",
       alreadyHaveAccount: "Уже есть аккаунт?",
       loginLink: "Войти",
@@ -167,8 +167,9 @@ const ruTranslations = {
     editProfile: "Редактировать профиль",
     logout: "Выйти",
     statuses: {
-      completed: "Завершено",
       pending: "В обработке",
+      processing: "Обрабатывается",
+      completed: "Завершено",
       failed: "Ошибка",
     },
     loadMore: "Загрузить больше",
