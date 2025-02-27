@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import UserManagement from "../admin/UserManagement";
 import ExchangeRequests from "../admin/ExchangeRequests";
 import ChatSupport from "../admin/ChatSupport";
@@ -8,12 +6,7 @@ import Dashboard from "../admin/Dashboard";
 import "../scss/main.scss";
 
 const Admin = () => {
-  // const { user, isLoggedIn } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("dashboard");
-
-  // if (!isLoggedIn || user.role !== "admin") {
-  //   return <Navigate to="/cryptobit" />;
-  // }
 
   const renderContent = () => {
     switch (activeTab) {

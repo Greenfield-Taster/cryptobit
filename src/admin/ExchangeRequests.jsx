@@ -21,7 +21,6 @@ const ExchangeRequests = () => {
   });
   const [selectedRequest, setSelectedRequest] = useState(null);
 
-  // Модальные окна
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -31,7 +30,6 @@ const ExchangeRequests = () => {
     fetchRequests();
   }, [pagination.page, pagination.limit, filters]);
 
-  // Исправление ошибки в функции fetchRequests
   const fetchRequests = async () => {
     try {
       setLoading(true);
@@ -45,11 +43,9 @@ const ExchangeRequests = () => {
       });
 
       if (response && response.data && response.data.success) {
-        // Безопасно получаем массив заявок
         const receivedRequests = response.data.data.requests || [];
         setRequests(receivedRequests);
 
-        // Обновляем пагинацию с проверками
         if (response.data.data.pagination) {
           const paginationData = response.data.data.pagination;
 
@@ -59,7 +55,6 @@ const ExchangeRequests = () => {
             pages: paginationData.pages || 0,
           }));
 
-          // Если текущая страница больше чем общее количество страниц, переходим на первую
           if (
             pagination.page > paginationData.pages &&
             paginationData.pages > 0
@@ -86,33 +81,29 @@ const ExchangeRequests = () => {
 
   const handleStatusChange = (e) => {
     setFilters({ ...filters, status: e.target.value });
-    setPagination({ ...pagination, page: 1 }); // Сбрасываем на первую страницу при изменении фильтра
+    setPagination({ ...pagination, page: 1 });
   };
 
   const handleSortChange = (field) => {
     if (filters.sortField === field) {
-      // Если поле то же, меняем порядок сортировки
       setFilters({
         ...filters,
         sortOrder: filters.sortOrder === "asc" ? "desc" : "asc",
       });
     } else {
-      // Если поле новое, устанавливаем его и сортировку по убыванию
       setFilters({
         ...filters,
         sortField: field,
         sortOrder: "desc",
       });
     }
-    setPagination({ ...pagination, page: 1 }); // Сбрасываем на первую страницу при изменении сортировки
+    setPagination({ ...pagination, page: 1 });
   };
 
   const handlePageChange = (newPage) => {
-    // Проверяем, что новая страница в допустимых пределах
     if (newPage >= 1 && newPage <= pagination.pages) {
       setPagination({ ...pagination, page: newPage });
     } else if (pagination.pages === 0) {
-      // Если страниц нет, устанавливаем страницу на 1
       setPagination({ ...pagination, page: 1 });
     }
   };

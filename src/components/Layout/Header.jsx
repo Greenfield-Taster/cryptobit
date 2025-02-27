@@ -50,14 +50,17 @@ const Header = ({ onNavigate }) => {
 
   const registration = () => {
     navigate("/auth");
+    window.scrollTo(0, 0);
   };
 
   const goToProfile = () => {
     navigate("/profile");
+    window.scrollTo(0, 0);
   };
 
   const goToAdmin = () => {
     navigate("/admin");
+    window.scrollTo(0, 0);
   };
 
   const getAvatarLetter = () => {
@@ -131,7 +134,6 @@ const Header = ({ onNavigate }) => {
           {isLangOpen && (
             <div className="language-switcher__dropdown">
               <button onClick={() => changeLanguage("en")}>English</button>
-              <button onClick={() => changeLanguage("ua")}>Українська</button>
               <button onClick={() => changeLanguage("ru")}>Русский</button>
             </div>
           )}
@@ -154,12 +156,10 @@ const Header = ({ onNavigate }) => {
           </button>
         )}
 
-        {isAdmin ? (
+        {isAdmin && (
           <button onClick={goToAdmin} className="header__admin-btn">
             Admin
           </button>
-        ) : (
-          <p>not an admin</p>
         )}
       </div>
     </header>

@@ -84,7 +84,7 @@ const Profile = () => {
         const wallets = currentUserOrders
           .filter((order) => order.saveFromWallet && order.senderWallet?.trim())
           .map((order) => ({
-            currency: order.fromCrypto,
+            currency: order.toCrypto,
             address: order.senderWallet,
           }));
 

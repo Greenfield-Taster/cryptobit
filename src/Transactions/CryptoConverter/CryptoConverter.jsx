@@ -1,14 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
-import { selectIsAuthenticated } from "../../store/slices/authSlice";
+import {
+  selectIsAuthenticated,
+  selectUserOrders,
+  selectUser,
+  getUserOrders,
+} from "../../store/slices/authSlice";
 import {
   setCurrentExchange,
   selectCurrentExchange,
   selectExchangeStatus,
   selectExchangeError,
 } from "../../store/slices/exchangeSlice";
+import AuthService from "../../services/auth.service";
 import AuthModal from "./components/AuthModal";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
@@ -19,23 +31,25 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const { t } = useTranslation();
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const currentExchange = useSelector(selectCurrentExchange) || null;
   const exchangeStatus = useSelector(selectExchangeStatus) || "idle";
   const exchangeError = useSelector(selectExchangeError) || null;
+  const userOrders = useSelector(selectUserOrders) || [];
+  const user = useSelector(selectUser);
 
-  // Локальное состояние
   const [formData, setFormData] = useState({
     fromCrypto: null,
     toCrypto: null,
     amount: "1",
     senderWallet: "",
-    recipientWallet: "vlad`s-wallet",
     saveFromWallet: true,
-    saveToWallet: true,
   });
+
   const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
   const [isToDropdownOpen, setIsToDropdownOpen] = useState(false);
+  const [isSavedWalletsDropdownOpen, setIsSavedWalletsDropdownOpen] =
+    useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [savedWallets, setSavedWallets] = useState([]);
   const [errors, setErrors] = useState({
     calculatedAmount: false,
     senderWallet: "",
@@ -44,6 +58,90 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
   const authModalRef = useRef(null);
+  const savedWalletsRef = useRef(null);
+
+  const { fromCrypto, toCrypto, amount, senderWallet, saveFromWallet } =
+    formData;
+
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      Array.isArray(userOrders) &&
+      userOrders.length > 0 &&
+      user?.id
+    ) {
+      const wallets = userOrders
+        .filter(
+          (order) =>
+            (order.userId === user.id || !order.userId) &&
+            order.saveFromWallet &&
+            order.senderWallet?.trim()
+        )
+        .map((order) => ({
+          currency: order.toCrypto,
+          address: order.senderWallet,
+        }));
+
+      const uniqueWallets = Array.from(
+        new Map(
+          wallets.map((wallet) => [
+            `${wallet.currency}:${wallet.address}`,
+            wallet,
+          ])
+        ).values()
+      );
+
+      setSavedWallets(uniqueWallets);
+    }
+  }, [userOrders, user?.id, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getUserOrders());
+    }
+  }, [isAuthenticated, dispatch]);
+
+  useEffect(() => {
+    if (cryptos?.length > 0) {
+      const defaultFromCrypto = selectedFromList || cryptos[0];
+      const tether =
+        cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
+      const defaultToCrypto =
+        defaultFromCrypto.id === tether?.id
+          ? cryptos.find((crypto) => crypto.id !== tether?.id) || cryptos[0]
+          : tether;
+
+      setFormData((prev) => ({
+        ...prev,
+        fromCrypto: defaultFromCrypto,
+        toCrypto: defaultToCrypto,
+      }));
+    }
+  }, [cryptos, selectedFromList]);
+
+  useEffect(() => {
+    if (toCrypto) {
+      setFormData((prev) => ({ ...prev, senderWallet: "" }));
+
+      if (savedWallets.length > 0 && isAuthenticated) {
+        const matchingWallet = savedWallets.find(
+          (wallet) => wallet.currency === toCrypto.name
+        );
+
+        if (matchingWallet) {
+          setFormData((prev) => ({
+            ...prev,
+            senderWallet: matchingWallet.address,
+          }));
+        }
+      }
+    }
+  }, [toCrypto, savedWallets, isAuthenticated]);
+
+  const filteredWallets = useMemo(() => {
+    if (!toCrypto || !savedWallets.length) return [];
+    return savedWallets.filter((wallet) => wallet.currency === toCrypto.name);
+  }, [toCrypto, savedWallets]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -65,6 +163,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       ) {
         setShowAuthModal(false);
       }
+      if (
+        savedWalletsRef.current &&
+        !savedWalletsRef.current.contains(event.target)
+      ) {
+        setIsSavedWalletsDropdownOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -73,86 +177,73 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (cryptos && cryptos.length > 0) {
-      const defaultFromCrypto = selectedFromList || cryptos[0];
-      const tether =
-        cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
+  const getAvailableToOptions = useCallback(() => {
+    if (!fromCrypto || !cryptos) return [];
+    return cryptos.filter((crypto) => crypto.id !== fromCrypto?.id);
+  }, [fromCrypto, cryptos]);
 
-      const defaultToCrypto =
-        defaultFromCrypto.id === (tether?.id || "")
-          ? cryptos.find((crypto) => crypto.id !== (tether?.id || "")) ||
-            cryptos[0]
-          : tether;
+  const calculateConversion = useCallback(() => {
+    if (!fromCrypto || !toCrypto || !amount) return "0";
 
-      setFormData((prev) => ({
-        ...prev,
-        fromCrypto: defaultFromCrypto,
-        toCrypto: defaultToCrypto,
-      }));
-    }
-  }, [cryptos, selectedFromList]);
+    const fromPrice = fromCrypto.current_price || 0;
+    const toPrice = toCrypto.current_price || 0;
 
-  const getAvailableToOptions = () => {
-    if (!formData.fromCrypto || !cryptos) return [];
-    return cryptos.filter((crypto) => crypto.id !== formData.fromCrypto?.id);
-  };
+    if (toPrice === 0) return "0";
+
+    const rate = fromPrice / toPrice;
+    const parsedAmount = parseFloat(amount);
+
+    if (isNaN(parsedAmount)) return "0";
+
+    return (parsedAmount * rate).toFixed(8);
+  }, [fromCrypto, toCrypto, amount]);
+
+  const validateCalculatedAmount = useCallback(() => {
+    const calculatedValue = parseFloat(calculateConversion());
+    return calculatedValue < 25;
+  }, [calculateConversion]);
+
+  const validateWallet = useCallback((value) => {
+    return !value || value.trim() === "" || value.trim().length < 26;
+  }, []);
 
   const handleRedirectToAuth = () => {
     navigate("/auth");
     window.scrollTo(0, 0);
   };
 
-  const handleInputChange = (field, value) => {
-    if (field === "fromCrypto" && cryptos?.length > 0) {
-      const tether =
-        cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
+  const handleInputChange = useCallback(
+    (field, value) => {
+      if (field === "fromCrypto" && cryptos?.length > 0) {
+        const tether =
+          cryptos.find((crypto) => crypto.id === "tether") || cryptos[1];
+        const newToCrypto =
+          value.id === tether?.id
+            ? cryptos.find((crypto) => crypto.id !== tether?.id) || cryptos[0]
+            : tether;
 
-      const newToCrypto =
-        value.id === (tether?.id || "")
-          ? cryptos.find((crypto) => crypto.id !== (tether?.id || "")) ||
-            cryptos[0]
-          : tether;
+        setFormData((prev) => ({
+          ...prev,
+          [field]: value,
+          toCrypto: newToCrypto,
+        }));
+      } else if (field === "toCrypto") {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: value,
+          senderWallet: "",
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+      }
+    },
+    [cryptos]
+  );
 
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-        toCrypto: newToCrypto,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
-  };
-
-  const calculateConversion = () => {
-    if (!formData.fromCrypto || !formData.toCrypto || !formData.amount)
-      return "0";
-
-    const fromPrice = formData.fromCrypto.current_price || 0;
-    const toPrice = formData.toCrypto.current_price || 0;
-
-    if (toPrice === 0) return "0";
-
-    const rate = fromPrice / toPrice;
-    const amount = parseFloat(formData.amount);
-
-    if (isNaN(amount)) return "0";
-
-    return (amount * rate).toFixed(8);
-  };
-
-  const validateCalculatedAmount = (value) => {
-    if (!value) return true;
-    const calculatedValue = parseFloat(calculateConversion());
-    return calculatedValue < 25;
-  };
-
-  const validateWallet = (value) => {
-    return !value || value.trim() === "" || value.trim().length < 26;
-  };
+  const handleSelectSavedWallet = useCallback((wallet) => {
+    setFormData((prev) => ({ ...prev, senderWallet: wallet.address }));
+    setIsSavedWalletsDropdownOpen(false);
+  }, []);
 
   const handleContinue = async () => {
     if (!isAuthenticated) {
@@ -161,35 +252,32 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     }
 
     const newErrors = {
-      calculatedAmount: validateCalculatedAmount(formData.amount),
-      senderWallet: validateWallet(formData.senderWallet),
+      calculatedAmount: validateCalculatedAmount(),
+      senderWallet: validateWallet(senderWallet),
     };
 
     setErrors(newErrors);
 
-    if (Object.values(newErrors).some((error) => error)) {
-      return;
-    }
-
-    const orderId = Math.floor(100000000 + Math.random() * 900000000);
-
-    const exchangeData = {
-      fromCrypto: formData.fromCrypto?.name || "",
-      toCrypto: formData.toCrypto?.name || "",
-      amount: parseFloat(formData.amount),
-      calculatedAmount: parseFloat(calculateConversion()),
-      senderWallet: formData.senderWallet,
-      recipientWallet: formData.recipientWallet,
-      saveFromWallet: Boolean(formData.saveFromWallet),
-      orderId: orderId.toString(),
-    };
+    if (Object.values(newErrors).some((error) => error)) return;
 
     try {
-      dispatch(setCurrentExchange(exchangeData));
+      const orderId = Math.floor(
+        100000000 + Math.random() * 900000000
+      ).toString();
 
-      navigate(`/payment/${orderId}`, {
-        state: exchangeData,
-      });
+      const exchangeData = {
+        fromCrypto: fromCrypto?.name || "",
+        toCrypto: toCrypto?.name || "",
+        amount: parseFloat(amount),
+        calculatedAmount: parseFloat(calculateConversion()),
+        senderWallet,
+        recipientWallet: "vlad`s-wallet",
+        saveFromWallet: Boolean(saveFromWallet),
+        orderId,
+      };
+
+      dispatch(setCurrentExchange(exchangeData));
+      navigate(`/payment/${orderId}`, { state: exchangeData });
       window.scrollTo(0, 0);
     } catch (error) {
       console.error("Error saving exchange data:", error);
@@ -199,22 +287,22 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   return (
     <div className="crypto-converter">
       <div className="crypto-converter__form">
-        <div className="crypto-converter__section">
+        <div className="crypto-converter__section crypto-converter__section--left">
           <div
             className="crypto-selector"
             ref={fromDropdownRef}
             onClick={() => setIsFromDropdownOpen(!isFromDropdownOpen)}
           >
             <div className="crypto-selector__selected">
-              {formData.fromCrypto ? (
+              {fromCrypto ? (
                 <>
                   <img
                     className="crypto-selector__icon"
-                    src={formData.fromCrypto.image}
-                    alt={formData.fromCrypto.name}
+                    src={fromCrypto.image}
+                    alt={fromCrypto.name}
                   />
                   <span className="crypto-selector__name">
-                    {formData.fromCrypto.name}
+                    {fromCrypto.name}
                   </span>
                   <span className="crypto-selector__arrow">▼</span>
                 </>
@@ -226,12 +314,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             </div>
 
             {isFromDropdownOpen && cryptos && (
-              <div className="crypto-selector__dropdown crypto-selector__dropdown--from">
+              <div className="crypto-selector__dropdown">
                 {cryptos.map((crypto) => (
                   <div
                     key={crypto.id}
                     className="crypto-selector__option"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleInputChange("fromCrypto", crypto);
                       setIsFromDropdownOpen(false);
                     }}
@@ -254,7 +343,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             <input
               type="number"
               className="crypto-converter__amount-input"
-              value={formData.amount}
+              value={amount}
               onChange={(e) => handleInputChange("amount", e.target.value)}
               step="any"
             />
@@ -268,59 +357,23 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               {t("transaction.minCount")}: 25$
             </div>
           </div>
-
-          <div className="wallet-input">
-            <input
-              type="text"
-              className={`wallet-input__field ${
-                errors.senderWallet ? "wallet-input__field--error" : ""
-              }`}
-              placeholder={t("transaction.senderWalletPlaceholder")}
-              value={formData.senderWallet}
-              onChange={(e) =>
-                handleInputChange("senderWallet", e.target.value)
-              }
-            />
-            {errors.senderWallet && (
-              <div className="wallet-input__error">
-                {formData.senderWallet.trim() === ""
-                  ? t("transaction.senderWalletRequired")
-                  : t("transaction.senderWalletMinLength")}
-              </div>
-            )}
-            <label className="wallet-input__save">
-              <input
-                type="checkbox"
-                className="wallet-input__checkbox"
-                checked={formData.saveFromWallet}
-                onChange={(e) =>
-                  handleInputChange("saveFromWallet", e.target.checked)
-                }
-              />
-              <span className="wallet-input__save-text">
-                {t("transaction.saveWallet")}
-              </span>
-            </label>
-          </div>
         </div>
 
-        <div className="crypto-converter__section">
+        <div className="crypto-converter__section crypto-converter__section--right">
           <div
             className="crypto-selector"
             ref={toDropdownRef}
             onClick={() => setIsToDropdownOpen(!isToDropdownOpen)}
           >
             <div className="crypto-selector__selected">
-              {formData.toCrypto ? (
+              {toCrypto ? (
                 <>
                   <img
                     className="crypto-selector__icon"
-                    src={formData.toCrypto.image}
-                    alt={formData.toCrypto.name}
+                    src={toCrypto.image}
+                    alt={toCrypto.name}
                   />
-                  <span className="crypto-selector__name">
-                    {formData.toCrypto.name}
-                  </span>
+                  <span className="crypto-selector__name">{toCrypto.name}</span>
                   <span className="crypto-selector__arrow">▼</span>
                 </>
               ) : (
@@ -331,12 +384,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             </div>
 
             {isToDropdownOpen && (
-              <div className="crypto-selector__dropdown crypto-selector__dropdown--to">
+              <div className="crypto-selector__dropdown">
                 {getAvailableToOptions().map((crypto) => (
                   <div
                     key={crypto.id}
                     className="crypto-selector__option"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       handleInputChange("toCrypto", crypto);
                       setIsToDropdownOpen(false);
                     }}
@@ -367,19 +421,83 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
               readOnly
             />
           </div>
+        </div>
+      </div>
 
-          <div className="wallet-input">
+      <div className="crypto-converter__wallet-container">
+        <div className="wallet-input wallet-input--expanded">
+          <div className="wallet-input__wrapper">
             <input
               type="text"
-              className="wallet-input__field crypto-converter__amount-input--readonly"
-              placeholder={t("transaction.recipientWalletPlaceholder")}
-              value={formData.recipientWallet}
-              readOnly
+              className={`wallet-input__field ${
+                errors.senderWallet ? "wallet-input__field--error" : ""
+              }`}
+              placeholder={`${t("transaction.senderWalletPlaceholder")} ${
+                toCrypto?.name || ""
+              }`}
+              value={senderWallet}
               onChange={(e) =>
-                handleInputChange("recipientWallet", e.target.value)
+                handleInputChange("senderWallet", e.target.value)
               }
             />
+            {isAuthenticated && filteredWallets.length > 0 && (
+              <button
+                className="wallet-input__saved-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSavedWalletsDropdownOpen(!isSavedWalletsDropdownOpen);
+                }}
+                title={t("transaction.selectSavedWallet")}
+              >
+                ↓
+              </button>
+            )}
           </div>
+
+          {isSavedWalletsDropdownOpen && filteredWallets.length > 0 && (
+            <div className="wallet-input__saved-dropdown" ref={savedWalletsRef}>
+              {filteredWallets.map((wallet, index) => (
+                <div
+                  key={index}
+                  className="wallet-input__saved-option"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectSavedWallet(wallet);
+                  }}
+                >
+                  <div className="wallet-input__saved-currency">
+                    {wallet.currency}
+                  </div>
+                  <div className="wallet-input__saved-address">
+                    {wallet.address}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {errors.senderWallet && (
+            <div className="wallet-input__error">
+              {senderWallet.trim() === ""
+                ? `${toCrypto?.name || ""}${t(
+                    "transaction.senderWalletRequired"
+                  )}`
+                : t("transaction.senderWalletMinLength")}
+            </div>
+          )}
+          <label className="wallet-input__save">
+            <input
+              type="checkbox"
+              className="wallet-input__checkbox"
+              checked={saveFromWallet}
+              onChange={(e) =>
+                handleInputChange("saveFromWallet", e.target.checked)
+              }
+            />
+            <span className="wallet-input__save-text">
+              {t("transaction.saveWallet")}
+            </span>
+          </label>
         </div>
       </div>
 
