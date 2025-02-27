@@ -1,0 +1,81 @@
+@media (max-width: 992px) {
+  .admin-page {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    padding: 15px 0;
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .admin-nav {
+      display: flex;
+      overflow-x: auto;
+
+      li {
+        padding: 10px 15px;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .chat-container {
+    flex-direction: column;
+    height: auto;
+
+    .chat-list {
+      width: 100%;
+      max-height: 300px;
+    }
+  }
+
+  .stats-overview {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-table-container {
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+
+  .stats-overview {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-table-container {
+    .search-filter {
+      flex-direction: column;
+
+      input,
+      select {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+
+    table {
+      th,
+      td {
+        padding: 8px;
+      }
+    }
+  }
+
+  .admin-modal .modal-content {
+    width: 95%;
+  }
+
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+}

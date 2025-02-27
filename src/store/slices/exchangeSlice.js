@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import AuthService from "../../auth/services/auth.service";
+import AuthService from "../../services/auth.service";
 
 const API_URL =
   "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api";

@@ -16,7 +16,6 @@ const Header = ({ onNavigate }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Получаем состояние авторизации и данные пользователя из Redux
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
 
@@ -57,12 +56,18 @@ const Header = ({ onNavigate }) => {
     navigate("/profile");
   };
 
+  const goToAdmin = () => {
+    navigate("/admin");
+  };
+
   const getAvatarLetter = () => {
     if (user && user.email) {
       return user.email.charAt(0).toUpperCase();
     }
     return "U";
   };
+
+  const isAdmin = user && user.role === "admin";
 
   return (
     <header className="header">
@@ -147,6 +152,14 @@ const Header = ({ onNavigate }) => {
           >
             {t("header.register")}
           </button>
+        )}
+
+        {isAdmin ? (
+          <button onClick={goToAdmin} className="header__admin-btn">
+            Admin
+          </button>
+        ) : (
+          <p>not an admin</p>
         )}
       </div>
     </header>

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import AuthService from "../../auth/services/auth.service";
+import AuthService from "../../services/auth.service";
 
 const initialState = {
   isAuthenticated: !!localStorage.getItem("token"),
@@ -7,6 +7,7 @@ const initialState = {
   token: localStorage.getItem("token") || null,
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
+  tokenExpiration: null,
 };
 
 export const login = createAsyncThunk(
@@ -70,6 +71,21 @@ const authSlice = createSlice({
       state.user = user;
       state.token = token;
     },
+    setTokenExpiration: (state, action) => {
+      state.tokenExpiration = action.payload;
+    },
+    checkTokenExpiration: (state) => {
+      if (
+        state.tokenExpiration &&
+        new Date() > new Date(state.tokenExpiration)
+      ) {
+        state.token = null;
+        state.isAuthenticated = false;
+        state.user = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenExpiration");
+      }
+    },
   },
   extraReducers: (builder) => {
     // Login
@@ -84,6 +100,13 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
+        if (action.payload.expiresIn) {
+          const expirationTime = new Date(
+            new Date().getTime() + action.payload.expiresIn * 1000
+          );
+          state.tokenExpiration = expirationTime.toISOString();
+          localStorage.setItem("tokenExpiration", expirationTime.toISOString());
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
@@ -144,7 +167,8 @@ const authSlice = createSlice({
   },
 });
 
-export const { checkAuthState } = authSlice.actions;
+export const { checkAuthState, checkTokenExpiration, setTokenExpiration } =
+  authSlice.actions;
 
 // Селекторы
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;

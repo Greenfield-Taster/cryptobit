@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -8,6 +9,8 @@ import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
+import { checkTokenExpiration } from "./store/slices/authSlice";
 
 import "./scss/app.scss";
 
@@ -18,6 +21,16 @@ function App() {
   const homeRef = useRef(null);
   const testimonialRef = useRef(null);
   const frequentlyQARef = useRef(null);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(checkTokenExpiration());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   const handleScroll = (ref) => {
     if (ref.current) {
@@ -63,8 +76,8 @@ function App() {
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/auth" element={<Auth />} />
-          {/* <Route path="/profile/:userId" element={<Profile />} /> */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />;
         </Routes>
       </div>
