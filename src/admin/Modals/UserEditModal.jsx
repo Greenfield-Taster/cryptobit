@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "../../scss/admin/_modals.scss";
 
 const UserEditModal = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -7,14 +8,28 @@ const UserEditModal = ({ user, onClose, onSave }) => {
     email: user.email || "",
     phone: user.phone || "",
     role: user.role || "user",
+    nickname: user.nickname || "",
   });
 
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    setFormData({
+      _id: user._id,
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      role: user.role || "user",
+      nickname: user.nickname || "",
+    });
+  }, [user]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    // Очищаем ошибку для поля при изменении
+    const { name, value, type, checked } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+
+    setFormData({ ...formData, [name]: newValue });
+
     if (errors[name]) {
       setErrors({ ...errors, [name]: "" });
     }
@@ -45,6 +60,7 @@ const UserEditModal = ({ user, onClose, onSave }) => {
     e.preventDefault();
 
     if (validateForm()) {
+      console.log("Отправка данных на сохранение:", formData);
       onSave(formData);
     }
   };
@@ -89,6 +105,17 @@ const UserEditModal = ({ user, onClose, onSave }) => {
               {errors.email && (
                 <div className="error-message">{errors.email}</div>
               )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="nickname">Никнейм</label>
+              <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                value={formData.nickname}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="form-group">

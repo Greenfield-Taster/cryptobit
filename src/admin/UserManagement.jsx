@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import UserEditModal from "./Modals/UserEditModal";
 import UserDetailModal from "./Modals/UserDetailModal";
 import ConfirmModal from "./Modals/ConfirmModal";
 import adminService from "../services/admin.service";
+import "../scss/admin/_userManagement.scss";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -17,11 +17,13 @@ const UserManagement = () => {
   });
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
-  // Модальные окна
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     fetchUsers();
@@ -60,22 +62,23 @@ const UserManagement = () => {
   };
 
   const handlePageChange = (newPage) => {
-    setPagination({ ...pagination, page: newPage });
+    if (newPage >= 1 && newPage <= pagination.pages) {
+      setPagination({ ...pagination, page: newPage });
+    } else if (pagination.pages === 0) {
+      setPagination({ ...pagination, page: 1 });
+    }
   };
 
   const handleEditUser = (user) => {
+    setActiveDropdown(null);
     setSelectedUser(user);
     setShowEditModal(true);
   };
 
   const handleViewUser = async (userId) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`/api/admin/users/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      setActiveDropdown(null);
+      const response = await adminService.userService.getUserById(userId);
 
       if (response.data.success) {
         setSelectedUser({
@@ -93,20 +96,32 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = (user) => {
+    setActiveDropdown(null);
     setSelectedUser(user);
     setShowDeleteModal(true);
   };
 
+  const toggleDropdown = (userId) => {
+    setActiveDropdown(activeDropdown === userId ? null : userId);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
   const confirmDeleteUser = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.delete(
-        `/api/admin/users/${selectedUser._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await adminService.userService.deleteUser(
+        selectedUser._id
       );
 
       if (response.data.success) {
@@ -126,15 +141,9 @@ const UserManagement = () => {
 
   const handleSaveUser = async (userData) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        `/api/admin/users/${userData._id}`,
-        userData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const response = await adminService.userService.updateUser(
+        userData._id,
+        userData
       );
 
       if (response.data.success) {
@@ -196,27 +205,44 @@ const UserManagement = () => {
                     </td>
                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                     <td className="actions">
-                      <button
-                        className="view"
-                        onClick={() => handleViewUser(user._id)}
-                        title="Просмотр"
+                      <div
+                        className={`dropdown ${
+                          activeDropdown === user._id ? "active" : ""
+                        }`}
+                        ref={activeDropdown === user._id ? dropdownRef : null}
                       >
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button
-                        className="edit"
-                        onClick={() => handleEditUser(user)}
-                        title="Редактировать"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button
-                        className="delete"
-                        onClick={() => handleDeleteUser(user)}
-                        title="Удалить"
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
+                        <button
+                          className="dropdown-toggle"
+                          onClick={() => toggleDropdown(user._id)}
+                        >
+                          <i className="fas fa-ellipsis-v"></i> Действия
+                        </button>
+                        <div
+                          className={`dropdown-menu ${
+                            activeDropdown === user._id ? "show" : ""
+                          }`}
+                        >
+                          <button
+                            className="dropdown-item view"
+                            onClick={() => handleViewUser(user._id)}
+                          >
+                            <i className="fas fa-eye">Просмотр</i>
+                          </button>
+                          <button
+                            className="dropdown-item edit"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <i className="fas fa-edit"></i> Редактировать
+                          </button>
+                          <div className="dropdown-divider"></div>
+                          <button
+                            className="dropdown-item delete"
+                            onClick={() => handleDeleteUser(user)}
+                          >
+                            <i className="fas fa-trash"></i> Удалить
+                          </button>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -230,7 +256,6 @@ const UserManagement = () => {
             </tbody>
           </table>
 
-          {/* Пагинация */}
           {pagination.pages > 1 && (
             <div className="pagination">
               <button
@@ -246,25 +271,48 @@ const UserManagement = () => {
                 &lsaquo;
               </button>
 
-              {[...Array(pagination.pages).keys()].map((page) => (
-                <button
-                  key={page + 1}
-                  onClick={() => handlePageChange(page + 1)}
-                  className={pagination.page === page + 1 ? "active" : ""}
-                >
-                  {page + 1}
-                </button>
-              ))}
+              {pagination.pages > 0 &&
+                Array.from({ length: pagination.pages }, (_, i) => i + 1)
+                  .filter((page) => {
+                    return (
+                      page === 1 ||
+                      page === pagination.pages ||
+                      Math.abs(page - pagination.page) <= 2
+                    );
+                  })
+                  .map((page, index, array) => {
+                    const previousPage = array[index - 1];
+                    const showEllipsis =
+                      previousPage && page - previousPage > 1;
+
+                    return (
+                      <React.Fragment key={page}>
+                        {showEllipsis && (
+                          <span className="pagination-ellipsis">...</span>
+                        )}
+                        <button
+                          onClick={() => handlePageChange(page)}
+                          className={pagination.page === page ? "active" : ""}
+                        >
+                          {page}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
 
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
+                disabled={
+                  pagination.page === pagination.pages || pagination.pages === 0
+                }
               >
                 &rsaquo;
               </button>
               <button
                 onClick={() => handlePageChange(pagination.pages)}
-                disabled={pagination.page === pagination.pages}
+                disabled={
+                  pagination.page === pagination.pages || pagination.pages === 0
+                }
               >
                 &raquo;
               </button>
@@ -273,7 +321,6 @@ const UserManagement = () => {
         </>
       )}
 
-      {/* Модальные окна */}
       {showEditModal && (
         <UserEditModal
           user={selectedUser}

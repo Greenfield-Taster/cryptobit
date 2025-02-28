@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../scss/admin/_modals.scss";
 
 const StatusUpdateModal = ({ request, onClose, onSave }) => {
   const [formData, setFormData] = useState({

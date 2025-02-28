@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import "./_authModal.scss";
 
 const AuthModal = ({ isOpen, onClose, onConfirm }) => {
   const { t } = useTranslation();

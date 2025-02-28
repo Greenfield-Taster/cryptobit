@@ -1,4 +1,5 @@
 import React from "react";
+import "../../scss/admin/_modals.scss";
 
 const UserDetailModal = ({ user, onClose, onEdit }) => {
   return (

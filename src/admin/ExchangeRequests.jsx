@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import adminService from "../services/admin.service";
 import ConfirmModal from "./Modals/ConfirmModal";
 import StatusUpdateModal from "./Modals/StatusUpdateModal";
 import RequestDetailModal from "./Modals/RequestDetailModal";
+import "../scss/admin/_exchangeRequests.scss";
 
 const ExchangeRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -21,14 +22,52 @@ const ExchangeRequests = () => {
   });
   const [selectedRequest, setSelectedRequest] = useState(null);
 
+  const [activeViewDropdown, setActiveViewDropdown] = useState(null);
+  const [activeActionDropdown, setActiveActionDropdown] = useState(null);
+
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
 
+  const viewDropdownRef = useRef(null);
+  const actionDropdownRef = useRef(null);
+
   useEffect(() => {
     fetchRequests();
   }, [pagination.page, pagination.limit, filters]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        viewDropdownRef.current &&
+        !viewDropdownRef.current.contains(event.target)
+      ) {
+        setActiveViewDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [viewDropdownRef]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        actionDropdownRef.current &&
+        !actionDropdownRef.current.contains(event.target)
+      ) {
+        setActiveActionDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [actionDropdownRef]);
 
   const fetchRequests = async () => {
     try {
@@ -108,8 +147,25 @@ const ExchangeRequests = () => {
     }
   };
 
+  const toggleViewDropdown = (requestId) => {
+    setActiveViewDropdown(activeViewDropdown === requestId ? null : requestId);
+    if (activeActionDropdown) {
+      setActiveActionDropdown(null);
+    }
+  };
+
+  const toggleActionDropdown = (requestId) => {
+    setActiveActionDropdown(
+      activeActionDropdown === requestId ? null : requestId
+    );
+    if (activeViewDropdown) {
+      setActiveViewDropdown(null);
+    }
+  };
+
   const handleViewRequest = async (requestId) => {
     try {
+      setActiveViewDropdown(null);
       setLoading(true);
       const response = await adminService.exchangeService.getRequestById(
         requestId
@@ -130,6 +186,7 @@ const ExchangeRequests = () => {
   };
 
   const handleUpdateStatus = (request) => {
+    setActiveViewDropdown(null);
     setSelectedRequest(request);
     setShowStatusModal(true);
   };
@@ -157,12 +214,14 @@ const ExchangeRequests = () => {
   };
 
   const confirmCompleteRequest = (request) => {
+    setActiveActionDropdown(null);
     setSelectedRequest(request);
     setConfirmAction("complete");
     setShowConfirmModal(true);
   };
 
   const confirmCancelRequest = (request) => {
+    setActiveActionDropdown(null);
     setSelectedRequest(request);
     setConfirmAction("cancel");
     setShowConfirmModal(true);
@@ -346,39 +405,85 @@ const ExchangeRequests = () => {
                       </td>
                       <td>{formatDate(request.createdAt)}</td>
                       <td className="actions">
-                        <button
-                          className="view"
-                          onClick={() => handleViewRequest(request._id)}
-                          title="Просмотр"
+                        <div
+                          className={`dropdown ${
+                            activeViewDropdown === request._id ? "active" : ""
+                          }`}
+                          ref={
+                            activeViewDropdown === request._id
+                              ? viewDropdownRef
+                              : null
+                          }
                         >
-                          <i className="fas fa-eye"></i>
-                        </button>
-                        <button
-                          className="edit"
-                          onClick={() => handleUpdateStatus(request)}
-                          title="Изменить статус"
-                        >
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        {request.status === "pending" ||
-                        request.status === "processing" ? (
-                          <>
+                          <button
+                            className="dropdown-toggle"
+                            onClick={() => toggleViewDropdown(request._id)}
+                          >
+                            <i className="fas fa-eye"></i> Просмотр
+                          </button>
+                          <div
+                            className={`dropdown-menu ${
+                              activeViewDropdown === request._id ? "show" : ""
+                            }`}
+                          >
                             <button
-                              className="complete"
-                              onClick={() => confirmCompleteRequest(request)}
-                              title="Завершить"
+                              className="dropdown-item view"
+                              onClick={() => handleViewRequest(request._id)}
                             >
-                              <i className="fas fa-check"></i>
+                              <i className="fas fa-eye"></i> Просмотр
                             </button>
                             <button
-                              className="cancel"
-                              onClick={() => confirmCancelRequest(request)}
-                              title="Отменить"
+                              className="dropdown-item edit"
+                              onClick={() => handleUpdateStatus(request)}
                             >
-                              <i className="fas fa-times"></i>
+                              <i className="fas fa-edit"></i> Изменить статус
                             </button>
-                          </>
-                        ) : null}
+                          </div>
+                        </div>
+
+                        {(request.status === "pending" ||
+                          request.status === "processing") && (
+                          <div
+                            className={`dropdown ${
+                              activeActionDropdown === request._id
+                                ? "active"
+                                : ""
+                            }`}
+                            ref={
+                              activeActionDropdown === request._id
+                                ? actionDropdownRef
+                                : null
+                            }
+                            style={{ marginLeft: "10px" }}
+                          >
+                            <button
+                              className="dropdown-toggle"
+                              onClick={() => toggleActionDropdown(request._id)}
+                            >
+                              <i className="fas fa-cog"></i> Действия
+                            </button>
+                            <div
+                              className={`dropdown-menu ${
+                                activeActionDropdown === request._id
+                                  ? "show"
+                                  : ""
+                              }`}
+                            >
+                              <button
+                                className="dropdown-item complete"
+                                onClick={() => confirmCompleteRequest(request)}
+                              >
+                                <i className="fas fa-check"></i> Завершить
+                              </button>
+                              <button
+                                className="dropdown-item delete"
+                                onClick={() => confirmCancelRequest(request)}
+                              >
+                                <i className="fas fa-times"></i> Отменить
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -411,7 +516,6 @@ const ExchangeRequests = () => {
               {pagination.pages > 0 &&
                 Array.from({ length: pagination.pages }, (_, i) => i + 1)
                   .filter((page) => {
-                    // Показываем только страницы вокруг текущей (+/- 2) и первую/последнюю
                     return (
                       page === 1 ||
                       page === pagination.pages ||
@@ -460,7 +564,6 @@ const ExchangeRequests = () => {
         </>
       )}
 
-      {/* Модальные окна */}
       {showStatusModal && selectedRequest && (
         <StatusUpdateModal
           request={selectedRequest}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../scss/admin/_modals.scss";
 
 const ConfirmModal = ({
   title,
@@ -22,7 +23,7 @@ const ConfirmModal = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="confirm-modal">
         <div className="modal-header">
           <h3>{title}</h3>
           <button className="close-btn" onClick={onCancel}>
@@ -51,7 +52,7 @@ const ConfirmModal = ({
             {cancelText}
           </button>
           <button
-            className="btn-primary"
+            className="btn-danger"
             onClick={handleConfirm}
             disabled={promptInput && !inputValue.trim()}
           >
