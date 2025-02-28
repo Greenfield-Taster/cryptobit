@@ -1,35 +1,39 @@
 @media (max-width: 1070px) {
   .header {
-    .language-switcher {
-      margin-left: 0;
-    }
-
-    &__nav {
-      display: none;
-    }
-
     &__container {
-      position: relative;
+      justify-content: space-between;
     }
 
     &__logo {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+      order: 1;
 
       img {
         height: 40px;
         width: auto;
       }
     }
+
+    &__right-group {
+      order: 2;
+    }
+
+    &__nav {
+      display: none;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .header {
-    .language-switcher {
-      margin-right: 1rem;
+    &__container {
+      padding: 0 1.5rem;
+    }
 
+    &__right-group {
+      gap: 0.5rem;
+    }
+
+    .language-switcher {
       &__current {
         padding: 0.3rem 1.8rem 0.3rem 0.6rem;
         font-size: 13px;
@@ -39,15 +43,40 @@
     &__register-btn {
       padding: 0.5rem 1rem;
       font-size: 14px;
-      margin-left: 0;
+    }
+
+    &__admin-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 13px;
+    }
+
+    &__profile-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
     }
   }
 }
 
 @media (max-width: 485px) {
   .header {
+    &__container {
+      padding: 0 1rem;
+    }
+
     &__register-btn {
       padding: 0.4rem 0.8rem;
+      font-size: 12px;
+    }
+
+    &__admin-btn {
+      padding: 0.3rem 0.6rem;
+      font-size: 12px;
+    }
+
+    &__profile-avatar {
+      width: 32px;
+      height: 32px;
       font-size: 12px;
     }
   }
@@ -55,14 +84,14 @@
 
 @media (max-width: 430px) {
   .header {
-    &__container {
-      padding: 0 1rem;
-    }
-
     &__logo {
       img {
         height: 32px;
       }
+    }
+
+    &__right-group {
+      gap: 0.4rem;
     }
 
     .language-switcher {

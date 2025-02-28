@@ -17,10 +17,14 @@
     justify-content: space-between;
   }
 
-  &__nav {
+  &__right-group {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    gap: 1rem;
+  }
+
+  &__nav {
+    margin-left: 0 auto;
 
     &-list {
       display: flex;
@@ -29,6 +33,10 @@
       margin: 0;
       padding: 0;
       gap: 1.5rem;
+    }
+
+    &-item {
+      display: flex;
     }
 
     &-link {
@@ -52,7 +60,6 @@
 
   .language-switcher {
     position: relative;
-    margin-left: 2rem;
 
     &__current {
       background: none;
@@ -136,10 +143,26 @@
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-left: 1rem;
 
     &:hover {
       background-color: darken(#ffb800, 10%);
+    }
+  }
+
+  &__admin-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #e6e6e6;
     }
   }
 
@@ -147,7 +170,6 @@
     background: none;
     border: none;
     padding: 0;
-    margin-left: 1rem;
     cursor: pointer;
   }
 

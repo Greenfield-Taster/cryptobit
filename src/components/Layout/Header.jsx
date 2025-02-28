@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,12 +15,18 @@ const Header = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langSwitcherRef = useRef(null);
+
+  const hideNavPages = ["/admin", "/auth", "/profile"];
+  const shouldHideNav = hideNavPages.some((path) =>
+    location.pathname.includes(path)
+  );
 
   useEffect(() => {
     dispatch(checkAuthState());
@@ -81,86 +87,100 @@ const Header = ({ onNavigate }) => {
           </Link>
         </div>
 
-        <nav className="header__nav">
-          <ul className="header__nav-list">
-            <li className="header__nav-item">
-              <button
-                onClick={() => onNavigate("home")}
-                className="header__nav-link"
-              >
-                {t("header.home")}
-              </button>
-            </li>
-            <button
-              onClick={() => onNavigate("transaction")}
-              className="header__nav-link"
-            >
-              {t("header.transaction")}
-            </button>
-            <button
-              onClick={() => onNavigate("about")}
-              className="header__nav-link"
-            >
-              {t("header.about")}
-            </button>
-            <button
-              onClick={() => onNavigate("testimonial")}
-              className="header__nav-link"
-            >
-              {t("header.testimonial")}
-            </button>
-            <button
-              onClick={() => onNavigate("frequentlyQA")}
-              className="header__nav-link"
-            >
-              {t("header.frequentlyQA")}
-            </button>
-            <button
-              onClick={() => onNavigate("contact")}
-              className="header__nav-link"
-            >
-              {t("header.contact")}
-            </button>
-          </ul>
-        </nav>
+        {!shouldHideNav && (
+          <nav className="header__nav">
+            <ul className="header__nav-list">
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("home")}
+                  className="header__nav-link"
+                >
+                  {t("header.home")}
+                </button>
+              </li>
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("transaction")}
+                  className="header__nav-link"
+                >
+                  {t("header.transaction")}
+                </button>
+              </li>
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("about")}
+                  className="header__nav-link"
+                >
+                  {t("header.about")}
+                </button>
+              </li>
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("testimonial")}
+                  className="header__nav-link"
+                >
+                  {t("header.testimonial")}
+                </button>
+              </li>
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("frequentlyQA")}
+                  className="header__nav-link"
+                >
+                  {t("header.frequentlyQA")}
+                </button>
+              </li>
+              <li className="header__nav-item">
+                <button
+                  onClick={() => onNavigate("contact")}
+                  className="header__nav-link"
+                >
+                  {t("header.contact")}
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
 
-        <div className="language-switcher" ref={langSwitcherRef}>
-          <button
-            className="language-switcher__current"
-            onClick={() => setIsLangOpen(!isLangOpen)}
-          >
-            {i18n.language.toUpperCase()}
-          </button>
-          {isLangOpen && (
-            <div className="language-switcher__dropdown">
-              <button onClick={() => changeLanguage("en")}>English</button>
-              <button onClick={() => changeLanguage("ru")}>Русский</button>
-            </div>
+        <div className="header__right-group">
+          <div className="language-switcher" ref={langSwitcherRef}>
+            <button
+              className="language-switcher__current"
+              onClick={() => setIsLangOpen(!isLangOpen)}
+            >
+              {i18n.language.toUpperCase()}
+            </button>
+            {isLangOpen && (
+              <div className="language-switcher__dropdown">
+                <button onClick={() => changeLanguage("en")}>English</button>
+                <button onClick={() => changeLanguage("ru")}>Русский</button>
+              </div>
+            )}
+          </div>
+
+          {isAuthenticated ? (
+            <button className="header__profile-btn" onClick={goToProfile}>
+              <div className="header__profile-avatar">
+                <span>{getAvatarLetter()}</span>
+              </div>
+            </button>
+          ) : (
+            <button
+              className="header__register-btn"
+              onClick={() => {
+                registration();
+              }}
+            >
+              {t("header.register")}
+            </button>
+          )}
+
+          {isAdmin && (
+            <button onClick={goToAdmin} className="header__admin-btn">
+              Admin
+            </button>
           )}
         </div>
-
-        {isAuthenticated ? (
-          <button className="header__profile-btn" onClick={goToProfile}>
-            <div className="header__profile-avatar">
-              <span>{getAvatarLetter()}</span>
-            </div>
-          </button>
-        ) : (
-          <button
-            className="header__register-btn"
-            onClick={() => {
-              registration();
-            }}
-          >
-            {t("header.register")}
-          </button>
-        )}
-
-        {isAdmin && (
-          <button onClick={goToAdmin} className="header__admin-btn">
-            Admin
-          </button>
-        )}
       </div>
     </header>
   );
