@@ -1,0 +1,167 @@
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton-pulse {
+  width: 100%;
+  height: 100%;
+  background-color: #2a2a2a;
+  border-radius: inherit;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-header {
+  .skeleton-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #2a2a2a;
+  }
+
+  .skeleton-title {
+    height: 32px;
+    width: 250px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+}
+
+.skeleton-section-title {
+  height: 24px;
+  width: 200px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  overflow: hidden;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skeleton-info-label {
+  height: 16px;
+  width: 80px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.skeleton-info-value {
+  height: 48px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skeleton-wallets-message {
+  height: 60px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #2a2a2a;
+  margin: 20px 0;
+  padding: 30px;
+}
+
+.skeleton-transaction {
+  .skeleton-transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #1a1a1a;
+  }
+
+  .skeleton-transaction-id {
+    height: 18px;
+    width: 60px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .skeleton-transaction-date {
+    height: 16px;
+    width: 120px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .skeleton-transaction-description {
+    height: 16px;
+    width: 180px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .skeleton-status-badge {
+    height: 36px;
+    width: 80px;
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: #1a1a1a;
+  }
+}
+
+.profile-actions {
+  .skeleton-edit-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .skeleton-logout-btn {
+    height: 48px;
+    width: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .skeleton-pulse {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.profile-loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  color: #ffffff;
+  gap: 20px;
+
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #fbbf24;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  p {
+    color: #9ca3af;
+    font-size: 16px;
+  }
+}

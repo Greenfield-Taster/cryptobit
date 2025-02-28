@@ -10,6 +10,7 @@ import {
   selectAuthStatus,
   selectUserOrders,
 } from "../store/slices/authSlice";
+import ProfileSkeleton from "../Skeleton/ProfileSkeleton";
 import walletIcon from "../assets/images/wallet.png";
 import "../scss/main.scss";
 
@@ -59,14 +60,15 @@ const Profile = () => {
       } catch (error) {
         console.error("Failed to load orders:", error);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
       }
     };
 
     loadData();
   }, [isAuthenticated, navigate, dispatch]);
 
-  // Извлечение сохраненных кошельков из заказов
   useEffect(() => {
     setSavedWallets([]);
 
@@ -117,12 +119,7 @@ const Profile = () => {
   };
 
   if (isLoading || authStatus === "loading") {
-    return (
-      <div className="profile-loading">
-        <div className="spinner"></div>
-        <p>{t("profile.loading")}</p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!isAuthenticated || !user) {

@@ -1,24 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../store/slices/authSlice";
 import LoginForm from "../auth/components/LoginForm";
 import RegisterForm from "../auth/components/RegisterForm";
 import "../scss/main.scss";
 
 const Auth = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [activeForm, setActiveForm] = useState(1);
-
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/profile");
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleSwitchForm = (formId) => {
     setActiveForm(formId);
