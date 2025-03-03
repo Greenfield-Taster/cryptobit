@@ -13,7 +13,6 @@ const LoginForm = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Получаем состояние авторизации из Redux
   const authStatus = useSelector(selectAuthStatus);
   const authError = useSelector(selectAuthError);
 
@@ -25,7 +24,6 @@ const LoginForm = (props) => {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
 
-  // Отслеживаем изменения состояния авторизации
   useEffect(() => {
     if (authStatus === "succeeded") {
       navigate("/profile");

@@ -13,7 +13,6 @@ const RegisterForm = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Получаем состояние авторизации из Redux
   const authStatus = useSelector(selectAuthStatus);
   const authError = useSelector(selectAuthError);
 
@@ -97,7 +96,6 @@ const RegisterForm = (props) => {
     );
   };
 
-  // Определяем, загружаются ли данные
   const isLoading = authStatus === "loading";
 
   return (

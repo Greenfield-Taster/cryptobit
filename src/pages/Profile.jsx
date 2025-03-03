@@ -28,25 +28,6 @@ const Profile = () => {
   const [savedWallets, setSavedWallets] = useState([]);
   const [displayCount, setDisplayCount] = useState(3);
 
-  const statusConfig = {
-    pending: {
-      color: "yellow",
-      text: "В ожидании",
-    },
-    processing: {
-      color: "blue",
-      text: "В обработке",
-    },
-    completed: {
-      color: "green",
-      text: "Завершено",
-    },
-    failed: {
-      color: "red",
-      text: "Ошибка",
-    },
-  };
-
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/auth");
@@ -120,17 +101,6 @@ const Profile = () => {
 
   if (isLoading || authStatus === "loading") {
     return <ProfileSkeleton />;
-  }
-
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="profile-error">
-        <p>{t("profile.notAuthorized")}</p>
-        <button className="btn-primary" onClick={() => navigate("/auth")}>
-          {t("profile.goToLogin")}
-        </button>
-      </div>
-    );
   }
 
   const orders = Array.isArray(userOrders)
