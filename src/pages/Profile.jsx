@@ -99,7 +99,7 @@ const Profile = () => {
     setDisplayCount((prevCount) => prevCount + 4);
   };
 
-  if (isLoading || authStatus === "loading") {
+  if (isLoading || authStatus === "loading" || !user) {
     return <ProfileSkeleton />;
   }
 
@@ -119,10 +119,10 @@ const Profile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-avatar">
-            <span>{getFirstLetter(user.email)}</span>
+            <span>{getFirstLetter(user?.email)}</span>
           </div>
           <h1 className="profile-title">
-            {t("profile.title")} #{user.nickname}
+            {t("profile.title")} #{user?.nickname}
           </h1>
         </div>
 
