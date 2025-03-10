@@ -66,96 +66,102 @@ const UserEditModal = ({ user, onClose, onSave }) => {
   };
 
   return (
-    <div className="admin-modal">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h3>Редактирование пользователя</h3>
-          <button className="close-btn" onClick={onClose}>
-            &times;
-          </button>
-        </div>
+    <div className="modal-overlay">
+      <div className="admin-modal">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h3>Редактирование пользователя</h3>
+            <button className="close-btn" onClick={onClose}>
+              &times;
+            </button>
+          </div>
 
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <div className="modal-body">
-            <div className="form-group">
-              <label htmlFor="name">Имя</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={errors.name ? "error" : ""}
-              />
-              {errors.name && (
-                <div className="error-message">{errors.name}</div>
-              )}
+          <form className="admin-form" onSubmit={handleSubmit}>
+            <div className="modal-body">
+              <div className="form-group">
+                <label htmlFor="name">Имя</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={errors.name ? "error" : ""}
+                />
+                {errors.name && (
+                  <div className="error-message">{errors.name}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? "error" : ""}
+                />
+                {errors.email && (
+                  <div className="error-message">{errors.email}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="nickname">Никнейм</label>
+                <input
+                  type="text"
+                  id="nickname"
+                  name="nickname"
+                  value={formData.nickname}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone">Телефон</label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={errors.phone ? "error" : ""}
+                />
+                {errors.phone && (
+                  <div className="error-message">{errors.phone}</div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="role">Роль</label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="user">Пользователь</option>
+                  <option value="admin">Администратор</option>
+                </select>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={errors.email ? "error" : ""}
-              />
-              {errors.email && (
-                <div className="error-message">{errors.email}</div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="nickname">Никнейм</label>
-              <input
-                type="text"
-                id="nickname"
-                name="nickname"
-                value={formData.nickname}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="phone">Телефон</label>
-              <input
-                type="text"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={errors.phone ? "error" : ""}
-              />
-              {errors.phone && (
-                <div className="error-message">{errors.phone}</div>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="role">Роль</label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={onClose}
               >
-                <option value="user">Пользователь</option>
-                <option value="admin">Администратор</option>
-              </select>
+                Отмена
+              </button>
+              <button type="submit" className="btn btn-primary">
+                Сохранить
+              </button>
             </div>
-          </div>
-
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline" onClick={onClose}>
-              Отмена
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Сохранить
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

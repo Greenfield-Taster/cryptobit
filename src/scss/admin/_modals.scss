@@ -11,7 +11,6 @@
   z-index: 1000;
 }
 
-// Базовые стили для всех модальных окон
 .admin-modal,
 .confirm-modal {
   background-color: #fff;
@@ -181,7 +180,6 @@
   }
 }
 
-/* Специфические стили для UserDetailModal */
 .user-details {
   .detail-row {
     display: flex;
@@ -236,7 +234,6 @@
   }
 }
 
-/* Специфические стили для RequestDetailModal */
 .request-details {
   .status-banner {
     margin-bottom: 20px;
@@ -363,7 +360,6 @@
   }
 }
 
-/* Специфические стили для StatusUpdateModal */
 .current-status {
   display: flex;
   align-items: center;
@@ -398,7 +394,6 @@
   }
 }
 
-/* Стили для ConfirmModal */
 .confirm-modal {
   .modal-body {
     p {
@@ -408,7 +403,6 @@
   }
 }
 
-/* Адаптивность для мобильных устройств */
 @media (max-width: 576px) {
   .admin-modal,
   .confirm-modal {

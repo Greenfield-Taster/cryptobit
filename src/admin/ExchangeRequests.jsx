@@ -576,6 +576,10 @@ const ExchangeRequests = () => {
         <RequestDetailModal
           request={selectedRequest}
           onClose={() => setShowDetailModal(false)}
+          onUpdateStatus={() => {
+            setShowDetailModal(false);
+            setShowStatusModal(true);
+          }}
         />
       )}
 

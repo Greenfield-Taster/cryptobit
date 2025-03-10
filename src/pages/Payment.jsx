@@ -52,6 +52,11 @@ function Payment() {
     }
   }, [orderId, navigate, paymentData]);
 
+  const closeRequest = () => {
+    navigate("/cryptobit", { replace: true });
+    window.scrollTo(0, 0);
+  };
+
   useEffect(() => {
     return () => {
       dispatch(clearCurrentExchange());
@@ -209,10 +214,7 @@ function Payment() {
             <div className="form-actions">
               <button
                 className="btn-secondary"
-                onClick={() => {
-                  navigate("/cryptobit");
-                  window.scrollTo(0, 0);
-                }}
+                onClick={closeRequest}
                 disabled={exchangeStatus === "loading"}
               >
                 {t("payment.closeRequest")}
