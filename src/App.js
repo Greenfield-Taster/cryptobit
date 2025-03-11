@@ -59,8 +59,8 @@ function App() {
         }}
       />
       <div className="content">
-        <Route path="/" element={<Navigate to="cryptobit" replace />} />
         <Routes>
+          <Route path="/" element={<Navigate to="cryptobit" replace />} />
           <Route
             path="cryptobit"
             element={
