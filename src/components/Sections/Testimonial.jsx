@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import testimonialDataEn from "../../data/testimonials-en.json";
 import testimonialDataRu from "../../data/testimonials-ru.json";
-import testimonialDataUa from "../../data/testimonials-ua.json";
 import team1 from "../../assets/images/testi/team1.png";
 import team2 from "../../assets/images/testi/team2.png";
 import team3 from "../../assets/images/testi/team3.png";
@@ -20,7 +19,6 @@ const images = {
 const testimonialsByLang = {
   en: testimonialDataEn,
   ru: testimonialDataRu,
-  ua: testimonialDataUa,
 };
 
 const Testimonial = () => {
