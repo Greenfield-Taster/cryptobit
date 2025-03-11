@@ -17,8 +17,8 @@ const Admin = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname === "admin") {
-      navigate("admin/dashboard");
+    if (location.pathname === "/admin" || location.pathname === "admin") {
+      navigate("dashboard");
     }
   }, [location.pathname, navigate]);
 

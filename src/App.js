@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
@@ -59,6 +59,7 @@ function App() {
         }}
       />
       <div className="content">
+        <Route path="/" element={<Navigate to="cryptobit" replace />} />
         <Routes>
           <Route
             path="cryptobit"
@@ -78,7 +79,7 @@ function App() {
           <Route path="auth" element={<Auth />} />
           <Route path="profile" element={<Profile />} />
           <Route path="admin/*" element={<Admin />} />
-          <Route path="*" element={<NotFound />} />;
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
       <Footer />

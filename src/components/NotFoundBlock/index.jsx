@@ -14,7 +14,7 @@ const NotFoundBlock = () => {
       <p>
         We apologize, but the page you are looking for could not be found.
         Please, check the URL path or try navigating back to the{" "}
-        <Link to="cryptobit">homepage</Link> .
+        <Link to="/">homepage</Link> .
       </p>
     </div>
   );

@@ -208,7 +208,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   }, []);
 
   const handleRedirectToAuth = () => {
-    navigate("/auth");
+    navigate("auth");
     window.scrollTo(0, 0);
   };
 
@@ -277,7 +277,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       };
 
       dispatch(setCurrentExchange(exchangeData));
-      navigate(`/payment/${orderId}`, { state: exchangeData });
+      navigate(`payment/${orderId}`, { state: exchangeData });
       window.scrollTo(0, 0);
     } catch (error) {
       console.error("Error saving exchange data:", error);

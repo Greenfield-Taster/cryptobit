@@ -26,7 +26,7 @@ const LoginForm = (props) => {
 
   useEffect(() => {
     if (authStatus === "succeeded") {
-      navigate("/profile");
+      navigate("profile");
     } else if (authStatus === "failed" && authError) {
       setServerError(authError);
     }
