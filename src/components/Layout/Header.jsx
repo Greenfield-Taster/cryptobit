@@ -23,7 +23,7 @@ const Header = ({ onNavigate }) => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langSwitcherRef = useRef(null);
 
-  const hideNavPages = ["admin", "auth", "profile"];
+  const hideNavPages = ["/admin", "/auth", "/profile"];
   const shouldHideNav = hideNavPages.some((path) =>
     location.pathname.includes(path)
   );
@@ -55,17 +55,17 @@ const Header = ({ onNavigate }) => {
   }, []);
 
   const registration = () => {
-    navigate("auth");
+    navigate("/auth");
     window.scrollTo(0, 0);
   };
 
   const goToProfile = () => {
-    navigate("profile");
+    navigate("/profile");
     window.scrollTo(0, 0);
   };
 
   const goToAdmin = () => {
-    navigate("admin");
+    navigate("/admin");
     window.scrollTo(0, 0);
   };
 
@@ -82,7 +82,7 @@ const Header = ({ onNavigate }) => {
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <Link to="cryptobit" onClick={() => window.scrollTo(0, 0)}>
+          <Link to="/cryptobit" onClick={() => window.scrollTo(0, 0)}>
             <img src={logo2} alt="logo" />
           </Link>
         </div>

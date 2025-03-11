@@ -30,7 +30,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("auth");
+      navigate("/auth");
       return;
     }
 
@@ -91,7 +91,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("cryptobit");
+    navigate("/cryptobit");
     window.scrollTo(0, 0);
   };
 

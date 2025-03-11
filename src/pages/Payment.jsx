@@ -41,7 +41,7 @@ function Payment() {
   useEffect(() => {
     const paymentStatus = localStorage.getItem(`payment_${orderId}`);
     if (paymentStatus === "completed") {
-      navigate("payment-success", {
+      navigate("/payment-success", {
         state: {
           orderId,
           fromCrypto: paymentData?.fromCrypto,
@@ -53,7 +53,7 @@ function Payment() {
   }, [orderId, navigate, paymentData]);
 
   const closeRequest = () => {
-    navigate("cryptobit", { replace: true });
+    navigate("/cryptobit", { replace: true });
     window.scrollTo(0, 0);
   };
 
@@ -99,7 +99,7 @@ function Payment() {
       if (createExchangeRequest.fulfilled.match(resultAction)) {
         localStorage.setItem(`payment_${orderId}`, "processing");
 
-        navigate("payment-success", {
+        navigate("/payment-success", {
           state: {
             orderId,
             fromCrypto: paymentData.fromCrypto,
@@ -121,7 +121,7 @@ function Payment() {
         <p>{t("payment.textError")}</p>
         <button
           className="btn-primary"
-          onClick={() => navigate("cryptobit", { replace: true })}
+          onClick={() => navigate("/cryptobit", { replace: true })}
         >
           {t("payment.goHome")}
         </button>
