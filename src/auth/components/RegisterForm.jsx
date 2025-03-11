@@ -28,7 +28,7 @@ const RegisterForm = (props) => {
 
   useEffect(() => {
     if (authStatus === "succeeded") {
-      navigate("profile");
+      navigate("/profile");
     } else if (authStatus === "failed" && authError) {
       setServerError(authError);
     }
@@ -85,6 +85,7 @@ const RegisterForm = (props) => {
 
     setServerError("");
 
+    // Используем Redux action для регистрации
     dispatch(
       register({
         email: formData.email,

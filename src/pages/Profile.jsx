@@ -91,7 +91,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("cryptobit");
     window.scrollTo(0, 0);
   };
 

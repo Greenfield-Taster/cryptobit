@@ -53,7 +53,7 @@ function Payment() {
   }, [orderId, navigate, paymentData]);
 
   const closeRequest = () => {
-    navigate("/", { replace: true });
+    navigate("cryptobit", { replace: true });
     window.scrollTo(0, 0);
   };
 

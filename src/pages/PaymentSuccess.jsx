@@ -12,7 +12,7 @@ function PaymentSuccess() {
   useEffect(() => {
     const paymentStatus = localStorage.getItem(`payment_${orderId}`);
     if (!paymentStatus || paymentStatus !== "processing") {
-      navigate("/", { replace: true });
+      navigate("cryptobit", { replace: true });
     }
   }, [orderId, navigate]);
 
