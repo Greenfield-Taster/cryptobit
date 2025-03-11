@@ -215,7 +215,7 @@ const UserManagement = () => {
                           className="dropdown-toggle"
                           onClick={() => toggleDropdown(user._id)}
                         >
-                          <i className="fas fa-ellipsis-v"></i> Действия
+                          Действия
                         </button>
                         <div
                           className={`dropdown-menu ${
@@ -226,20 +226,20 @@ const UserManagement = () => {
                             className="dropdown-item view"
                             onClick={() => handleViewUser(user._id)}
                           >
-                            <i className="fas fa-eye">Просмотр</i>
+                            Просмотр
                           </button>
                           <button
                             className="dropdown-item edit"
                             onClick={() => handleEditUser(user)}
                           >
-                            <i className="fas fa-edit"></i> Редактировать
+                            Редактировать
                           </button>
                           <div className="dropdown-divider"></div>
                           <button
                             className="dropdown-item delete"
                             onClick={() => handleDeleteUser(user)}
                           >
-                            <i className="fas fa-trash"></i> Удалить
+                            Удалить
                           </button>
                         </div>
                       </div>

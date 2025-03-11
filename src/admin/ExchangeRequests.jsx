@@ -326,39 +326,12 @@ const ExchangeRequests = () => {
             <table>
               <thead>
                 <tr>
-                  <th onClick={() => handleSortChange("orderId")}>
-                    ID заявки
-                    {filters.sortField === "orderId" && (
-                      <i
-                        className={`fas fa-sort-${
-                          filters.sortOrder === "asc" ? "up" : "down"
-                        }`}
-                      ></i>
-                    )}
-                  </th>
+                  <th>ID заявки</th>
                   <th>Отправитель</th>
                   <th>Из</th>
                   <th>В</th>
-                  <th onClick={() => handleSortChange("amount")}>
-                    Сумма
-                    {filters.sortField === "amount" && (
-                      <i
-                        className={`fas fa-sort-${
-                          filters.sortOrder === "asc" ? "up" : "down"
-                        }`}
-                      ></i>
-                    )}
-                  </th>
-                  <th onClick={() => handleSortChange("status")}>
-                    Статус
-                    {filters.sortField === "status" && (
-                      <i
-                        className={`fas fa-sort-${
-                          filters.sortOrder === "asc" ? "up" : "down"
-                        }`}
-                      ></i>
-                    )}
-                  </th>
+                  <th>Сумма</th>
+                  <th>Статус</th>
                   <th onClick={() => handleSortChange("createdAt")}>
                     Дата создания
                     {filters.sortField === "createdAt" && (
@@ -366,7 +339,9 @@ const ExchangeRequests = () => {
                         className={`fas fa-sort-${
                           filters.sortOrder === "asc" ? "up" : "down"
                         }`}
-                      ></i>
+                      >
+                        \/
+                      </i>
                     )}
                   </th>
                   <th>Действия</th>
