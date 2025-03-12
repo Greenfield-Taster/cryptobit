@@ -78,6 +78,15 @@ const PromoCodeManagement = () => {
           search,
         })
       );
+    } else if (pagination.pages === 0) {
+      dispatch(
+        getPromoCodes({
+          page: 1,
+          limit: pagination.limit,
+          status,
+          search,
+        })
+      );
     }
   };
 
@@ -174,7 +183,7 @@ const PromoCodeManagement = () => {
         <div className="error-message">{promoCodesError}</div>
       ) : (
         <>
-          <div className="table-responsive">
+          <div>
             <table>
               <thead>
                 <tr>
@@ -275,41 +284,48 @@ const PromoCodeManagement = () => {
                 &lsaquo;
               </button>
 
-              {Array.from({ length: pagination.pages }, (_, i) => i + 1)
-                .filter(
-                  (page) =>
-                    page === 1 ||
-                    page === pagination.pages ||
-                    Math.abs(page - pagination.page) <= 2
-                )
-                .map((page, index, array) => {
-                  const previousPage = array[index - 1];
-                  const showEllipsis = previousPage && page - previousPage > 1;
+              {pagination.pages > 0 &&
+                Array.from({ length: pagination.pages }, (_, i) => i + 1)
+                  .filter((page) => {
+                    return (
+                      page === 1 ||
+                      page === pagination.pages ||
+                      Math.abs(page - pagination.page) <= 2
+                    );
+                  })
+                  .map((page, index, array) => {
+                    const previousPage = array[index - 1];
+                    const showEllipsis =
+                      previousPage && page - previousPage > 1;
 
-                  return (
-                    <React.Fragment key={page}>
-                      {showEllipsis && (
-                        <span className="pagination-ellipsis">...</span>
-                      )}
-                      <button
-                        onClick={() => handlePageChange(page)}
-                        className={pagination.page === page ? "active" : ""}
-                      >
-                        {page}
-                      </button>
-                    </React.Fragment>
-                  );
-                })}
+                    return (
+                      <React.Fragment key={page}>
+                        {showEllipsis && (
+                          <span className="pagination-ellipsis">...</span>
+                        )}
+                        <button
+                          onClick={() => handlePageChange(page)}
+                          className={pagination.page === page ? "active" : ""}
+                        >
+                          {page}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
 
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
+                disabled={
+                  pagination.page === pagination.pages || pagination.pages === 0
+                }
               >
                 &rsaquo;
               </button>
               <button
                 onClick={() => handlePageChange(pagination.pages)}
-                disabled={pagination.page === pagination.pages}
+                disabled={
+                  pagination.page === pagination.pages || pagination.pages === 0
+                }
               >
                 &raquo;
               </button>

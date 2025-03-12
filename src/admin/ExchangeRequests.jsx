@@ -35,6 +35,7 @@ const ExchangeRequests = () => {
 
   useEffect(() => {
     fetchRequests();
+    console.log(selectedRequest);
   }, [pagination.page, pagination.limit, filters]);
 
   useEffect(() => {
@@ -322,7 +323,7 @@ const ExchangeRequests = () => {
         <div className="loading-spinner">Загрузка заявок...</div>
       ) : (
         <>
-          <div className="table-responsive">
+          <div>
             <table>
               <thead>
                 <tr>

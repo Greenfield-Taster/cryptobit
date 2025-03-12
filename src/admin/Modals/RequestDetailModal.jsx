@@ -130,6 +130,39 @@ const RequestDetailModal = ({
                 </div>
               </div>
 
+              {request.promoCodeId && (
+                <div className="details-section">
+                  <h4>Информация о промокоде</h4>
+
+                  <div className="detail-row">
+                    <span className="detail-label">ID промокода:</span>
+                    <span className="detail-value promo-code">
+                      {request.promoCodeId}
+                    </span>
+                  </div>
+
+                  {request.promoCodeDiscount && (
+                    <div className="detail-row">
+                      <span className="detail-label">Скидка:</span>
+                      <span className="detail-value">
+                        {typeof request.promoCodeDiscount === "number"
+                          ? `${request.promoCodeDiscount}%`
+                          : request.promoCodeDiscount}
+                      </span>
+                    </div>
+                  )}
+
+                  {request.promoCodeApplied && (
+                    <div className="detail-row">
+                      <span className="detail-label">Статус:</span>
+                      <span className="detail-value promo-applied">
+                        <i className="fas fa-check-circle"></i> Применен
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="details-section">
                 <h4>Информация о кошельках</h4>
 

@@ -157,64 +157,6 @@
     font-style: italic;
   }
 
-  .table-responsive {
-    overflow-x: auto;
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-
-      th,
-      td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #eee;
-      }
-
-      th {
-        background-color: #f5f7fa;
-        font-weight: 600;
-        color: #444;
-        cursor: pointer;
-        user-select: none;
-        position: relative;
-
-        i {
-          margin-left: 5px;
-          font-size: 12px;
-        }
-
-        &:hover {
-          background-color: #edf0f5;
-        }
-      }
-
-      tbody tr {
-        &:hover {
-          background-color: #f9fafc;
-        }
-
-        td {
-          color: #333;
-          font-size: 14px;
-
-          &.text-center {
-            text-align: center;
-          }
-
-          &.actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-start;
-            align-items: center;
-            white-space: nowrap;
-            min-width: 230px;
-          }
-        }
-      }
-    }
-  }
-
   .status-pending {
     display: inline-block;
     padding: 4px 10px;

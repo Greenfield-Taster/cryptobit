@@ -56,10 +56,9 @@ const UserDetailModal = ({ user, onClose, onEdit }) => {
             </div>
 
             {user.stats && (
-              <div className="user-stats">
-                <h4>Статистика</h4>
-
-                <div className="stats-row">
+              <div className="user-stats-container">
+                <h4 className="stats-heading">Статистика</h4>
+                <div className="stats-content">
                   <div className="stat-item">
                     <div className="stat-value">{user.stats.ordersCount}</div>
                     <div className="stat-label">Всего заявок</div>
