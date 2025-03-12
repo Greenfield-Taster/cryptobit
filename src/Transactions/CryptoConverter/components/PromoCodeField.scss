@@ -1,0 +1,165 @@
+.promo-code-container {
+  width: 100%;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.promo-code-field {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+
+  &.validated {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+  }
+
+  &.error {
+    border-color: #f44336;
+  }
+}
+
+.promo-code-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.promo-code-saved-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.promo-code-apply-btn,
+.promo-code-remove-btn {
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.promo-code-apply-btn {
+  background-color: #ffc107;
+  color: #000;
+
+  &:hover:not(:disabled) {
+    background-color: #ffcd38;
+  }
+
+  &:disabled {
+    background-color: rgba(255, 193, 7, 0.5);
+    cursor: not-allowed;
+  }
+}
+
+.promo-code-remove-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .remove-icon {
+    font-size: 18px;
+  }
+}
+
+.promo-code-dropdown {
+  position: absolute;
+  width: 100%;
+  top: 100%;
+  left: 0;
+  background: rgba(30, 30, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-top: 8px;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.promo-code-option {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.promo-code-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.promo-code-value {
+  font-weight: 600;
+  color: #ffc107;
+  font-size: 15px;
+}
+
+.promo-code-discount {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.promo-code-expires {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.promo-code-error {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 6px;
+  padding: 4px 8px;
+}
+
+.promo-code-success {
+  color: #4caf50;
+  font-size: 13px;
+  margin-top: 6px;
+  padding: 4px 8px;
+}

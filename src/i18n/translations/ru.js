@@ -100,6 +100,8 @@ const ruTranslations = {
     processing: "Обработка...",
     goHome: "Вернуться к Главной",
     copy: "Скопировано",
+    promoCode: "Промокод",
+    promoBonus: "бонус",
   },
   paymentSuccess: {
     title: "Оплата успешно выполнена!",
@@ -173,6 +175,15 @@ const ruTranslations = {
       failed: "Ошибка",
     },
     loadMore: "Загрузить больше",
+  },
+  promoCode: {
+    placeholder: "Введите промокод",
+    selectSaved: "Выберите сохраненный промокод",
+    checking: "Проверка...",
+    apply: "Применить",
+    expires: "Истекает",
+    applied: "Промокод применен: +{{discount}}% к транзакции",
+    loading: "Загрузка промокодов...",
   },
 };
 

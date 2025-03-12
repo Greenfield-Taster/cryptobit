@@ -4,8 +4,7 @@ const API_URL =
 const API_BASE_URL =
   "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api";
 
-class AuthService {
-  // Метод для обновления токена
+const AuthService = {
   async refreshToken(token) {
     try {
       const response = await fetch(`${API_URL}/refresh-token`, {
@@ -34,9 +33,8 @@ class AuthService {
       console.error("Ошибка при обновлении токена:", error);
       return { success: false, message: "Ошибка сети при обновлении токена" };
     }
-  }
+  },
 
-  // Новый метод для выполнения авторизованных запросов с проверкой токена
   async authorizedFetch(url, options = {}) {
     const token = this.getToken();
     if (!token) {
@@ -88,7 +86,7 @@ class AuthService {
       console.error("Ошибка запроса:", error);
       return { success: false, message: "Ошибка сети при выполнении запроса" };
     }
-  }
+  },
 
   async register(email, password, name, phone) {
     try {
@@ -112,7 +110,7 @@ class AuthService {
       console.error("Ошибка при регистрации:", error);
       throw error;
     }
-  }
+  },
 
   async login(email, password) {
     try {
@@ -136,7 +134,7 @@ class AuthService {
       console.error("Ошибка при входе:", error);
       throw error;
     }
-  }
+  },
 
   logout() {
     localStorage.removeItem("token");
@@ -149,20 +147,20 @@ class AuthService {
         localStorage.removeItem(key);
       }
     }
-  }
+  },
 
   getCurrentUser() {
     const userStr = localStorage.getItem("user");
     return userStr ? JSON.parse(userStr) : null;
-  }
+  },
 
   isAuthenticated() {
     return !!localStorage.getItem("token");
-  }
+  },
 
   getToken() {
     return localStorage.getItem("token");
-  }
+  },
 
   async getUserOrders() {
     try {
@@ -189,36 +187,50 @@ class AuthService {
       console.error("Error fetching orders:", error);
       return { success: false, message: error.message };
     }
-  }
+  },
 
-  async exchangeApiRequest(endpoint, method = "GET", body = null) {
+  async validatePromoCode(code) {
     try {
-      const options = {
-        method,
-        headers: {},
-      };
-
-      if (body) {
-        options.headers["Content-Type"] = "application/json";
-        options.body = JSON.stringify(body);
+      const token = this.getToken();
+      if (!token) {
+        throw new Error("Authorization required");
       }
 
-      // Используем новый метод authorizedFetch
-      const data = await this.authorizedFetch(
-        `${API_BASE_URL}${endpoint}`,
-        options
-      );
+      const response = await fetch(`${API_BASE_URL}/promocodes/validate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code }),
+      });
 
-      if (data.sessionExpired) {
-        window.location.href = "/auth";
-      }
-
-      return data;
+      return await response.json();
     } catch (error) {
-      console.error(`Error in exchange API request to ${endpoint}:`, error);
-      return { success: false, message: error.message };
+      console.error("Error validating promo code:", error);
+      throw error;
     }
-  }
-}
+  },
 
-export default new AuthService();
+  async getUserPromoCodes() {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        throw new Error("Authorization required");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/promocodes/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error getting user promo codes:", error);
+      throw error;
+    }
+  },
+};
+
+export default AuthService;

@@ -90,6 +90,7 @@ function Payment() {
         senderWallet: paymentData.senderWallet,
         recipientWallet: paymentData.recipientWallet,
         saveFromWallet: paymentData.saveFromWallet || false,
+        promoCode: paymentData.promoCode || null,
       };
 
       const resultAction = await dispatch(
@@ -165,6 +166,27 @@ function Payment() {
                 </span>
               </div>
             </div>
+
+            {paymentData.promoCode && (
+              <div className="exchange-item promo-code-info">
+                <div className="exchange-icon promo-code-icon">
+                  <i className="fas fa-ticket-alt"></i>
+                </div>
+                <div className="exchange-details">
+                  <span className="exchange-label">
+                    {t("payment.promoCode")}
+                  </span>
+                  <span className="exchange-value">
+                    {paymentData.promoCode}
+                    {paymentData.promoCodeDiscount && (
+                      <span className="promo-bonus">
+                        +{paymentData.promoCodeDiscount}%
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="payment__form">

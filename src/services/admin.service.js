@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Use the API URL from the environment variable or default to your Azure hosting
 const API_URL =
   "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net";
 
@@ -95,10 +94,31 @@ const chatService = {
   },
 };
 
+const promoCodeService = {
+  getPromoCodes: async (page = 1, limit = 10, search = "", status = "") => {
+    return axios.get(`/api/admin/promocodes`, {
+      params: { page, limit, search, status },
+    });
+  },
+
+  getPromoCodeById: async (promoCodeId) => {
+    return axios.get(`/api/admin/promocodes/${promoCodeId}`);
+  },
+
+  createPromoCode: async (promoCodeData) => {
+    return axios.post(`/api/admin/promocodes`, promoCodeData);
+  },
+
+  deletePromoCode: async (promoCodeId) => {
+    return axios.delete(`/api/admin/promocodes/${promoCodeId}`);
+  },
+};
+
 const adminService = {
   userService,
   exchangeService,
   chatService,
+  promoCodeService,
 };
 
 export default adminService;

@@ -380,6 +380,21 @@
   }
 }
 
+.promo-code-info {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #4caf50;
+}
+
+.promo-code-icon {
+  background: #4caf50 !important;
+}
+
+.promo-bonus {
+  color: #4caf50;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -19,11 +19,14 @@ import {
   selectCurrentExchange,
   selectExchangeStatus,
   selectExchangeError,
+  getUserPromoCodes,
+  selectUserPromoCodes,
+  selectUserPromoCodesStatus,
 } from "../../store/slices/exchangeSlice";
-import AuthService from "../../services/auth.service";
 import AuthModal from "./components/AuthModal";
 import "./CryptoConverter.scss";
 import "../media/CryptoConverter.scss";
+import PromoCodeField from "./components/PromoCodeField";
 
 const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const dispatch = useDispatch();
@@ -35,6 +38,11 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const exchangeError = useSelector(selectExchangeError) || null;
   const userOrders = useSelector(selectUserOrders) || [];
   const user = useSelector(selectUser);
+  const userPromoCodes = useSelector(selectUserPromoCodes);
+  const userPromoCodesStatus = useSelector(selectUserPromoCodesStatus);
+
+  // Проверяем, есть ли у пользователя доступные промокоды
+  const hasAvailablePromoCodes = userPromoCodes && userPromoCodes.length > 0;
 
   const [formData, setFormData] = useState({
     fromCrypto: null,
@@ -54,6 +62,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     calculatedAmount: false,
     senderWallet: "",
   });
+  const [appliedPromoCode, setAppliedPromoCode] = useState(null);
 
   const fromDropdownRef = useRef(null);
   const toDropdownRef = useRef(null);
@@ -62,6 +71,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
   const { fromCrypto, toCrypto, amount, senderWallet, saveFromWallet } =
     formData;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("PromoCode status:", userPromoCodesStatus);
+      console.log("PromoCode count:", userPromoCodes?.length || 0);
+    }
+  }, [isAuthenticated, userPromoCodesStatus, userPromoCodes]);
 
   useEffect(() => {
     if (
@@ -98,6 +114,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   useEffect(() => {
     if (isAuthenticated) {
       dispatch(getUserOrders());
+      dispatch(getUserPromoCodes());
     }
   }, [isAuthenticated, dispatch]);
 
@@ -195,8 +212,14 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
     if (isNaN(parsedAmount)) return "0";
 
-    return (parsedAmount * rate).toFixed(8);
-  }, [fromCrypto, toCrypto, amount]);
+    let result = parsedAmount * rate;
+
+    if (appliedPromoCode && appliedPromoCode.discount) {
+      result = result * (1 + appliedPromoCode.discount / 100);
+    }
+
+    return result.toFixed(8);
+  }, [fromCrypto, toCrypto, amount, appliedPromoCode]);
 
   const validateCalculatedAmount = useCallback(() => {
     const calculatedValue = parseFloat(calculateConversion());
@@ -274,6 +297,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         recipientWallet: "vlad`s-wallet",
         saveFromWallet: Boolean(saveFromWallet),
         orderId,
+        promoCode: appliedPromoCode ? appliedPromoCode.code : null,
       };
 
       dispatch(setCurrentExchange(exchangeData));
@@ -282,6 +306,10 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     } catch (error) {
       console.error("Error saving exchange data:", error);
     }
+  };
+
+  const handleApplyPromoCode = (promoCode) => {
+    setAppliedPromoCode(promoCode);
   };
 
   return (
@@ -508,6 +536,12 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
           onConfirm={handleRedirectToAuth}
         />
       </div>
+
+      {isAuthenticated && hasAvailablePromoCodes && (
+        <div className="crypto-converter__promo-code">
+          <PromoCodeField onApplyPromoCode={handleApplyPromoCode} />
+        </div>
+      )}
 
       {exchangeError && (
         <div className="crypto-converter__error">{exchangeError}</div>

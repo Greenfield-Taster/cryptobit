@@ -100,6 +100,8 @@ const enTranslations = {
     processing: "Processing...",
     goHome: "Go to Home",
     copy: "Copied",
+    promoCode: "Promo code",
+    promoBonus: "bonus",
   },
   paymentSuccess: {
     title: "Payment Successful!",
@@ -173,6 +175,15 @@ const enTranslations = {
       failed: "Failed",
     },
     loadMore: "Load more",
+  },
+  promoCode: {
+    placeholder: "Enter promo code",
+    selectSaved: "Select saved promo code",
+    checking: "Checking...",
+    apply: "Apply",
+    expires: "Expires",
+    applied: "Промокод применен: +{{discount}}% к транзакции",
+    loading: "Loading promo codes...",
   },
 };
 
