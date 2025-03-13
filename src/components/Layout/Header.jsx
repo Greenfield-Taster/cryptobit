@@ -55,7 +55,7 @@ const Header = ({ onNavigate }) => {
   }, []);
 
   const registration = () => {
-    navigate("/auth");
+    navigate("/cryptobit/auth");
     window.scrollTo(0, 0);
   };
 

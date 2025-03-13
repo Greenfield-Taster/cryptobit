@@ -75,7 +75,7 @@ function App() {
           />
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/cryptobit/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="*" element={<NotFound />} />;

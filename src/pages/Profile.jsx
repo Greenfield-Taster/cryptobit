@@ -30,7 +30,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/auth");
+      navigate("/cryptobit/auth");
       return;
     }
 
