@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
@@ -10,7 +10,12 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
-import { checkTokenExpiration } from "./store/slices/authSlice";
+import ChatWidget from "./components/Chat/ChatWidget";
+import {
+  checkTokenExpiration,
+  selectIsAuthenticated,
+  selectUser,
+} from "./store/slices/authSlice";
 
 import "./scss/app.scss";
 
@@ -22,14 +27,18 @@ function App() {
   const testimonialRef = useRef(null);
   const frequentlyQARef = useRef(null);
 
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
+  const location = useLocation();
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const tokenCheckInterval = setInterval(() => {
       dispatch(checkTokenExpiration());
     }, 60000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(tokenCheckInterval);
   }, [dispatch]);
 
   const handleScroll = (ref) => {
@@ -82,6 +91,10 @@ function App() {
         </Routes>
       </div>
       <Footer />
+      {location.pathname === "/cryptobit" &&
+        isAuthenticated &&
+        user &&
+        user.role !== "admin" && <ChatWidget />}
     </div>
   );
 }

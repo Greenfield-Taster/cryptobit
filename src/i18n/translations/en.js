@@ -185,6 +185,22 @@ const enTranslations = {
     applied: "Промокод применен: +{{discount}}% к транзакции",
     loading: "Loading promo codes...",
   },
+  chat: {
+    supportChat: "Support Chat",
+    loading: "Loading...",
+    typeMessage: "Type a message...",
+    typeYourMessage: "Type your message...",
+    startChat: "Start Chat",
+    cancel: "Cancel",
+    noMessagesYet: "No messages yet. Start the conversation!",
+    startNewChat: "Start New Chat",
+    noActiveChats: "You don't have any active chats.",
+    startNewChatMessage: "Please describe your question or issue:",
+    newConversation: "New Conversation",
+    backToChats: "Back to Chats",
+    send: "Send",
+    minimize: "Minimize",
+  },
 };
 
 export default enTranslations;

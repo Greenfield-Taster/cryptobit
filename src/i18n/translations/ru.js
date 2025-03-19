@@ -185,6 +185,22 @@ const ruTranslations = {
     applied: "Промокод применен: +{{discount}}% к транзакции",
     loading: "Загрузка промокодов...",
   },
+  chat: {
+    supportChat: "Чат поддержки",
+    loading: "Загрузка...",
+    typeMessage: "Введите сообщение...",
+    typeYourMessage: "Введите ваше сообщение...",
+    startChat: "Начать чат",
+    cancel: "Отмена",
+    noMessagesYet: "Сообщений пока нет. Начните разговор!",
+    startNewChat: "Начать новый чат",
+    noActiveChats: "У вас нет активных чатов.",
+    startNewChatMessage: "Пожалуйста, опишите ваш вопрос или проблему:",
+    newConversation: "Новый разговор",
+    backToChats: "Назад к чатам",
+    send: "Отправить",
+    minimize: "Свернуть",
+  },
 };
 
 export default ruTranslations;

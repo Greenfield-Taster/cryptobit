@@ -176,8 +176,6 @@ const AuthService = {
         }
       );
 
-      console.log("Orders API response:", data);
-
       if (data.sessionExpired) {
         window.location.href = "/auth";
       }

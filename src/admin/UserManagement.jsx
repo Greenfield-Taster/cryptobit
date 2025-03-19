@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { toast } from "react-toastify";
 import UserEditModal from "./Modals/UserEditModal";
 import UserDetailModal from "./Modals/UserDetailModal";
 import ConfirmModal from "./Modals/ConfirmModal";
@@ -46,11 +45,10 @@ const UserManagement = () => {
           pages: response.data.data.pagination.pages,
         });
       } else {
-        toast.error("Не удалось загрузить список пользователей");
+        console.error("Не удалось загрузить список пользователей");
       }
     } catch (error) {
       console.error("Ошибка при загрузке пользователей:", error);
-      toast.error("Ошибка при загрузке пользователей");
     } finally {
       setLoading(false);
     }
@@ -87,11 +85,10 @@ const UserManagement = () => {
         });
         setShowDetailModal(true);
       } else {
-        toast.error("Не удалось загрузить данные пользователя");
+        console.error("Не удалось загрузить данные пользователя");
       }
     } catch (error) {
       console.error("Ошибка при загрузке данных пользователя:", error);
-      toast.error("Ошибка при загрузке данных пользователя");
     }
   };
 
@@ -125,17 +122,13 @@ const UserManagement = () => {
       );
 
       if (response.data.success) {
-        toast.success("Пользователь успешно удален");
         setShowDeleteModal(false);
         fetchUsers();
       } else {
-        toast.error("Не удалось удалить пользователя");
+        console.error("Не удалось удалить пользователя");
       }
     } catch (error) {
       console.error("Ошибка при удалении пользователя:", error);
-      toast.error(
-        error.response?.data?.message || "Ошибка при удалении пользователя"
-      );
     }
   };
 
@@ -147,17 +140,13 @@ const UserManagement = () => {
       );
 
       if (response.data.success) {
-        toast.success("Пользователь успешно обновлен");
         setShowEditModal(false);
         fetchUsers();
       } else {
-        toast.error("Не удалось обновить пользователя");
+        console.error("Не удалось обновить пользователя");
       }
     } catch (error) {
       console.error("Ошибка при обновлении пользователя:", error);
-      toast.error(
-        error.response?.data?.message || "Ошибка при обновлении пользователя"
-      );
     }
   };
 

@@ -73,13 +73,6 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     formData;
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log("PromoCode status:", userPromoCodesStatus);
-      console.log("PromoCode count:", userPromoCodes?.length || 0);
-    }
-  }, [isAuthenticated, userPromoCodesStatus, userPromoCodes]);
-
-  useEffect(() => {
     if (
       isAuthenticated &&
       Array.isArray(userOrders) &&

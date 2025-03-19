@@ -175,13 +175,6 @@ const RequestDetailModal = ({
                   </div>
 
                   <div className="detail-row">
-                    <span className="detail-label">Кошелек получателя:</span>
-                    <span className="detail-value wallet-address">
-                      {request.recipientWallet}
-                    </span>
-                  </div>
-
-                  <div className="detail-row">
                     <span className="detail-label">Сохранить кошелек:</span>
                     <span className="detail-value">
                       {request.saveFromWallet ? "Да" : "Нет"}

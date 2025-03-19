@@ -11,6 +11,13 @@ export const store = configureStore({
     chat: chatReducer,
     admin: adminReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ["chat/initializeSignalR/fulfilled"],
+        ignoredPaths: ["chat.connection"],
+      },
+    }),
 });
 
 export default store;
