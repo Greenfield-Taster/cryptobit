@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import ChatWidget from "./components/Chat/ChatWidget";
 import {
+  checkAuthState,
   checkTokenExpiration,
   selectIsAuthenticated,
   selectUser,
@@ -30,16 +31,35 @@ function App() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
   const location = useLocation();
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(checkAuthState());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(checkTokenExpiration());
+
     const tokenCheckInterval = setInterval(() => {
       dispatch(checkTokenExpiration());
     }, 60000);
 
     return () => clearInterval(tokenCheckInterval);
   }, [dispatch]);
+
+  useEffect(() => {
+    const protectedRoutes = ["/profile", "/admin"];
+    const currentPath = location.pathname;
+
+    const isProtectedRoute = protectedRoutes.some(
+      (route) => currentPath === route || currentPath.startsWith(route + "/")
+    );
+
+    if (isProtectedRoute && !isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [isAuthenticated, location.pathname, navigate]);
 
   const handleScroll = (ref) => {
     if (ref.current) {
@@ -84,7 +104,7 @@ function App() {
           />
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/cryptobit/auth" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin/*" element={<Admin />} />
           <Route path="*" element={<NotFound />} />;

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  selectIsAuthenticated,
   selectUser,
   logout,
   getUserOrders,
@@ -19,7 +18,6 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
   const authStatus = useSelector(selectAuthStatus);
   const userOrders = useSelector(selectUserOrders);
@@ -29,11 +27,6 @@ const Profile = () => {
   const [displayCount, setDisplayCount] = useState(3);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/cryptobit/auth");
-      return;
-    }
-
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -48,7 +41,7 @@ const Profile = () => {
     };
 
     loadData();
-  }, [isAuthenticated, navigate, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     setSavedWallets([]);

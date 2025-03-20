@@ -224,7 +224,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   }, []);
 
   const handleRedirectToAuth = () => {
-    navigate("/cryptobit/auth");
+    navigate("/auth");
     window.scrollTo(0, 0);
   };
 
