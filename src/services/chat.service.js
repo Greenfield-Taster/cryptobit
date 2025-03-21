@@ -1,342 +1,278 @@
-import {
-  HubConnectionBuilder,
-  LogLevel,
-  HttpTransportType,
-} from "@microsoft/signalr";
+import * as signalR from "@microsoft/signalr";
+import authService from "./auth.service";
 
-import axios from "axios";
-
-const API_BASE_URL = "https://chat-service-dev.azurewebsites.net/api";
-const HUB_URL = "https://chat-service-dev.azurewebsites.net/chatHub";
+// Базовый URL API
+const API_URL = "https://chat-service-dev.azurewebsites.net";
+const HUB_URL = `${API_URL}/chatHub`;
 
 class ChatService {
   constructor() {
     this.connection = null;
     this.connectionPromise = null;
-    this.isConnected = false;
-    this.currentUserId = null;
-    this.currentChatRoomId = null;
     this.reconnectAttempts = 0;
+    this.maxReconnectAttempts = 5;
+    this.eventCallbacks = {};
   }
 
-  async initConnection() {
-    if (this.connection && this.isConnected) {
+  // Создание подключения SignalR
+  createConnection() {
+    if (this.connection) {
       return this.connection;
     }
 
+    const token = authService.getToken();
+
+    this.connection = new signalR.HubConnectionBuilder()
+      .withUrl(HUB_URL, {
+        accessTokenFactory: () => token,
+      })
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 15000])
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
+    // Регистрация стандартных обработчиков событий
+    this.registerDefaultHandlers();
+
+    return this.connection;
+  }
+
+  // Инициализация подключения
+  async startConnection() {
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
 
-    this.connectionPromise = new Promise(async (resolve, reject) => {
-      try {
-        this.connection = new HubConnectionBuilder()
-          .withUrl(HUB_URL, {
-            skipNegotiation: false,
-            transport: HttpTransportType.WebSockets,
-          })
-          .configureLogging(LogLevel.Information)
-          .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
-          .build();
+    const connection = this.createConnection();
 
-        this.setupEventHandlers();
-
-        await this.connection.start();
-        console.log("SignalR connection established");
-        this.isConnected = true;
+    this.connectionPromise = connection
+      .start()
+      .then(() => {
+        console.log("SignalR connected");
         this.reconnectAttempts = 0;
-        resolve(this.connection);
-      } catch (error) {
-        console.error("Error establishing SignalR connection:", error);
-        this.isConnected = false;
-        this.connection = null;
+        return connection;
+      })
+      .catch((err) => {
+        console.error("SignalR connection error:", err);
         this.connectionPromise = null;
-        reject(error);
-      }
-    });
+
+        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.reconnectAttempts++;
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(this.startConnection());
+            }, 2000);
+          });
+        }
+
+        throw err;
+      });
 
     return this.connectionPromise;
   }
 
-  setupEventHandlers() {
-    this.connection.on("ReceiveMessage", (message) => {
-      if (this.onMessageReceived) {
-        this.onMessageReceived(message);
-      }
+  // Проверка состояния подключения
+  isConnected() {
+    return this.connection?.state === signalR.HubConnectionState.Connected;
+  }
+
+  // Регистрация слушателей событий по умолчанию
+  registerDefaultHandlers() {
+    if (!this.connection) return;
+
+    this.connection.onreconnecting((error) => {
+      console.log("SignalR reconnecting:", error);
+      this.invokeEvent("onReconnecting", error);
     });
 
-    this.connection.on("ReceiveRecentMessages", (messages) => {
-      if (this.onRecentMessagesReceived) {
-        this.onRecentMessagesReceived(messages);
-      }
+    this.connection.onreconnected((connectionId) => {
+      console.log("SignalR reconnected, ID:", connectionId);
+      this.invokeEvent("onReconnected", connectionId);
     });
 
-    this.connection.on("ReceiveMoreMessages", (messages) => {
-      if (this.onMoreMessagesReceived) {
-        this.onMoreMessagesReceived(messages);
-      }
-    });
-
-    this.connection.on("MessageStatusUpdated", (messageId, status) => {
-      if (this.onMessageStatusUpdated) {
-        this.onMessageStatusUpdated(messageId, status);
-      }
-    });
-
-    this.connection.onclose(() => {
-      console.log("SignalR connection closed");
-      this.isConnected = false;
-      this.connection = null;
+    this.connection.onclose((error) => {
+      console.log("SignalR connection closed:", error);
       this.connectionPromise = null;
+      this.invokeEvent("onClose", error);
     });
 
-    this.connection.onreconnecting(() => {
-      console.log("SignalR attempting to reconnect...");
-      this.isConnected = false;
-      this.reconnectAttempts++;
-    });
+    // Стандартные события чата
+    const events = [
+      "ReceiveMessage",
+      "ReceiveMessageHistory",
+      "UserTyping",
+      "MessagesRead",
+      "NewRoomCreated",
+      "RoomCreated",
+      "ReceiveAllChats",
+      "UserOnline",
+      "UserOffline",
+      "Error",
+    ];
 
-    this.connection.onreconnected(async () => {
-      console.log("SignalR connection reconnected");
-      this.isConnected = true;
-
-      // Если до потери соединения был активный чат, присоединиться снова
-      if (this.currentUserId) {
-        try {
-          await this.registerConnection(this.currentUserId);
-
-          if (this.currentChatRoomId) {
-            await this.joinChatRoom(this.currentUserId, this.currentChatRoomId);
-          }
-        } catch (error) {
-          console.error("Error rejoining chat room after reconnection:", error);
-        }
-      }
+    events.forEach((event) => {
+      this.connection.on(event, (...args) => {
+        this.invokeEvent(event, ...args);
+      });
     });
   }
 
-  setMessageCallback(callback) {
-    this.onMessageReceived = callback;
-  }
-
-  setRecentMessagesCallback(callback) {
-    this.onRecentMessagesReceived = callback;
-  }
-
-  setMoreMessagesCallback(callback) {
-    this.onMoreMessagesReceived = callback;
-  }
-
-  setMessageStatusCallback(callback) {
-    this.onMessageStatusUpdated = callback;
-  }
-
-  async ensureUserExists(userId, userInfo = null) {
-    try {
-      // Проверяем, существует ли пользователь, получая его чаты
-      await this.getUserChatRooms(userId);
-      return true;
-    } catch (error) {
-      // Если пользователь не найден, создаем его
-      if (
-        error.response &&
-        (error.response.status === 404 || error.response.status === 400)
-      ) {
-        if (!userInfo) {
-          // Если информация о пользователе не предоставлена, используем базовую
-          const currentUser = this.getCurrentUserFromLocalStorage();
-          userInfo = {
-            id: userId,
-            name: currentUser?.name || "User",
-            nickname: currentUser?.nickname || currentUser?.name || "User",
-            email: currentUser?.email || "user@example.com",
-            role: currentUser?.role || "user",
-          };
-        }
-
-        // Регистрируем пользователя в чат-сервисе
-        await this.registerOrUpdateUser(userInfo);
-        return true;
-      }
-      throw error;
+  // Регистрация обработчика события
+  on(event, callback) {
+    if (!this.eventCallbacks[event]) {
+      this.eventCallbacks[event] = [];
     }
+    this.eventCallbacks[event].push(callback);
+    return this;
   }
 
-  getCurrentUserFromLocalStorage() {
-    const userStr = localStorage.getItem("user");
-    return userStr ? JSON.parse(userStr) : null;
-  }
-
-  async registerConnection(userId) {
-    try {
-      // Сначала убедимся, что пользователь существует
-      await this.ensureUserExists(userId);
-
-      // Запоминаем текущего пользователя для возможного переподключения
-      this.currentUserId = userId;
-
-      // Затем подключаемся
-      const connection = await this.initConnection();
-      await connection.invoke("RegisterConnection", userId);
-    } catch (error) {
-      console.error("Error registering connection:", error);
-      throw error;
+  // Удаление обработчика события
+  off(event, callback) {
+    if (this.eventCallbacks[event]) {
+      this.eventCallbacks[event] = this.eventCallbacks[event].filter(
+        (cb) => cb !== callback
+      );
     }
+    return this;
   }
 
-  async joinChatRoom(userId, chatRoomId) {
-    try {
-      const connection = await this.initConnection();
-      // Сохраняем ID комнаты для возможного переподключения
-      this.currentChatRoomId = chatRoomId;
-      await connection.invoke("JoinChatRoom", userId, chatRoomId);
-    } catch (error) {
-      console.error("Error joining chat room:", error);
-      throw error;
-    }
-  }
-
-  async sendMessage(userId, chatRoomId, message) {
-    try {
-      const connection = await this.initConnection();
-      await connection.invoke("SendMessage", userId, chatRoomId, message);
-    } catch (error) {
-      console.error("Error sending message via SignalR:", error);
-
-      // Если ошибка с SignalR, попробуем через REST API как запасной вариант
+  // Вызов всех обработчиков события
+  invokeEvent(event, ...args) {
+    const callbacks = this.eventCallbacks[event] || [];
+    callbacks.forEach((callback) => {
       try {
-        console.log("Fallback to REST API for sending message");
-        await this.sendMessageApi(chatRoomId, userId, message);
-      } catch (apiError) {
-        console.error("Error sending message via API fallback:", apiError);
-        throw apiError;
+        callback(...args);
+      } catch (error) {
+        console.error(`Error in ${event} handler:`, error);
       }
-    }
+    });
   }
 
-  async updateMessageStatus(messageId, status) {
-    try {
-      const connection = await this.initConnection();
-      await connection.invoke("UpdateMessageStatus", messageId, status);
-    } catch (error) {
-      console.error("Error updating message status:", error);
-      throw error;
-    }
-  }
-
-  async loadMoreMessages(userId, chatRoomId, offset) {
-    try {
-      const connection = await this.initConnection();
-      await connection.invoke("LoadMoreMessages", userId, chatRoomId, offset);
-    } catch (error) {
-      console.error("Error loading more messages:", error);
-      throw error;
-    }
-  }
-
-  async closeConnection() {
+  // Остановка подключения
+  async stopConnection() {
     if (this.connection) {
       try {
         await this.connection.stop();
-        this.isConnected = false;
+        console.log("SignalR connection stopped");
+      } catch (err) {
+        console.error("SignalR stop error:", err);
+      } finally {
         this.connection = null;
         this.connectionPromise = null;
-        this.currentUserId = null;
-        this.currentChatRoomId = null;
-        console.log("SignalR connection closed");
-      } catch (error) {
-        console.error("Error closing SignalR connection:", error);
       }
     }
   }
 
+  // Методы для работы с чатом
+
+  // Подключение пользователя
+  async connectUser(userId) {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("ConnectUser", userId);
+    } catch (error) {
+      console.error("Failed to connect user:", error);
+      throw error;
+    }
+  }
+
+  // Отправка сообщения
+  async sendMessage(roomId, message) {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("SendMessage", roomId, message);
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      throw error;
+    }
+  }
+
+  // Создание новой комнаты
+  async createRoom(userId) {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("CreateRoom", userId);
+    } catch (error) {
+      console.error("Failed to create room:", error);
+      throw error;
+    }
+  }
+
+  // Присоединение к комнате
+  async joinRoom(roomId) {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("JoinRoom", roomId);
+    } catch (error) {
+      console.error("Failed to join room:", error);
+      throw error;
+    }
+  }
+
+  // Получение всех чатов (для админов)
+  async getAllChats() {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("GetAllChats");
+    } catch (error) {
+      console.error("Failed to get all chats:", error);
+      throw error;
+    }
+  }
+
+  // Отправка статуса "печатает..."
+  async sendTypingStatus(roomId, isTyping) {
+    try {
+      const connection = await this.startConnection();
+      return connection.invoke("SendTypingStatus", roomId, isTyping);
+    } catch (error) {
+      console.error("Failed to send typing status:", error);
+      throw error;
+    }
+  }
+
+  // API запросы
+
+  // Получение комнат пользователя
   async getUserChatRooms(userId) {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/chat/rooms/${userId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching user chat rooms:", error);
-      throw error;
+    const response = await fetch(`${API_URL}/api/ChatRooms/user/${userId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user chat rooms");
     }
+    return response.json();
   }
 
-  async getChatRoom(roomId) {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/chat/room/${roomId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching chat room:", error);
-      throw error;
+  // Получение всех пользователей
+  async getAllUsers() {
+    const response = await fetch(`${API_URL}/api/Users`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
     }
+    return response.json();
   }
 
+  // Создание комнаты чата
   async createChatRoom(adminId, userId) {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/chat/room`, {
+    const response = await fetch(`${API_URL}/api/ChatRooms`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authService.getToken()}`,
+      },
+      body: JSON.stringify({
         adminId,
         userId,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error creating chat room:", error);
-      throw error;
-    }
-  }
+        name: `Support chat for user ${userId}`,
+      }),
+    });
 
-  async getMessages(chatRoomId, limit = 50, offset = 0) {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/chat/messages/${chatRoomId}`,
-        { params: { limit, offset } }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-      throw error;
+    if (!response.ok) {
+      throw new Error("Failed to create chat room");
     }
-  }
 
-  async sendMessageApi(chatRoomId, senderId, message) {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/chat/message`, {
-        chatRoomId,
-        senderId,
-        message,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error sending message via API:", error);
-      throw error;
-    }
-  }
-
-  async registerOrUpdateUser(userInfo) {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/chat/user`, userInfo);
-      return response.data;
-    } catch (error) {
-      console.error("Error registering/updating user:", error);
-      throw error;
-    }
-  }
-
-  async getAllUsers() {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/chat/users`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching all users:", error);
-      throw error;
-    }
-  }
-
-  getConnectionStatus() {
-    return {
-      isConnected: this.isConnected,
-      connectionState: this.connection?.state || "Disconnected",
-      reconnectAttempts: this.reconnectAttempts,
-    };
+    return response.json();
   }
 }
 
-export default new ChatService();
+// Создаем синглтон для сервиса чата
+const chatService = new ChatService();
+export default chatService;

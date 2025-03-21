@@ -1,319 +1,180 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ChatService from "../../services/chat.service";
+import chatService from "../../services/chat.service";
 
-export const initializeSignalR = createAsyncThunk(
-  "chat/initializeSignalR",
-  async (userId, { dispatch, getState }) => {
-    try {
-      const { auth } = getState();
-      const userInfo = auth.user;
-
-      ChatService.setMessageCallback((message) => {
-        dispatch(addMessage(message));
-
-        if (message.senderId !== userId && message.status !== "Read") {
-          dispatch(
-            updateMessageStatusSignalR({
-              messageId: message.id,
-              status: "Read",
-            })
-          );
-        }
-      });
-
-      ChatService.setRecentMessagesCallback((messages) => {
-        dispatch(setMessages(messages));
-      });
-
-      ChatService.setMoreMessagesCallback((messages) => {
-        dispatch(prependMessages(messages));
-      });
-
-      ChatService.setMessageStatusCallback((messageId, status) => {
-        dispatch(updateMessageStatus({ messageId, status }));
-      });
-
-      // Если пользователь авторизован, преобразуем его в формат, подходящий для чат-сервиса
-      if (userInfo) {
-        const chatUserInfo = {
-          id: userId,
-          name: userInfo.name || "User",
-          nickname: userInfo.nickname || userInfo.name || "User",
-          email: userInfo.email || "user@example.com",
-          role: userInfo.role || "user",
-        };
-
-        // Сначала регистрируем пользователя в чат-сервисе
-        await ChatService.registerOrUpdateUser(chatUserInfo);
-      }
-
-      // Инициализируем подключение
-      await ChatService.initConnection();
-      await ChatService.registerConnection(userId);
-      return true;
-    } catch (error) {
-      console.error("Failed to initialize SignalR:", error);
-      throw error;
-    }
-  }
-);
-
+// Асинхронные функции
 export const fetchUserChatRooms = createAsyncThunk(
   "chat/fetchUserChatRooms",
   async (userId, { rejectWithValue }) => {
     try {
-      const chatRooms = await ChatService.getUserChatRooms(userId);
-      return chatRooms;
+      const response = await chatService.getUserChatRooms(userId);
+      return response;
     } catch (error) {
-      console.error("Failed to fetch chat rooms:", error);
-      return rejectWithValue(error.message || "Failed to fetch chat rooms");
+      return rejectWithValue(error.message);
     }
   }
 );
 
-export const joinChatRoomSignalR = createAsyncThunk(
-  "chat/joinChatRoomSignalR",
-  async ({ userId, chatRoomId }, { rejectWithValue }) => {
+export const initializeSignalR = createAsyncThunk(
+  "chat/initializeSignalR",
+  async (userId, { rejectWithValue }) => {
     try {
-      await ChatService.joinChatRoom(userId, chatRoomId);
-      const chatRoom = await ChatService.getChatRoom(chatRoomId);
-      return chatRoom;
+      await chatService.startConnection();
+      await chatService.connectUser(userId);
+      return { connected: true };
     } catch (error) {
-      console.error("Failed to join chat room:", error);
-      return rejectWithValue(error.message || "Failed to join chat room");
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const sendMessageSignalR = createAsyncThunk(
-  "chat/sendMessageSignalR",
+  "chat/sendMessage",
   async ({ userId, chatRoomId, message }, { rejectWithValue }) => {
     try {
-      await ChatService.sendMessage(userId, chatRoomId, message);
+      await chatService.sendMessage(chatRoomId, message);
       return { success: true };
     } catch (error) {
-      console.error("Failed to send message:", error);
-      return rejectWithValue(error.message || "Failed to send message");
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const joinChatRoomSignalR = createAsyncThunk(
+  "chat/joinChatRoom",
+  async ({ userId, chatRoomId }, { rejectWithValue }) => {
+    try {
+      await chatService.joinRoom(chatRoomId);
+      return { roomId: chatRoomId };
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const updateMessageStatusSignalR = createAsyncThunk(
-  "chat/updateMessageStatusSignalR",
+  "chat/updateMessageStatus",
   async ({ messageId, status }, { rejectWithValue }) => {
     try {
-      await ChatService.updateMessageStatus(messageId, status);
+      await fetch(
+        `${process.env.REACT_APP_API_URL}/api/ChatMessages/${messageId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status, userId: "" }),
+        }
+      );
       return { messageId, status };
     } catch (error) {
-      console.error("Failed to update message status:", error);
-      return rejectWithValue(
-        error.message || "Failed to update message status"
-      );
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const loadMoreMessagesSignalR = createAsyncThunk(
-  "chat/loadMoreMessagesSignalR",
+  "chat/loadMoreMessages",
   async ({ userId, chatRoomId, offset }, { rejectWithValue }) => {
     try {
-      await ChatService.loadMoreMessages(userId, chatRoomId, offset);
-      return { success: true };
-    } catch (error) {
-      console.error("Failed to load more messages:", error);
-      return rejectWithValue(error.message || "Failed to load more messages");
-    }
-  }
-);
-
-export const checkConnectionStatus = createAsyncThunk(
-  "chat/checkConnectionStatus",
-  async (_, { dispatch }) => {
-    const status = ChatService.getConnectionStatus();
-
-    // Если количество попыток восстановления соединения превышает 5,
-    // считаем соединение потерянным и возвращаем ошибку
-    if (status.reconnectAttempts > 5) {
-      dispatch(
-        updateConnectionState({
-          isConnected: false,
-          connectionState: "Failed",
-          error: "Connection lost after multiple attempts",
-        })
+      const response = await fetch(
+        `${
+          process.env.REACT_APP_API_URL
+        }/api/PaginatedMessages/room/${chatRoomId}?page=${
+          Math.floor(offset / 20) + 1
+        }&pageSize=20`
       );
-      return {
-        isConnected: false,
-        connectionState: "Failed",
-      };
-    }
-
-    dispatch(updateConnectionState(status));
-    return status;
-  }
-);
-
-export const cleanupChat = createAsyncThunk(
-  "chat/cleanupChat",
-  async (_, { dispatch }) => {
-    try {
-      await ChatService.closeConnection();
-      dispatch(clearChat());
-      return true;
+      if (!response.ok) {
+        throw new Error("Failed to load more messages");
+      }
+      const data = await response.json();
+      return { messages: data.items || [] };
     } catch (error) {
-      console.error("Error during chat cleanup:", error);
-      return false;
+      return rejectWithValue(error.message);
     }
   }
 );
 
+// Слайс для чата
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
-    isConnected: false,
-    connectionState: "Disconnected",
-    reconnectAttempts: 0,
     chatRooms: [],
     currentChatRoomId: null,
     currentChatRoom: null,
     messages: [],
+    isConnected: false,
+    connectionState: "disconnected",
     loading: false,
-    sendingMessage: false,
     loadingMore: false,
+    sendingMessage: false,
     error: null,
   },
   reducers: {
     setCurrentChatRoom: (state, action) => {
       state.currentChatRoomId = action.payload;
-      state.messages = [];
       state.currentChatRoom = state.chatRooms.find(
         (room) => room.id === action.payload
       );
+      state.messages = [];
     },
     addMessage: (state, action) => {
-      const existingMessageIndex = state.messages.findIndex(
-        (msg) => msg.id === action.payload.id
-      );
-
-      if (existingMessageIndex === -1) {
-        state.messages.push(action.payload);
-        // Sort messages by timestamp to ensure newest are at the bottom
-        state.messages.sort(
-          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-        );
-      } else {
-        state.messages[existingMessageIndex] = action.payload;
+      const message = action.payload;
+      const existingMessage = state.messages.find((m) => m.id === message.id);
+      if (!existingMessage) {
+        state.messages.push(message);
       }
-
-      if (state.currentChatRoomId) {
-        const roomIndex = state.chatRooms.findIndex(
-          (room) => room.id === state.currentChatRoomId
-        );
-        if (roomIndex !== -1) {
-          state.chatRooms[roomIndex].lastMessage = action.payload;
-
-          // Помещаем чат с новым сообщением вверху списка
-          if (roomIndex !== 0) {
-            const updatedRoom = state.chatRooms[roomIndex];
-            state.chatRooms.splice(roomIndex, 1);
-            state.chatRooms.unshift(updatedRoom);
-          }
-        }
-      }
-    },
-    setMessages: (state, action) => {
-      // Sort messages by timestamp before setting them
-      state.messages = [...action.payload].sort(
-        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-      );
-    },
-    prependMessages: (state, action) => {
-      // Удаляем дубликаты перед добавлением новых сообщений
-      const newMessageIds = new Set(action.payload.map((msg) => msg.id));
-      const existingMessages = state.messages.filter(
-        (msg) => !newMessageIds.has(msg.id)
-      );
-
-      const allMessages = [...action.payload, ...existingMessages];
-      // Sort all messages by timestamp
-      state.messages = allMessages.sort(
-        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-      );
     },
     updateMessageStatus: (state, action) => {
       const { messageId, status } = action.payload;
-      const messageIndex = state.messages.findIndex(
-        (msg) => msg.id === messageId
-      );
-      if (messageIndex !== -1) {
-        state.messages[messageIndex].status = status;
+      const message = state.messages.find((m) => m.id === messageId);
+      if (message) {
+        message.status = status;
       }
     },
     clearChat: (state) => {
+      state.messages = [];
+    },
+    setConnectionState: (state, action) => {
+      state.connectionState = action.payload;
+      state.isConnected = action.payload === "connected";
+    },
+    cleanupChat: (state) => {
+      state.chatRooms = [];
       state.currentChatRoomId = null;
       state.currentChatRoom = null;
       state.messages = [];
-    },
-    disconnectSignalR: (state) => {
       state.isConnected = false;
-      state.connectionState = "Disconnected";
-    },
-    updateConnectionState: (state, action) => {
-      const { isConnected, connectionState, reconnectAttempts, error } =
-        action.payload;
-      state.isConnected = isConnected;
-      state.connectionState = connectionState;
-      if (reconnectAttempts !== undefined) {
-        state.reconnectAttempts = reconnectAttempts;
-      }
-      if (error) {
-        state.error = error;
-      }
+      state.connectionState = "disconnected";
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(initializeSignalR.pending, (state) => {
-        state.loading = true;
-        state.connectionState = "Connecting";
-        state.error = null;
-      })
-      .addCase(initializeSignalR.fulfilled, (state, action) => {
-        state.isConnected = action.payload;
-        state.connectionState = action.payload ? "Connected" : "Disconnected";
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(initializeSignalR.rejected, (state, action) => {
-        state.loading = false;
-        state.isConnected = false;
-        state.connectionState = "Disconnected";
-        state.error = action.error.message;
-      })
-
+      // Получение комнат пользователя
       .addCase(fetchUserChatRooms.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchUserChatRooms.fulfilled, (state, action) => {
-        state.chatRooms = action.payload;
         state.loading = false;
+        state.chatRooms = action.payload;
       })
       .addCase(fetchUserChatRooms.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error.message;
+        state.error = action.payload;
       })
-
-      .addCase(joinChatRoomSignalR.pending, (state) => {
-        state.loading = true;
+      // Инициализация SignalR
+      .addCase(initializeSignalR.pending, (state) => {
+        state.connectionState = "connecting";
       })
-      .addCase(joinChatRoomSignalR.fulfilled, (state, action) => {
-        state.currentChatRoom = action.payload;
-        state.loading = false;
+      .addCase(initializeSignalR.fulfilled, (state) => {
+        state.isConnected = true;
+        state.connectionState = "connected";
       })
-      .addCase(joinChatRoomSignalR.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || action.error.message;
+      .addCase(initializeSignalR.rejected, (state, action) => {
+        state.isConnected = false;
+        state.connectionState = "disconnected";
+        state.error = action.payload;
       })
-
+      // Отправка сообщения
       .addCase(sendMessageSignalR.pending, (state) => {
         state.sendingMessage = true;
       })
@@ -322,34 +183,21 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessageSignalR.rejected, (state, action) => {
         state.sendingMessage = false;
-        state.error = action.payload || action.error.message;
+        state.error = action.payload;
       })
-
+      // Загрузка дополнительных сообщений
       .addCase(loadMoreMessagesSignalR.pending, (state) => {
         state.loadingMore = true;
       })
-      .addCase(loadMoreMessagesSignalR.fulfilled, (state) => {
+      .addCase(loadMoreMessagesSignalR.fulfilled, (state, action) => {
         state.loadingMore = false;
+        if (action.payload.messages) {
+          state.messages = [...action.payload.messages, ...state.messages];
+        }
       })
       .addCase(loadMoreMessagesSignalR.rejected, (state, action) => {
         state.loadingMore = false;
-        state.error = action.payload || action.error.message;
-      })
-
-      .addCase(checkConnectionStatus.fulfilled, (state, action) => {
-        state.isConnected = action.payload.isConnected;
-        state.connectionState = action.payload.connectionState;
-        if (action.payload.reconnectAttempts !== undefined) {
-          state.reconnectAttempts = action.payload.reconnectAttempts;
-        }
-      })
-
-      .addCase(cleanupChat.fulfilled, (state) => {
-        state.isConnected = false;
-        state.connectionState = "Disconnected";
-        state.currentChatRoomId = null;
-        state.currentChatRoom = null;
-        state.messages = [];
+        state.error = action.payload;
       });
   },
 });
@@ -357,12 +205,34 @@ const chatSlice = createSlice({
 export const {
   setCurrentChatRoom,
   addMessage,
-  setMessages,
-  prependMessages,
   updateMessageStatus,
   clearChat,
-  disconnectSignalR,
-  updateConnectionState,
+  setConnectionState,
+  cleanupChat,
 } = chatSlice.actions;
+
+export const selectChatRooms = (state) => state.chat.chatRooms;
+export const selectCurrentChatRoomId = (state) => state.chat.currentChatRoomId;
+export const selectCurrentChatRoom = (state) => state.chat.currentChatRoom;
+export const selectMessages = (state) => state.chat.messages;
+export const selectIsConnected = (state) => state.chat.isConnected;
+export const selectConnectionState = (state) => state.chat.connectionState;
+export const selectIsLoading = (state) => state.chat.loading;
+export const selectIsSendingMessage = (state) => state.chat.sendingMessage;
+export const selectIsLoadingMore = (state) => state.chat.loadingMore;
+export const selectChatError = (state) => state.chat.error;
+
+export const checkConnectionStatus = () => (dispatch, getState) => {
+  const state = getState();
+  const isConnected = chatService.isConnected();
+
+  if (isConnected && !state.chat.isConnected) {
+    dispatch(setConnectionState("connected"));
+  } else if (!isConnected && state.chat.isConnected) {
+    dispatch(setConnectionState("disconnected"));
+  }
+
+  return isConnected;
+};
 
 export default chatSlice.reducer;

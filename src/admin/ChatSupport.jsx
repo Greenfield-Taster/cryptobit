@@ -1,95 +1,158 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchUserChatRooms,
-  initializeSignalR,
-  joinChatRoomSignalR,
-  sendMessageSignalR,
-  updateMessageStatusSignalR,
-  setCurrentChatRoom,
-  loadMoreMessagesSignalR,
-  clearChat,
-  checkConnectionStatus,
-  cleanupChat,
-} from "../store/slices/chatSlice";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/slices/authSlice";
+import { useSignalR } from "../contexts/SignalRContext";
 import "../scss/admin/_chatSupport.scss";
 
 const ChatSupport = () => {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const {
-    chatRooms,
-    currentChatRoom,
-    currentChatRoomId,
-    messages,
-    isConnected,
-    connectionState,
-    loading,
-    sendingMessage,
-    loadingMore,
-    error,
-  } = useSelector((state) => state.chat);
+  const user = useSelector(selectUser);
+  const { isConnected, connectionError, chatService } = useSignalR();
 
+  const [chatRooms, setChatRooms] = useState([]);
+  const [currentChatRoomId, setCurrentChatRoomId] = useState(null);
+  const [currentChatRoom, setCurrentChatRoom] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const messagesEndRef = useRef(null);
-  const messagesDivRef = useRef(null);
-  const [connectionError, setConnectionError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [lastScrollHeight, setLastScrollHeight] = useState(0);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
-  // Инициализация подключения при первой загрузке
+  const messagesEndRef = useRef(null);
+  const messagesDivRef = useRef(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Загрузка чатов
   useEffect(() => {
-    if (user && user.role === "admin") {
-      setConnectionError(false);
+    const loadChatRooms = async () => {
+      if (!isConnected || !user || user.role !== "admin") return;
 
-      dispatch(initializeSignalR(user.id))
-        .unwrap()
-        .then(() => {
-          dispatch(fetchUserChatRooms(user.id));
-          setInitialLoadComplete(true);
-        })
-        .catch((error) => {
-          console.error("Failed to initialize SignalR:", error);
-          setConnectionError(true);
-        });
-    }
-
-    return () => {
-      if (isConnected) {
-        dispatch(cleanupChat());
+      try {
+        setLoading(true);
+        await chatService.getAllChats();
+        const rooms = await chatService.getUserChatRooms(user.id);
+        setChatRooms(rooms);
+        setInitialLoadComplete(true);
+      } catch (error) {
+        console.error("Failed to load chat rooms:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  }, [user, dispatch, retryCount]);
 
-  // Присоединение к комнате чата после установки соединения
-  useEffect(() => {
-    if (isConnected && currentChatRoomId) {
-      dispatch(
-        joinChatRoomSignalR({ userId: user.id, chatRoomId: currentChatRoomId })
-      );
+    if (isConnected && user && user.role === "admin") {
+      loadChatRooms();
     }
-  }, [isConnected, currentChatRoomId, user, dispatch]);
+  }, [isConnected, user, chatService]);
 
-  // Обновление статуса сообщений после их загрузки
+  // Регистрация обработчиков событий
   useEffect(() => {
-    if (messages.length > 0 && currentChatRoomId && isConnected) {
+    if (!isConnected) return;
+
+    const handleReceiveMessage = (message) => {
+      if (!message) return;
+
+      setMessages((prev) => {
+        if (!prev) return [message];
+        const exists = prev.some((msg) => msg && msg.id === message.id);
+        if (exists) return prev;
+        return [...prev, message];
+      });
+
+      // Обновляем информацию о последнем сообщении в комнате
+      setChatRooms((prev) => {
+        if (!prev) return [];
+        return prev.map((room) =>
+          room && room.id === message.roomId
+            ? {
+                ...room,
+                lastMessage: {
+                  message: message.message,
+                  timestamp: message.timestamp,
+                  status: message.status,
+                  senderId: message.senderId,
+                },
+              }
+            : room
+        );
+      });
+    };
+
+    const handleReceiveMessageHistory = (roomId, messageHistory) => {
+      if (roomId === currentChatRoomId && messageHistory) {
+        setMessages(messageHistory);
+      }
+    };
+
+    const handleNewRoomCreated = (room) => {
+      if (!room) return;
+
+      setChatRooms((prev) => {
+        if (!prev) return [room];
+        const exists = prev.some((r) => r && r.id === room.id);
+        if (exists) return prev;
+        return [...prev, room];
+      });
+    };
+
+    const handleReceiveAllChats = (chats) => {
+      if (chats) {
+        setChatRooms(chats);
+      }
+    };
+
+    chatService.on("ReceiveMessage", handleReceiveMessage);
+    chatService.on("ReceiveMessageHistory", handleReceiveMessageHistory);
+    chatService.on("NewRoomCreated", handleNewRoomCreated);
+    chatService.on("ReceiveAllChats", handleReceiveAllChats);
+
+    return () => {
+      chatService.off("ReceiveMessage", handleReceiveMessage);
+      chatService.off("ReceiveMessageHistory", handleReceiveMessageHistory);
+      chatService.off("NewRoomCreated", handleNewRoomCreated);
+      chatService.off("ReceiveAllChats", handleReceiveAllChats);
+    };
+  }, [isConnected, currentChatRoomId, chatService]);
+
+  // Обновление статуса сообщений
+  useEffect(() => {
+    if (
+      messages &&
+      messages.length > 0 &&
+      currentChatRoomId &&
+      isConnected &&
+      user
+    ) {
       const unreadMessages = messages.filter(
-        (msg) => msg.senderId !== user.id && msg.status !== "Read"
+        (msg) => msg && msg.senderId !== user.id && msg.status !== "Read"
       );
 
-      if (unreadMessages.length > 0) {
-        unreadMessages.forEach((msg) => {
-          dispatch(
-            updateMessageStatusSignalR({ messageId: msg.id, status: "Read" })
-          );
+      if (unreadMessages && unreadMessages.length > 0) {
+        unreadMessages.forEach(async (msg) => {
+          if (!msg || !msg.id) return;
+
+          try {
+            await fetch(
+              `${process.env.REACT_APP_API_URL}/api/ChatMessages/${msg.id}/status`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status: "Read", userId: user.id }),
+              }
+            );
+          } catch (error) {
+            console.error("Failed to update message status:", error);
+          }
         });
       }
     }
-  }, [messages, currentChatRoomId, user, dispatch, isConnected]);
+  }, [messages, currentChatRoomId, user, isConnected]);
 
-  // Обработка прокрутки при загрузке новых сообщений
+  // Обработка прокрутки при загрузке сообщений
   useEffect(() => {
     const messagesDiv = messagesDivRef.current;
 
@@ -108,21 +171,57 @@ const ChatSupport = () => {
     }
   }, [messages, loadingMore, lastScrollHeight, initialLoadComplete]);
 
-  // Периодическая проверка статуса соединения
-  useEffect(() => {
-    if (user && user.role === "admin" && isConnected) {
-      dispatch(checkConnectionStatus());
+  // Выбор чата
+  const handleChatSelect = useCallback(
+    (chatRoomId) => {
+      if (currentChatRoomId !== chatRoomId && chatRooms) {
+        setCurrentChatRoomId(chatRoomId);
+        const selectedRoom = chatRooms.find(
+          (room) => room && room.id === chatRoomId
+        );
+        setCurrentChatRoom(selectedRoom || null);
+        setMessages([]);
+        if (chatService && typeof chatService.joinRoom === "function") {
+          chatService.joinRoom(chatRoomId);
+        }
+      }
+    },
+    [currentChatRoomId, chatRooms, chatService]
+  );
 
-      const intervalId = setInterval(() => {
-        dispatch(checkConnectionStatus());
-      }, 30000);
+  // Загрузка предыдущих сообщений
+  const handleLoadMoreMessages = useCallback(async () => {
+    if (currentChatRoomId && messages && messages.length > 0 && !loadingMore) {
+      try {
+        setLoadingMore(true);
 
-      return () => clearInterval(intervalId);
+        const response = await fetch(
+          `${
+            process.env.REACT_APP_API_URL
+          }/api/PaginatedMessages/room/${currentChatRoomId}?page=${
+            Math.floor(messages.length / 20) + 1
+          }&pageSize=20`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load more messages");
+        }
+
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          setMessages((prev) => [...data.items, ...prev]);
+        }
+      } catch (error) {
+        console.error("Failed to load more messages:", error);
+      } finally {
+        setLoadingMore(false);
+      }
     }
-  }, [user, isConnected, dispatch]);
+  }, [currentChatRoomId, messages, loadingMore]);
 
-  // Обработка отправки сообщения
-  const handleSendMessage = (e) => {
+  // Отправка сообщения
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (!messageText.trim() || !currentChatRoomId || !isConnected) return;
@@ -131,82 +230,82 @@ const ChatSupport = () => {
     const message = messageText.trim();
     setMessageText("");
 
-    dispatch(
-      sendMessageSignalR({
-        userId: user.id,
-        chatRoomId: currentChatRoomId,
-        message: message,
-      })
-    ).catch((error) => {
+    try {
+      setSendingMessage(true);
+      await chatService.sendMessage(currentChatRoomId, message);
+    } catch (error) {
       console.error("Failed to send message:", error);
-      // В случае ошибки можно показать уведомление пользователю
-    });
-  };
-
-  // Выбор чата
-  const handleChatSelect = useCallback(
-    (chatRoomId) => {
-      if (currentChatRoomId !== chatRoomId) {
-        dispatch(setCurrentChatRoom(chatRoomId));
-      }
-    },
-    [currentChatRoomId, dispatch]
-  );
-
-  // Загрузка предыдущих сообщений
-  const handleLoadMoreMessages = useCallback(() => {
-    if (currentChatRoomId && messages.length > 0 && !loadingMore) {
-      dispatch(
-        loadMoreMessagesSignalR({
-          userId: user.id,
-          chatRoomId: currentChatRoomId,
-          offset: messages.length,
-        })
-      );
+      // Восстанавливаем текст сообщения, если произошла ошибка
+      setMessageText(message);
+    } finally {
+      setSendingMessage(false);
     }
-  }, [currentChatRoomId, messages.length, loadingMore, user, dispatch]);
+  };
 
   // Повторная попытка подключения при ошибке
   const retryConnection = useCallback(() => {
     setRetryCount((prevCount) => prevCount + 1);
   }, []);
 
-  // Форматирование времени
+  // Форматирование времени и даты
   const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    if (!timestamp) return "";
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      return "";
+    }
   };
 
-  // Форматирование даты
   const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString();
+    if (!timestamp) return "";
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleDateString();
+    } catch (e) {
+      return "";
+    }
   };
 
-  // Проверка, отображается ли сообщение в тот же день, что и предыдущее
+  // Проверка дат сообщений
   const isSameDay = (current, previous) => {
-    if (!previous) return false;
+    if (!current || !previous) return false;
 
-    const currentDate = new Date(current);
-    const previousDate = new Date(previous);
+    try {
+      const currentDate = new Date(current);
+      const previousDate = new Date(previous);
 
-    return (
-      currentDate.getFullYear() === previousDate.getFullYear() &&
-      currentDate.getMonth() === previousDate.getMonth() &&
-      currentDate.getDate() === previousDate.getDate()
-    );
+      return (
+        currentDate.getFullYear() === previousDate.getFullYear() &&
+        currentDate.getMonth() === previousDate.getMonth() &&
+        currentDate.getDate() === previousDate.getDate()
+      );
+    } catch (e) {
+      return false;
+    }
   };
 
   // Фильтрация чатов по поисковому запросу
-  const filteredChatRooms = chatRooms.filter(
-    (room) =>
-      room.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      room.user.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (room.lastMessage &&
-        room.lastMessage.message
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()))
-  );
+  const filteredChatRooms = chatRooms
+    ? chatRooms.filter((room) => {
+        if (!room) return false;
+
+        // Адаптация к структуре API - проверка обоих вариантов
+        const userName = (room.userName || room.user?.name || "").toLowerCase();
+        const userNickname = (room.user?.nickname || "").toLowerCase();
+        const messageText = (room.lastMessage?.message || "").toLowerCase();
+
+        return (
+          userName.includes(searchTerm.toLowerCase()) ||
+          userNickname.includes(searchTerm.toLowerCase()) ||
+          messageText.includes(searchTerm.toLowerCase())
+        );
+      })
+    : [];
 
   // Проверка доступа
   if (!user || user.role !== "admin") {
@@ -223,7 +322,7 @@ const ChatSupport = () => {
           <i className="fas fa-exclamation-triangle"></i>
         </div>
         <h3>Ошибка подключения</h3>
-        <p>Не удалось установить соединение с сервером чата</p>
+        <p>{connectionError}</p>
         <button onClick={retryConnection}>
           <i className="fas fa-sync-alt"></i> Повторить попытку
         </button>
@@ -256,52 +355,70 @@ const ChatSupport = () => {
         </div>
 
         <div className="chat-support__users">
-          {loading && filteredChatRooms.length === 0 ? (
+          {loading && (!filteredChatRooms || filteredChatRooms.length === 0) ? (
             <div className="chat-support__loading">Загрузка чатов...</div>
-          ) : filteredChatRooms.length === 0 ? (
+          ) : !filteredChatRooms || filteredChatRooms.length === 0 ? (
             <div className="chat-support__no-chats">
               {searchTerm
                 ? "Нет чатов, соответствующих поиску"
                 : "Нет активных чатов"}
             </div>
           ) : (
-            filteredChatRooms.map((room) => (
-              <div
-                key={room.id}
-                className={`chat-support__user ${
-                  currentChatRoomId === room.id ? "active" : ""
-                }`}
-                onClick={() => handleChatSelect(room.id)}
-              >
-                <div className="chat-support__user-avatar">
-                  {room.user.nickname.charAt(0).toUpperCase()}
-                </div>
-                <div className="chat-support__user-info">
-                  <div className="chat-support__user-name">
-                    {room.user.nickname || room.user.name}
+            filteredChatRooms.map((room) => {
+              if (!room) return null;
+
+              return (
+                <div
+                  key={room.id}
+                  className={`chat-support__user ${
+                    currentChatRoomId === room.id ? "active" : ""
+                  }`}
+                  onClick={() => handleChatSelect(room.id)}
+                >
+                  <div className="chat-support__user-avatar">
+                    {(
+                      (
+                        room.userName ||
+                        room.user?.name ||
+                        room.user?.nickname ||
+                        "U"
+                      ).charAt(0) || "U"
+                    ).toUpperCase()}
                   </div>
-                  {room.lastMessage && (
-                    <div className="chat-support__last-message">
-                      {room.lastMessage.message.length > 30
-                        ? `${room.lastMessage.message.substring(0, 30)}...`
-                        : room.lastMessage.message}
+                  <div className="chat-support__user-info">
+                    <div className="chat-support__user-name">
+                      {room.user?.nickname ||
+                        room.userName ||
+                        room.user?.name ||
+                        "Неизвестный пользователь"}
                     </div>
-                  )}
-                </div>
-                <div className="chat-support__message-meta">
-                  <div className="chat-support__message-time">
-                    {room.lastMessage
-                      ? formatTime(room.lastMessage.timestamp)
-                      : formatDate(room.createdAt)}
-                  </div>
-                  {room.lastMessage &&
-                    room.lastMessage.senderId !== user.id &&
-                    room.lastMessage.status !== "Read" && (
-                      <div className="chat-support__unread-indicator"></div>
+                    {room.lastMessage && room.lastMessage.message && (
+                      <div className="chat-support__last-message">
+                        {room.lastMessage.message.length > 30
+                          ? `${room.lastMessage.message.substring(0, 30)}...`
+                          : room.lastMessage.message}
+                      </div>
                     )}
+                  </div>
+                  <div className="chat-support__message-meta">
+                    <div className="chat-support__message-time">
+                      {room.lastMessage && room.lastMessage.timestamp
+                        ? formatTime(room.lastMessage.timestamp)
+                        : room.createdAt
+                        ? formatDate(room.createdAt)
+                        : ""}
+                    </div>
+                    {room.lastMessage &&
+                      room.lastMessage.senderId &&
+                      user &&
+                      room.lastMessage.senderId !== user.id &&
+                      room.lastMessage.status !== "Read" && (
+                        <div className="chat-support__unread-indicator"></div>
+                      )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -321,15 +438,26 @@ const ChatSupport = () => {
               {currentChatRoom && (
                 <>
                   <div className="chat-support__user-avatar">
-                    {currentChatRoom.user.nickname.charAt(0).toUpperCase()}
+                    {(
+                      (
+                        currentChatRoom.userName ||
+                        currentChatRoom.user?.name ||
+                        currentChatRoom.user?.nickname ||
+                        "U"
+                      ).charAt(0) || "U"
+                    ).toUpperCase()}
                   </div>
                   <div className="chat-support__user-info">
                     <div className="chat-support__user-name">
-                      {currentChatRoom.user.nickname ||
-                        currentChatRoom.user.name}
+                      {currentChatRoom.user?.nickname ||
+                        currentChatRoom.userName ||
+                        currentChatRoom.user?.name ||
+                        "Неизвестный пользователь"}
                     </div>
                     <div className="chat-support__user-email">
-                      {currentChatRoom.user.email}
+                      {currentChatRoom.user?.email ||
+                        currentChatRoom.userEmail ||
+                        "Нет email"}
                     </div>
                   </div>
                   <div className="chat-support__user-status">
@@ -350,22 +478,23 @@ const ChatSupport = () => {
                   <div className="chat-support__loading-spinner"></div>
                   <p>Загрузка сообщений...</p>
                 </div>
-              ) : messages.length === 0 ? (
+              ) : !messages || messages.length === 0 ? (
                 <div className="chat-support__no-messages">
                   <p>Начните общение с пользователем</p>
                 </div>
               ) : (
                 <>
-                  {messages.length >= 50 && (
+                  {messages && messages.length >= 20 && (
                     <div className="chat-support__load-more">
                       <button
                         onClick={handleLoadMoreMessages}
                         disabled={loadingMore}
+                        className={loadingMore ? "loading" : ""}
                       >
                         {loadingMore ? (
                           <>
-                            <div className="chat-support__loading-spinner small"></div>
-                            <span>Загрузка...</span>
+                            <span className="chat-support__loading-dots"></span>
+                            Загрузка...
                           </>
                         ) : (
                           "Загрузить предыдущие сообщения"
@@ -374,58 +503,67 @@ const ChatSupport = () => {
                     </div>
                   )}
 
-                  {messages.map((msg, index) => {
-                    const isSentByMe = msg.senderId === user.id;
-                    const prevMsg = index > 0 ? messages[index - 1] : null;
-                    const showDateHeader = !isSameDay(
-                      msg.timestamp,
-                      prevMsg?.timestamp
-                    );
-                    const isConsecutive =
-                      prevMsg &&
-                      prevMsg.senderId === msg.senderId &&
-                      !showDateHeader;
+                  {messages &&
+                    messages.map((message, index) => {
+                      if (!message) return null;
 
-                    return (
-                      <React.Fragment key={msg.id}>
-                        {showDateHeader && (
-                          <div className="chat-support__date-header">
-                            {new Date(msg.timestamp).toLocaleDateString()}
-                          </div>
-                        )}
-                        <div
-                          className={`chat-support__message-container ${
-                            isSentByMe ? "sent" : "received"
-                          } ${isConsecutive ? "consecutive" : ""}`}
-                        >
-                          {!isSentByMe && !isConsecutive && (
-                            <div className="chat-support__message-avatar">
-                              {msg.senderName.charAt(0).toUpperCase()}
+                      const isCurrentUserMessage =
+                        message && user && message.senderId === user.id;
+                      const previousMessage =
+                        index > 0 && messages ? messages[index - 1] : null;
+                      const showDateSeparator =
+                        message &&
+                        message.timestamp &&
+                        !isSameDay(
+                          message.timestamp,
+                          previousMessage?.timestamp
+                        );
+
+                      return (
+                        <React.Fragment key={message.id || index}>
+                          {showDateSeparator && message.timestamp && (
+                            <div className="chat-support__date-separator">
+                              <span>{formatDate(message.timestamp)}</span>
                             </div>
                           )}
-                          <div className="chat-support__message-wrapper">
-                            {!isConsecutive && !isSentByMe && (
-                              <div className="chat-support__message-sender">
-                                {msg.senderName}
+
+                          <div
+                            className={`chat-support__message ${
+                              isCurrentUserMessage ? "outgoing" : "incoming"
+                            }`}
+                          >
+                            {!isCurrentUserMessage && currentChatRoom && (
+                              <div className="chat-support__message-avatar">
+                                {(
+                                  (
+                                    currentChatRoom.userName ||
+                                    currentChatRoom.user?.name ||
+                                    currentChatRoom.user?.nickname ||
+                                    "U"
+                                  ).charAt(0) || "U"
+                                ).toUpperCase()}
                               </div>
                             )}
-                            <div className="chat-support__message">
-                              <div className="chat-support__message-content">
-                                {msg.message}
+
+                            <div className="chat-support__message-content">
+                              <div className="chat-support__message-text">
+                                {message.message || ""}
                               </div>
-                              <div className="chat-support__message-meta">
-                                <span className="chat-support__message-time">
-                                  {formatTime(msg.timestamp)}
-                                </span>
-                                {isSentByMe && (
-                                  <span className="chat-support__message-status">
-                                    {msg.status === "Sent" && (
+                              <div className="chat-support__message-time">
+                                {message.timestamp
+                                  ? formatTime(message.timestamp)
+                                  : ""}
+                                {isCurrentUserMessage && message.status && (
+                                  <span
+                                    className={`message-status ${message.status.toLowerCase()}`}
+                                  >
+                                    {message.status === "Sent" && (
                                       <i className="fas fa-check"></i>
                                     )}
-                                    {msg.status === "Delivered" && (
+                                    {message.status === "Delivered" && (
                                       <i className="fas fa-check-double"></i>
                                     )}
-                                    {msg.status === "Read" && (
+                                    {message.status === "Read" && (
                                       <i className="fas fa-check-double read"></i>
                                     )}
                                   </span>
@@ -433,38 +571,34 @@ const ChatSupport = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </React.Fragment>
-                    );
-                  })}
+                        </React.Fragment>
+                      );
+                    })}
                   <div ref={messagesEndRef} />
                 </>
               )}
             </div>
 
-            <form
-              className="chat-support__input-form"
-              onSubmit={handleSendMessage}
-            >
-              <input
-                type="text"
+            <form className="chat-support__input" onSubmit={handleSendMessage}>
+              <textarea
+                placeholder="Введите сообщение..."
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Введите сообщение..."
-                disabled={!isConnected || loading}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
+                disabled={!isConnected || sendingMessage}
               />
               <button
                 type="submit"
-                disabled={
-                  !messageText.trim() ||
-                  !isConnected ||
-                  loading ||
-                  sendingMessage
-                }
+                disabled={!isConnected || !messageText.trim() || sendingMessage}
                 className={sendingMessage ? "sending" : ""}
               >
                 {sendingMessage ? (
-                  <div className="chat-support__loading-spinner small"></div>
+                  <div className="chat-support__sending-indicator"></div>
                 ) : (
                   <i className="fas fa-paper-plane"></i>
                 )}

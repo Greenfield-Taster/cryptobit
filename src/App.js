@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import ChatWidget from "./components/Chat/ChatWidget";
+import { SignalRProvider } from "./contexts/SignalRContext";
 import {
   checkAuthState,
   checkTokenExpiration,
@@ -76,46 +77,48 @@ function App() {
   };
 
   return (
-    <div className="wrapper">
-      <Header
-        onNavigate={(section) => {
-          if (section === "about") handleScroll(aboutRef);
-          if (section === "contact") handleScroll(contactRef);
-          if (section === "transaction") handleScroll(transactionRef);
-          if (section === "home") handleScroll(homeRef);
-          if (section === "testimonial") handleScroll(testimonialRef);
-          if (section === "frequentlyQA") handleScroll(frequentlyQARef);
-        }}
-      />
-      <div className="content">
-        <Routes>
-          <Route
-            path="/cryptobit"
-            element={
-              <Home
-                homeRef={homeRef}
-                aboutRef={aboutRef}
-                contactRef={contactRef}
-                transactionRef={transactionRef}
-                testimonialRef={testimonialRef}
-                frequentlyQARef={frequentlyQARef}
-              />
-            }
-          />
-          <Route path="/payment/:orderId" element={<Payment />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/admin/*" element={<Admin />} />
-          <Route path="*" element={<NotFound />} />;
-        </Routes>
+    <SignalRProvider>
+      <div className="wrapper">
+        <Header
+          onNavigate={(section) => {
+            if (section === "about") handleScroll(aboutRef);
+            if (section === "contact") handleScroll(contactRef);
+            if (section === "transaction") handleScroll(transactionRef);
+            if (section === "home") handleScroll(homeRef);
+            if (section === "testimonial") handleScroll(testimonialRef);
+            if (section === "frequentlyQA") handleScroll(frequentlyQARef);
+          }}
+        />
+        <div className="content">
+          <Routes>
+            <Route
+              path="/cryptobit"
+              element={
+                <Home
+                  homeRef={homeRef}
+                  aboutRef={aboutRef}
+                  contactRef={contactRef}
+                  transactionRef={transactionRef}
+                  testimonialRef={testimonialRef}
+                  frequentlyQARef={frequentlyQARef}
+                />
+              }
+            />
+            <Route path="/payment/:orderId" element={<Payment />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="*" element={<NotFound />} />;
+          </Routes>
+        </div>
+        <Footer />
+        {location.pathname === "/cryptobit" &&
+          isAuthenticated &&
+          user &&
+          user.role !== "admin" && <ChatWidget />}
       </div>
-      <Footer />
-      {location.pathname === "/cryptobit" &&
-        isAuthenticated &&
-        user &&
-        user.role !== "admin" && <ChatWidget />}
-    </div>
+    </SignalRProvider>
   );
 }
 

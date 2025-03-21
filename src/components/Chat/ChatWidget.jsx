@@ -1,114 +1,152 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchUserChatRooms,
-  initializeSignalR,
-  joinChatRoomSignalR,
-  sendMessageSignalR,
-  updateMessageStatusSignalR,
-  setCurrentChatRoom,
-  loadMoreMessagesSignalR,
-  clearChat,
-  checkConnectionStatus,
-  cleanupChat,
-} from "../../store/slices/chatSlice";
-import ChatService from "../../services/chat.service";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../store/slices/authSlice";
+import { useSignalR } from "../../contexts/SignalRContext";
 import "./ChatWidget.scss";
 
 const ChatWidget = () => {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const {
-    chatRooms,
-    currentChatRoom,
-    currentChatRoomId,
-    messages,
-    isConnected,
-    connectionState,
-    loading,
-    sendingMessage,
-    loadingMore,
-    error,
-  } = useSelector((state) => state.chat);
+  const user = useSelector(selectUser);
+  const { isConnected, connectionError, chatService } = useSignalR();
 
+  const [messages, setMessages] = useState([]);
+  const [currentRoomId, setCurrentRoomId] = useState(null);
+  const [currentRoom, setCurrentRoom] = useState(null);
   const [messageText, setMessageText] = useState("");
-  const messagesEndRef = useRef(null);
-  const messagesDivRef = useRef(null);
-  const [connectionError, setConnectionError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [creatingNewChat, setCreatingNewChat] = useState(false);
+  const [userRooms, setUserRooms] = useState([]);
   const [lastScrollHeight, setLastScrollHeight] = useState(0);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [creatingNewChat, setCreatingNewChat] = useState(false);
 
-  // Инициализация подключения при первой загрузке
+  const messagesEndRef = useRef(null);
+  const messagesDivRef = useRef(null);
+
+  // Загрузка чатов пользователя
   useEffect(() => {
-    if (user && user.role !== "admin") {
-      setConnectionError(false);
+    const loadUserRooms = async () => {
+      if (!user || !user.id || !isConnected) return;
 
-      dispatch(initializeSignalR(user.id))
-        .unwrap()
-        .then(() => {
-          dispatch(fetchUserChatRooms(user.id));
-          setInitialLoadComplete(true);
-        })
-        .catch((error) => {
-          console.error("Failed to initialize SignalR:", error);
-          setConnectionError(true);
-        });
-    }
+      try {
+        setLoading(true);
+        const rooms = await chatService.getUserChatRooms(user.id);
+        setUserRooms(rooms);
 
-    return () => {
-      if (isConnected) {
-        dispatch(cleanupChat());
+        if (rooms.length > 0 && !currentRoomId) {
+          setCurrentRoomId(rooms[0].id);
+          setCurrentRoom(rooms[0]);
+          await chatService.joinRoom(rooms[0].id);
+        }
+
+        setInitialLoadComplete(true);
+      } catch (error) {
+        console.error("Failed to load user rooms:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  }, [user, dispatch, retryCount]);
 
-  // Присоединение к комнате чата после установки соединения
-  useEffect(() => {
-    if (isConnected && currentChatRoomId) {
-      dispatch(
-        joinChatRoomSignalR({ userId: user.id, chatRoomId: currentChatRoomId })
-      );
+    if (isConnected && user) {
+      loadUserRooms();
     }
-  }, [isConnected, currentChatRoomId, user, dispatch]);
+  }, [isConnected, user, currentRoomId, chatService]);
 
-  // Обновление статуса сообщений и отслеживание новых сообщений
+  // Обработка сообщений SignalR
   useEffect(() => {
-    if (messages.length > 0 && currentChatRoomId) {
-      const hasUnread = messages.some(
+    if (!isConnected) return;
+
+    const handleReceiveMessage = (message) => {
+      setMessages((prev) => {
+        const exists = prev.some((msg) => msg.id === message.id);
+        if (exists) return prev;
+        return [...prev, message];
+      });
+
+      if (!isOpen && message.senderId !== user.id) {
+        setHasNewMessages(true);
+      }
+    };
+
+    const handleReceiveMessageHistory = (roomId, messageHistory) => {
+      if (roomId === currentRoomId) {
+        setMessages(messageHistory);
+      }
+    };
+
+    const handleMessagesRead = (roomId, messageIds, userId) => {
+      if (roomId === currentRoomId && userId !== user.id) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            messageIds.includes(msg.id) ? { ...msg, status: "Read" } : msg
+          )
+        );
+      }
+    };
+
+    const handleRoomCreated = (roomId) => {
+      setCurrentRoomId(roomId);
+      chatService.joinRoom(roomId);
+    };
+
+    // Регистрация обработчиков событий
+    chatService.on("ReceiveMessage", handleReceiveMessage);
+    chatService.on("ReceiveMessageHistory", handleReceiveMessageHistory);
+    chatService.on("MessagesRead", handleMessagesRead);
+    chatService.on("RoomCreated", handleRoomCreated);
+
+    return () => {
+      // Удаление обработчиков при размонтировании
+      chatService.off("ReceiveMessage", handleReceiveMessage);
+      chatService.off("ReceiveMessageHistory", handleReceiveMessageHistory);
+      chatService.off("MessagesRead", handleMessagesRead);
+      chatService.off("RoomCreated", handleRoomCreated);
+    };
+  }, [isConnected, currentRoomId, isOpen, user, chatService]);
+
+  // Обновление статуса сообщений при открытии чата
+  useEffect(() => {
+    const updateMessageStatuses = async () => {
+      if (
+        !isConnected ||
+        !isOpen ||
+        !currentRoomId ||
+        !user ||
+        messages.length === 0
+      )
+        return;
+
+      const unreadMessages = messages.filter(
         (msg) => msg.senderId !== user.id && msg.status !== "Read"
       );
 
-      // Если чат закрыт и есть непрочитанные сообщения, показываем индикатор
-      if (!isOpen && hasUnread) {
-        setHasNewMessages(true);
-      }
-
-      // Если чат открыт, помечаем все сообщения как прочитанные
-      if (isOpen && isConnected) {
-        messages.forEach((msg) => {
-          if (msg.senderId !== user.id && msg.status !== "Read") {
-            dispatch(
-              updateMessageStatusSignalR({ messageId: msg.id, status: "Read" })
+      if (unreadMessages.length > 0) {
+        // Обновляем статус каждого непрочитанного сообщения
+        for (const msg of unreadMessages) {
+          try {
+            await fetch(
+              `${process.env.REACT_APP_API_URL}/api/ChatMessages/${msg.id}/status`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status: "Read", userId: user.id }),
+              }
             );
+          } catch (error) {
+            console.error("Failed to update message status:", error);
           }
-        });
-        setHasNewMessages(false);
+        }
       }
-    }
-  }, [messages, currentChatRoomId, user, dispatch, isOpen, isConnected]);
+    };
 
-  // Автоматический выбор первого чата при загрузке
-  useEffect(() => {
-    if (chatRooms.length > 0 && !currentChatRoomId) {
-      dispatch(setCurrentChatRoom(chatRooms[0].id));
-    }
-  }, [chatRooms, currentChatRoomId, dispatch]);
+    updateMessageStatuses();
+  }, [messages, currentRoomId, isOpen, user, isConnected]);
 
-  // Обработка прокрутки при загрузке новых сообщений
+  // Обработка прокрутки при загрузке сообщений
   useEffect(() => {
     const messagesDiv = messagesDivRef.current;
 
@@ -127,18 +165,22 @@ const ChatWidget = () => {
     }
   }, [messages, loadingMore, lastScrollHeight, initialLoadComplete, isOpen]);
 
-  // Периодическая проверка статуса соединения
-  useEffect(() => {
-    if (user && user.role !== "admin" && isConnected) {
-      dispatch(checkConnectionStatus());
-
-      const intervalId = setInterval(() => {
-        dispatch(checkConnectionStatus());
-      }, 30000);
-
-      return () => clearInterval(intervalId);
+  // Открытие/закрытие чата
+  const toggleChat = useCallback(() => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setHasNewMessages(false);
+      // При открытии чата прокручиваем к последнему сообщению
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
     }
-  }, [user, isConnected, dispatch]);
+  }, [isOpen]);
+
+  // Закрытие чата
+  const closeChat = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   // Создание нового чата и отправка первого сообщения
   const createNewChatAndSendMessage = async (message) => {
@@ -146,8 +188,10 @@ const ChatWidget = () => {
       setCreatingNewChat(true);
 
       // Получаем список админов
-      const users = await ChatService.getAllUsers();
-      const admins = users.filter((user) => user.role === "admin");
+      const users = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/Users`
+      ).then((res) => res.json());
+      const admins = users.filter((u) => u.role === "admin");
 
       if (admins.length === 0) {
         throw new Error("Нет доступных администраторов для создания чата");
@@ -157,27 +201,40 @@ const ChatWidget = () => {
       const adminId = admins[0].id;
 
       // Создаем новый чат-рум
-      const newChatRoom = await ChatService.createChatRoom(adminId, user.id);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/ChatRooms`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            adminId,
+            userId: user.id,
+            name: `Support chat for ${user.name}`,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create chat room");
+      }
+
+      const newRoom = await response.json();
 
       // Обновляем список чатов
-      await dispatch(fetchUserChatRooms(user.id));
+      const updatedRooms = await chatService.getUserChatRooms(user.id);
+      setUserRooms(updatedRooms);
 
       // Устанавливаем новый чат как текущий
-      dispatch(setCurrentChatRoom(newChatRoom.id));
+      setCurrentRoomId(newRoom.id);
+      setCurrentRoom(newRoom);
 
       // Присоединяемся к новому чату
-      await dispatch(
-        joinChatRoomSignalR({ userId: user.id, chatRoomId: newChatRoom.id })
-      ).unwrap();
+      await chatService.joinRoom(newRoom.id);
 
       // Отправляем первое сообщение
-      await dispatch(
-        sendMessageSignalR({
-          userId: user.id,
-          chatRoomId: newChatRoom.id,
-          message: message,
-        })
-      ).unwrap();
+      await chatService.sendMessage(newRoom.id, message);
 
       return true;
     } catch (error) {
@@ -205,60 +262,54 @@ const ChatWidget = () => {
     setMessageText("");
 
     try {
+      setSendingMessage(true);
+
       // Если нет активного чата, создаем новый
-      if (!currentChatRoomId) {
+      if (!currentRoomId) {
         await createNewChatAndSendMessage(message);
       } else {
         // Иначе отправляем сообщение в текущий чат
-        await dispatch(
-          sendMessageSignalR({
-            userId: user.id,
-            chatRoomId: currentChatRoomId,
-            message: message,
-          })
-        ).unwrap();
+        await chatService.sendMessage(currentRoomId, message);
       }
     } catch (error) {
       console.error("Failed to send message:", error);
       // Восстанавливаем текст сообщения, если произошла ошибка
       setMessageText(message);
+    } finally {
+      setSendingMessage(false);
     }
   };
 
   // Загрузка предыдущих сообщений
-  const handleLoadMoreMessages = useCallback(() => {
-    if (currentChatRoomId && messages.length > 0 && !loadingMore) {
-      dispatch(
-        loadMoreMessagesSignalR({
-          userId: user.id,
-          chatRoomId: currentChatRoomId,
-          offset: messages.length,
-        })
-      );
+  const handleLoadMoreMessages = useCallback(async () => {
+    if (currentRoomId && messages.length > 0 && !loadingMore) {
+      try {
+        setLoadingMore(true);
+
+        const response = await fetch(
+          `${
+            process.env.REACT_APP_API_URL
+          }/api/PaginatedMessages/room/${currentRoomId}?page=${
+            Math.floor(messages.length / 20) + 1
+          }&pageSize=20`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load more messages");
+        }
+
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          setMessages((prev) => [...data.items, ...prev]);
+        }
+      } catch (error) {
+        console.error("Failed to load more messages:", error);
+      } finally {
+        setLoadingMore(false);
+      }
     }
-  }, [currentChatRoomId, messages.length, loadingMore, user, dispatch]);
-
-  // Повторная попытка подключения при ошибке
-  const retryConnection = useCallback(() => {
-    setRetryCount((prevCount) => prevCount + 1);
-  }, []);
-
-  // Открытие/закрытие чата
-  const toggleChat = useCallback(() => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      setHasNewMessages(false);
-      // При открытии чата прокручиваем к последнему сообщению
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
-    }
-  }, [isOpen]);
-
-  // Закрытие чата
-  const closeChat = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+  }, [currentRoomId, messages.length, loadingMore]);
 
   // Форматирование времени
   const formatTime = (timestamp) => {
@@ -308,8 +359,8 @@ const ChatWidget = () => {
               <i className="fas fa-exclamation-triangle"></i>
             </div>
             <h3>Ошибка подключения</h3>
-            <p>Не удалось установить соединение с сервером чата</p>
-            <button onClick={retryConnection}>
+            <p>{connectionError}</p>
+            <button onClick={() => window.location.reload()}>
               <i className="fas fa-sync-alt"></i> Повторить попытку
             </button>
           </div>
@@ -331,11 +382,11 @@ const ChatWidget = () => {
       <div className={`user-chat ${isOpen ? "visible" : "hidden"}`}>
         <div className="user-chat__header">
           <h3>Чат с поддержкой</h3>
-          {currentChatRoom && currentChatRoom.admin && (
+          {currentRoom && currentRoom.admin && (
             <div className="user-chat__admin-info">
               <span className="user-chat__admin-label">Ваш консультант:</span>
               <span className="user-chat__admin-name">
-                {currentChatRoom.admin.name}
+                {currentRoom.admin.name}
               </span>
             </div>
           )}
@@ -350,7 +401,7 @@ const ChatWidget = () => {
               <div className="user-chat__loading-spinner"></div>
               <p>Загрузка сообщений...</p>
             </div>
-          ) : !currentChatRoomId && chatRooms.length === 0 ? (
+          ) : !currentRoomId && userRooms.length === 0 ? (
             <div className="user-chat__new-chat">
               <div className="user-chat__welcome-message">
                 <div className="user-chat__welcome-icon">
@@ -415,7 +466,7 @@ const ChatWidget = () => {
                     >
                       {!isSentByMe && !isConsecutive && (
                         <div className="user-chat__message-avatar admin">
-                          {msg.senderName.charAt(0).toUpperCase()}
+                          {msg.senderName?.charAt(0).toUpperCase() || "A"}
                         </div>
                       )}
                       <div className="user-chat__message-wrapper">
@@ -474,7 +525,7 @@ const ChatWidget = () => {
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             placeholder={
-              !currentChatRoomId
+              !currentRoomId
                 ? "Напишите ваше сообщение для создания чата..."
                 : "Введите сообщение..."
             }
