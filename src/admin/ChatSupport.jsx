@@ -24,7 +24,6 @@ const ChatSupport = () => {
   const messagesDivRef = useRef(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  // Загрузка чатов
   useEffect(() => {
     const loadChatRooms = async () => {
       if (!isConnected || !user || user.role !== "admin") return;
@@ -35,6 +34,7 @@ const ChatSupport = () => {
         const rooms = await chatService.getUserChatRooms(user.id);
         setChatRooms(rooms);
         setInitialLoadComplete(true);
+        console.log("current chat room", currentChatRoom);
       } catch (error) {
         console.error("Failed to load chat rooms:", error);
       } finally {
@@ -47,7 +47,6 @@ const ChatSupport = () => {
     }
   }, [isConnected, user, chatService]);
 
-  // Регистрация обработчиков событий
   useEffect(() => {
     if (!isConnected) return;
 
@@ -61,7 +60,6 @@ const ChatSupport = () => {
         return [...prev, message];
       });
 
-      // Обновляем информацию о последнем сообщении в комнате
       setChatRooms((prev) => {
         if (!prev) return [];
         return prev.map((room) =>
@@ -116,7 +114,6 @@ const ChatSupport = () => {
     };
   }, [isConnected, currentChatRoomId, chatService]);
 
-  // Обновление статуса сообщений
   useEffect(() => {
     if (
       messages &&
@@ -152,26 +149,27 @@ const ChatSupport = () => {
     }
   }, [messages, currentChatRoomId, user, isConnected]);
 
-  // Обработка прокрутки при загрузке сообщений
   useEffect(() => {
     const messagesDiv = messagesDivRef.current;
 
     if (messagesDiv) {
       if (loadingMore) {
-        // Сохраняем текущее положение прокрутки перед загрузкой дополнительных сообщений
         setLastScrollHeight(messagesDiv.scrollHeight);
       } else if (lastScrollHeight > 0) {
-        // После загрузки сохраняем относительное положение прокрутки
-        messagesDiv.scrollTop = messagesDiv.scrollHeight - lastScrollHeight;
+        const newScrollPosition = messagesDiv.scrollHeight - lastScrollHeight;
+        messagesDiv.scrollTop = newScrollPosition > 0 ? newScrollPosition : 0;
         setLastScrollHeight(0);
-      } else if (initialLoadComplete && !loadingMore) {
-        // Прокручиваем вниз только при первоначальной загрузке или при новых сообщениях
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      } else if (
+        initialLoadComplete &&
+        !loadingMore &&
+        messages &&
+        messages.length > 0
+      ) {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
       }
     }
   }, [messages, loadingMore, lastScrollHeight, initialLoadComplete]);
 
-  // Выбор чата
   const handleChatSelect = useCallback(
     (chatRoomId) => {
       if (currentChatRoomId !== chatRoomId && chatRooms) {
@@ -189,7 +187,6 @@ const ChatSupport = () => {
     [currentChatRoomId, chatRooms, chatService]
   );
 
-  // Загрузка предыдущих сообщений
   const handleLoadMoreMessages = useCallback(async () => {
     if (currentChatRoomId && messages && messages.length > 0 && !loadingMore) {
       try {
@@ -220,13 +217,11 @@ const ChatSupport = () => {
     }
   }, [currentChatRoomId, messages, loadingMore]);
 
-  // Отправка сообщения
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
     if (!messageText.trim() || !currentChatRoomId || !isConnected) return;
 
-    // Запоминаем текст сообщения перед очисткой поля ввода
     const message = messageText.trim();
     setMessageText("");
 
@@ -235,19 +230,16 @@ const ChatSupport = () => {
       await chatService.sendMessage(currentChatRoomId, message);
     } catch (error) {
       console.error("Failed to send message:", error);
-      // Восстанавливаем текст сообщения, если произошла ошибка
       setMessageText(message);
     } finally {
       setSendingMessage(false);
     }
   };
 
-  // Повторная попытка подключения при ошибке
   const retryConnection = useCallback(() => {
     setRetryCount((prevCount) => prevCount + 1);
   }, []);
 
-  // Форматирование времени и даты
   const formatTime = (timestamp) => {
     if (!timestamp) return "";
     try {
@@ -271,7 +263,6 @@ const ChatSupport = () => {
     }
   };
 
-  // Проверка дат сообщений
   const isSameDay = (current, previous) => {
     if (!current || !previous) return false;
 
@@ -289,12 +280,10 @@ const ChatSupport = () => {
     }
   };
 
-  // Фильтрация чатов по поисковому запросу
   const filteredChatRooms = chatRooms
     ? chatRooms.filter((room) => {
         if (!room) return false;
 
-        // Адаптация к структуре API - проверка обоих вариантов
         const userName = (room.userName || room.user?.name || "").toLowerCase();
         const userNickname = (room.user?.nickname || "").toLowerCase();
         const messageText = (room.lastMessage?.message || "").toLowerCase();
@@ -307,14 +296,12 @@ const ChatSupport = () => {
       })
     : [];
 
-  // Проверка доступа
   if (!user || user.role !== "admin") {
     return (
       <div className="admin-restricted">Доступ только для администраторов</div>
     );
   }
 
-  // Отображение ошибки подключения
   if (connectionError) {
     return (
       <div className="chat-support__connection-error">
@@ -343,17 +330,6 @@ const ChatSupport = () => {
           <i className="fas fa-search"></i>
         </div>
 
-        <div className="chat-support__connection-status">
-          <span
-            className={`chat-support__status-indicator ${
-              isConnected ? "connected" : "disconnected"
-            }`}
-          ></span>
-          <span className="chat-support__status-text">
-            {isConnected ? "Подключено" : "Отключено"}
-          </span>
-        </div>
-
         <div className="chat-support__users">
           {loading && (!filteredChatRooms || filteredChatRooms.length === 0) ? (
             <div className="chat-support__loading">Загрузка чатов...</div>
@@ -377,20 +353,12 @@ const ChatSupport = () => {
                 >
                   <div className="chat-support__user-avatar">
                     {(
-                      (
-                        room.userName ||
-                        room.user?.name ||
-                        room.user?.nickname ||
-                        "U"
-                      ).charAt(0) || "U"
+                      (room.userName || room.user?.name || "U").charAt(0) || "U"
                     ).toUpperCase()}
                   </div>
                   <div className="chat-support__user-info">
                     <div className="chat-support__user-name">
-                      {room.user?.nickname ||
-                        room.userName ||
-                        room.user?.name ||
-                        "Неизвестный пользователь"}
+                      {room.name || "Неизвестный пользователь"}
                     </div>
                     {room.lastMessage && room.lastMessage.message && (
                       <div className="chat-support__last-message">
@@ -449,10 +417,7 @@ const ChatSupport = () => {
                   </div>
                   <div className="chat-support__user-info">
                     <div className="chat-support__user-name">
-                      {currentChatRoom.user?.nickname ||
-                        currentChatRoom.userName ||
-                        currentChatRoom.user?.name ||
-                        "Неизвестный пользователь"}
+                      {currentChatRoom.user?.name || "Неизвестный пользователь"}
                     </div>
                     <div className="chat-support__user-email">
                       {currentChatRoom.user?.email ||

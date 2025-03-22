@@ -25,7 +25,6 @@ const ChatWidget = () => {
   const messagesEndRef = useRef(null);
   const messagesDivRef = useRef(null);
 
-  // Загрузка чатов пользователя
   useEffect(() => {
     const loadUserRooms = async () => {
       if (!user || !user.id || !isConnected) return;
@@ -188,28 +187,24 @@ const ChatWidget = () => {
       setCreatingNewChat(true);
       console.log("Creating new chat with message:", message);
 
-      // Проверяем и аутентифицируем пользователя
       if (!user || !user.id) {
         throw new Error("User not available");
       }
 
-      // Аутентифицируем пользователя в чат-системе
       try {
         console.log("Authenticating user:", user.id);
         await chatService.authenticateUser({
           Id: user.id,
-          Email: user.email || `user-${user.id}@example.com`,
-          Name: user.name || user.email || `User ${user.id}`,
-          Nickname: user.nickname || user.name || `user${user.id}`,
+          Email: user.email,
+          Name: user.name,
+          Nickname: user.nickname,
           Role: user.role || "user",
         });
         console.log("User authenticated successfully");
       } catch (authError) {
         console.warn("User authentication error:", authError);
-        // Продолжаем процесс, даже если аутентификация не удалась
       }
 
-      // Получаем список админов
       console.log("Fetching admin users");
       const users = await fetch(
         `${
@@ -235,17 +230,15 @@ const ChatWidget = () => {
         throw new Error("No available administrators for chat creation");
       }
 
-      // Берем первого админа из списка
       const adminId = admins[0].id;
       console.log("Selected admin:", adminId);
 
-      // Создаем чат через REST API
       try {
         console.log("Creating chat room via API");
         const newRoom = await chatService.createChatRoom(
           adminId,
           user.id,
-          user.name
+          user.nickname
         );
         console.log("Chat room created:", newRoom);
 
@@ -254,14 +247,11 @@ const ChatWidget = () => {
         console.log("Updated rooms:", updatedRooms);
         setUserRooms(Array.isArray(updatedRooms) ? updatedRooms : []);
 
-        // Устанавливаем новый чат как текущий
         setCurrentRoomId(newRoom.id);
         setCurrentRoom(newRoom);
 
-        // Присоединяемся к новому чату
         await chatService.joinRoom(newRoom.id);
 
-        // Отправляем первое сообщение
         await chatService.sendMessage(newRoom.id, message);
         console.log("Message sent successfully");
 
@@ -272,18 +262,14 @@ const ChatWidget = () => {
           apiError
         );
 
-        // Пробуем через SignalR если REST API не сработал
         try {
           const roomId = await chatService.createRoom(user.id);
           console.log("Chat room created via SignalR:", roomId);
 
-          // Присоединяемся к комнате
           await chatService.joinRoom(roomId);
 
-          // Устанавливаем новый чат как текущий
           setCurrentRoomId(roomId);
 
-          // Отправляем сообщение
           await chatService.sendMessage(roomId, message);
           console.log("Message sent successfully via SignalR");
 
@@ -301,7 +287,6 @@ const ChatWidget = () => {
     }
   };
 
-  // Обработка отправки сообщения
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
@@ -313,30 +298,25 @@ const ChatWidget = () => {
     )
       return;
 
-    // Запоминаем текст сообщения перед очисткой поля ввода
     const message = messageText.trim();
     setMessageText("");
 
     try {
       setSendingMessage(true);
 
-      // Если нет активного чата, создаем новый
       if (!currentRoomId) {
         await createNewChatAndSendMessage(message);
       } else {
-        // Иначе отправляем сообщение в текущий чат
         await chatService.sendMessage(currentRoomId, message);
       }
     } catch (error) {
       console.error("Failed to send message:", error);
-      // Восстанавливаем текст сообщения, если произошла ошибка
       setMessageText(message);
     } finally {
       setSendingMessage(false);
     }
   };
 
-  // Загрузка предыдущих сообщений
   const handleLoadMoreMessages = useCallback(async () => {
     if (currentRoomId && messages.length > 0 && !loadingMore) {
       try {
@@ -367,19 +347,16 @@ const ChatWidget = () => {
     }
   }, [currentRoomId, messages.length, loadingMore]);
 
-  // Форматирование времени
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  // Форматирование даты
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString();
   };
 
-  // Проверка, отображается ли сообщение в тот же день, что и предыдущее
   const isSameDay = (current, previous) => {
     if (!previous) return false;
 
@@ -393,7 +370,6 @@ const ChatWidget = () => {
     );
   };
 
-  // Отображение ошибки подключения
   if (connectionError) {
     return (
       <div className="user-chat-container">

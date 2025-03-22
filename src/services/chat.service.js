@@ -1,5 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import authService from "./auth.service";
+import { selectUser } from "../store/slices/authSlice";
 
 const API_URL = "https://chat-service-dev.azurewebsites.net";
 const HUB_URL = `${API_URL}/chatHub`;
@@ -19,6 +20,7 @@ class ChatService {
     }
 
     const token = authService.getToken();
+    const user = selectUser;
 
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
@@ -258,13 +260,11 @@ class ChatService {
     }
   }
 
-  async createChatRoom(adminId, userId, userName) {
+  async createChatRoom(adminId, userId, nickname) {
     try {
-      console.log(`Creating chat room: adminId=${adminId}, userId=${userId}`);
+      console.log(`Creating chat room: adminId=${adminId}, userId=${userId},`);
 
-      const roomName = userName
-        ? `Support chat for ${userName}`
-        : `Support chat for user ${userId}`;
+      const roomName = `Chat with ${nickname}`;
 
       console.log("Request URL:", `${API_URL}/api/ChatRooms`);
       console.log("Room name:", roomName);
