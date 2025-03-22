@@ -1,6 +1,12 @@
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Layout/Header";
@@ -18,6 +24,11 @@ import {
   selectIsAuthenticated,
   selectUser,
 } from "./store/slices/authSlice";
+import Dashboard from "./admin/Dashboard";
+import UserManagement from "./admin/UserManagement";
+import ChatSupport from "./admin/ChatSupport";
+import ExchangeRequests from "./admin/ExchangeRequests";
+import PromoCodeManagement from "./admin/PromoCodeManagement";
 
 import "./scss/app.scss";
 
@@ -108,7 +119,17 @@ function App() {
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/admin/*" element={<Admin />} />
+            <Route path="/admin" element={<Admin />}>
+              <Route
+                index
+                element={<Navigate to="/admin/dashboard" replace />}
+              />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="requests" element={<ExchangeRequests />} />
+              <Route path="chats" element={<ChatSupport />} />
+              <Route path="promocodes" element={<PromoCodeManagement />} />
+            </Route>
             <Route path="*" element={<NotFound />} />;
           </Routes>
         </div>
