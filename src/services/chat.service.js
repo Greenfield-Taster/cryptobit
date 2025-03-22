@@ -1,7 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import authService from "./auth.service";
 
-// Базовый URL API
 const API_URL = "https://chat-service-dev.azurewebsites.net";
 const HUB_URL = `${API_URL}/chatHub`;
 
@@ -14,7 +13,6 @@ class ChatService {
     this.eventCallbacks = {};
   }
 
-  // Создание подключения SignalR
   createConnection() {
     if (this.connection) {
       return this.connection;
@@ -30,13 +28,11 @@ class ChatService {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    // Регистрация стандартных обработчиков событий
     this.registerDefaultHandlers();
 
     return this.connection;
   }
 
-  // Инициализация подключения
   async startConnection() {
     if (this.connectionPromise) {
       return this.connectionPromise;
@@ -70,12 +66,10 @@ class ChatService {
     return this.connectionPromise;
   }
 
-  // Проверка состояния подключения
   isConnected() {
     return this.connection?.state === signalR.HubConnectionState.Connected;
   }
 
-  // Регистрация слушателей событий по умолчанию
   registerDefaultHandlers() {
     if (!this.connection) return;
 
@@ -95,7 +89,6 @@ class ChatService {
       this.invokeEvent("onClose", error);
     });
 
-    // Стандартные события чата
     const events = [
       "ReceiveMessage",
       "ReceiveMessageHistory",
@@ -116,7 +109,6 @@ class ChatService {
     });
   }
 
-  // Регистрация обработчика события
   on(event, callback) {
     if (!this.eventCallbacks[event]) {
       this.eventCallbacks[event] = [];
@@ -125,7 +117,6 @@ class ChatService {
     return this;
   }
 
-  // Удаление обработчика события
   off(event, callback) {
     if (this.eventCallbacks[event]) {
       this.eventCallbacks[event] = this.eventCallbacks[event].filter(
@@ -135,7 +126,6 @@ class ChatService {
     return this;
   }
 
-  // Вызов всех обработчиков события
   invokeEvent(event, ...args) {
     const callbacks = this.eventCallbacks[event] || [];
     callbacks.forEach((callback) => {
@@ -147,7 +137,6 @@ class ChatService {
     });
   }
 
-  // Остановка подключения
   async stopConnection() {
     if (this.connection) {
       try {
@@ -162,9 +151,6 @@ class ChatService {
     }
   }
 
-  // Методы для работы с чатом
-
-  // Подключение пользователя
   async connectUser(userId) {
     try {
       const connection = await this.startConnection();
@@ -175,7 +161,6 @@ class ChatService {
     }
   }
 
-  // Отправка сообщения
   async sendMessage(roomId, message) {
     try {
       const connection = await this.startConnection();
@@ -186,7 +171,6 @@ class ChatService {
     }
   }
 
-  // Создание новой комнаты
   async createRoom(userId) {
     try {
       const connection = await this.startConnection();
@@ -197,7 +181,6 @@ class ChatService {
     }
   }
 
-  // Присоединение к комнате
   async joinRoom(roomId) {
     try {
       const connection = await this.startConnection();
@@ -208,7 +191,6 @@ class ChatService {
     }
   }
 
-  // Получение всех чатов (для админов)
   async getAllChats() {
     try {
       const connection = await this.startConnection();
@@ -219,7 +201,6 @@ class ChatService {
     }
   }
 
-  // Отправка статуса "печатает..."
   async sendTypingStatus(roomId, isTyping) {
     try {
       const connection = await this.startConnection();
@@ -230,49 +211,133 @@ class ChatService {
     }
   }
 
-  // API запросы
-
-  // Получение комнат пользователя
   async getUserChatRooms(userId) {
-    const response = await fetch(`${API_URL}/api/ChatRooms/user/${userId}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch user chat rooms");
+    try {
+      console.log(`Fetching chat rooms for user: ${userId}`);
+
+      if (!userId) {
+        console.warn("getUserChatRooms called with empty userId");
+        return [];
+      }
+
+      const url = `${API_URL}/api/ChatRooms/user/${userId}`;
+      console.log("Request URL:", url);
+
+      const response = await fetch(url);
+      console.log("Response status:", response.status);
+
+      if (response.status === 404) {
+        console.log("No chat rooms found (404), returning empty array");
+        return [];
+      }
+
+      if (!response.ok) {
+        console.error("Response not OK:", response.status, response.statusText);
+        return [];
+      }
+
+      // Проверим текст ответа перед преобразованием в JSON
+      const text = await response.text();
+      if (!text || text.trim() === "") {
+        console.log("Empty response, returning empty array");
+        return [];
+      }
+
+      try {
+        const data = JSON.parse(text);
+        console.log("Chat rooms loaded:", data.length);
+        return data;
+      } catch (parseError) {
+        console.error("Error parsing JSON:", parseError);
+        console.log("Raw response:", text);
+        return [];
+      }
+    } catch (error) {
+      console.error("Error in getUserChatRooms:", error);
+      return [];
     }
-    return response.json();
   }
 
-  // Получение всех пользователей
-  async getAllUsers() {
-    const response = await fetch(`${API_URL}/api/Users`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
+  async createChatRoom(adminId, userId, userName) {
+    try {
+      console.log(`Creating chat room: adminId=${adminId}, userId=${userId}`);
+
+      const roomName = userName
+        ? `Support chat for ${userName}`
+        : `Support chat for user ${userId}`;
+
+      console.log("Request URL:", `${API_URL}/api/ChatRooms`);
+      console.log("Room name:", roomName);
+
+      const response = await fetch(`${API_URL}/api/ChatRooms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          adminId,
+          userId,
+          name: roomName,
+        }),
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        console.error("Response not OK:", response.status, response.statusText);
+        throw new Error(`Failed to create chat room: ${response.status}`);
+      }
+
+      const text = await response.text();
+      if (!text || text.trim() === "") {
+        console.error("Empty response when creating chat room");
+        throw new Error("Empty response from server");
+      }
+
+      try {
+        const data = JSON.parse(text);
+        console.log("Chat room created:", data);
+        return data;
+      } catch (parseError) {
+        console.error("Error parsing JSON:", parseError);
+        console.log("Raw response:", text);
+        throw new Error("Invalid JSON response");
+      }
+    } catch (error) {
+      console.error("Failed to create chat room:", error);
+      throw error;
     }
-    return response.json();
   }
 
-  // Создание комнаты чата
-  async createChatRoom(adminId, userId) {
-    const response = await fetch(`${API_URL}/api/ChatRooms`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authService.getToken()}`,
-      },
-      body: JSON.stringify({
-        adminId,
-        userId,
-        name: `Support chat for user ${userId}`,
-      }),
-    });
+  async authenticateUser(userData) {
+    try {
+      console.log("Attempting to authenticate user:", userData.Id);
+      const response = await fetch(`${API_URL}/api/Users/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to create chat room");
+      if (!response.ok) {
+        console.error(
+          "Auth response not OK:",
+          response.status,
+          response.statusText
+        );
+        throw new Error(`Failed to authenticate user: ${response.status}`);
+      }
+
+      const user = await response.json();
+      console.log("User authenticated successfully:", user);
+      return user;
+    } catch (error) {
+      console.error("Failed to authenticate user:", error);
+      throw error;
     }
-
-    return response.json();
   }
 }
 
-// Создаем синглтон для сервиса чата
 const chatService = new ChatService();
 export default chatService;

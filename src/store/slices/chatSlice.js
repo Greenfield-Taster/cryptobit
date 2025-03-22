@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import chatService from "../../services/chat.service";
 
-// Асинхронные функции
 export const fetchUserChatRooms = createAsyncThunk(
   "chat/fetchUserChatRooms",
   async (userId, { rejectWithValue }) => {
@@ -94,7 +93,6 @@ export const loadMoreMessagesSignalR = createAsyncThunk(
   }
 );
 
-// Слайс для чата
 const chatSlice = createSlice({
   name: "chat",
   initialState: {

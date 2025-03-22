@@ -186,57 +186,113 @@ const ChatWidget = () => {
   const createNewChatAndSendMessage = async (message) => {
     try {
       setCreatingNewChat(true);
+      console.log("Creating new chat with message:", message);
+
+      // Проверяем и аутентифицируем пользователя
+      if (!user || !user.id) {
+        throw new Error("User not available");
+      }
+
+      // Аутентифицируем пользователя в чат-системе
+      try {
+        console.log("Authenticating user:", user.id);
+        await chatService.authenticateUser({
+          Id: user.id,
+          Email: user.email || `user-${user.id}@example.com`,
+          Name: user.name || user.email || `User ${user.id}`,
+          Nickname: user.nickname || user.name || `user${user.id}`,
+          Role: user.role || "user",
+        });
+        console.log("User authenticated successfully");
+      } catch (authError) {
+        console.warn("User authentication error:", authError);
+        // Продолжаем процесс, даже если аутентификация не удалась
+      }
 
       // Получаем список админов
+      console.log("Fetching admin users");
       const users = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/Users`
-      ).then((res) => res.json());
+        `${
+          process.env.REACT_APP_API_URL ||
+          "https://chat-service-dev.azurewebsites.net"
+        }/api/Users`
+      )
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Failed to fetch users: ${res.status}`);
+          }
+          return res.json();
+        })
+        .catch((error) => {
+          console.error("Error fetching users:", error);
+          return [];
+        });
+
       const admins = users.filter((u) => u.role === "admin");
+      console.log(`Found ${admins.length} admins`);
 
       if (admins.length === 0) {
-        throw new Error("Нет доступных администраторов для создания чата");
+        throw new Error("No available administrators for chat creation");
       }
 
-      // Берем первого админа из списка для создания чата
+      // Берем первого админа из списка
       const adminId = admins[0].id;
+      console.log("Selected admin:", adminId);
 
-      // Создаем новый чат-рум
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/ChatRooms`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            adminId,
-            userId: user.id,
-            name: `Support chat for ${user.name}`,
-          }),
+      // Создаем чат через REST API
+      try {
+        console.log("Creating chat room via API");
+        const newRoom = await chatService.createChatRoom(
+          adminId,
+          user.id,
+          user.name
+        );
+        console.log("Chat room created:", newRoom);
+
+        // Обновляем список чатов
+        const updatedRooms = await chatService.getUserChatRooms(user.id);
+        console.log("Updated rooms:", updatedRooms);
+        setUserRooms(Array.isArray(updatedRooms) ? updatedRooms : []);
+
+        // Устанавливаем новый чат как текущий
+        setCurrentRoomId(newRoom.id);
+        setCurrentRoom(newRoom);
+
+        // Присоединяемся к новому чату
+        await chatService.joinRoom(newRoom.id);
+
+        // Отправляем первое сообщение
+        await chatService.sendMessage(newRoom.id, message);
+        console.log("Message sent successfully");
+
+        return true;
+      } catch (apiError) {
+        console.error(
+          "Failed to create chat via API, trying SignalR:",
+          apiError
+        );
+
+        // Пробуем через SignalR если REST API не сработал
+        try {
+          const roomId = await chatService.createRoom(user.id);
+          console.log("Chat room created via SignalR:", roomId);
+
+          // Присоединяемся к комнате
+          await chatService.joinRoom(roomId);
+
+          // Устанавливаем новый чат как текущий
+          setCurrentRoomId(roomId);
+
+          // Отправляем сообщение
+          await chatService.sendMessage(roomId, message);
+          console.log("Message sent successfully via SignalR");
+
+          return true;
+        } catch (signalRError) {
+          console.error("SignalR chat creation also failed:", signalRError);
+          throw new Error("Failed to create chat room through any method");
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to create chat room");
       }
-
-      const newRoom = await response.json();
-
-      // Обновляем список чатов
-      const updatedRooms = await chatService.getUserChatRooms(user.id);
-      setUserRooms(updatedRooms);
-
-      // Устанавливаем новый чат как текущий
-      setCurrentRoomId(newRoom.id);
-      setCurrentRoom(newRoom);
-
-      // Присоединяемся к новому чату
-      await chatService.joinRoom(newRoom.id);
-
-      // Отправляем первое сообщение
-      await chatService.sendMessage(newRoom.id, message);
-
-      return true;
     } catch (error) {
       console.error("Failed to create new chat:", error);
       throw error;

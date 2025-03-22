@@ -29,10 +29,32 @@ export const SignalRProvider = ({ children }) => {
       try {
         setConnectionError(null);
 
-        // Начинаем соединение
+        try {
+          await fetch(
+            `https://chat-service-dev.azurewebsites.net/api/Users/auth`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                Id: user.id,
+                Email: user.email,
+                Name: user.name,
+                Nickname: user.nickname,
+                Role: user.role || "user",
+              }),
+            }
+          );
+          console.log("User authenticated in chat system");
+        } catch (authError) {
+          console.warn("User authentication error:", authError);
+          // Продолжаем, даже если аутентификация не удалась
+        }
+
+        // Затем начинаем подключение
         await chatService.startConnection();
 
-        // Подключаем пользователя
         if (!chatService.isConnected()) {
           throw new Error("Connection failed");
         }
@@ -53,7 +75,6 @@ export const SignalRProvider = ({ children }) => {
       }
     };
 
-    // Регистрируем обработчики событий состояния
     chatService.on("onReconnecting", () => {
       if (mounted) setIsConnected(false);
     });
@@ -62,7 +83,6 @@ export const SignalRProvider = ({ children }) => {
       if (mounted) {
         setIsConnected(true);
 
-        // Повторно подключаем пользователя после переподключения
         if (user && user.id) {
           chatService.connectUser(user.id).catch((err) => {
             console.error("Failed to reconnect user:", err);
@@ -77,7 +97,6 @@ export const SignalRProvider = ({ children }) => {
 
     initializeSignalR();
 
-    // Проверка соединения каждые 30 секунд
     const intervalId = setInterval(() => {
       if (isAuthenticated && user && !chatService.isConnected()) {
         initializeSignalR();
