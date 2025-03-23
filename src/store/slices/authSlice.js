@@ -88,7 +88,6 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Login
     builder
       .addCase(login.pending, (state) => {
         state.status = "loading";
@@ -100,6 +99,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
+
         if (action.payload.expiresIn) {
           const expirationTime = new Date(
             new Date().getTime() + action.payload.expiresIn * 1000
@@ -113,7 +113,6 @@ const authSlice = createSlice({
         state.error = action.payload || "Login failed";
       });
 
-    // Register
     builder
       .addCase(register.pending, (state) => {
         state.status = "loading";
@@ -147,10 +146,8 @@ const authSlice = createSlice({
       })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Если данные приходят в action.payload
         const orders = action.payload.data || action.payload;
 
-        // Сохраняем заказы в пользователе, если он существует
         if (state.user) {
           state.user = {
             ...state.user,
@@ -170,7 +167,6 @@ const authSlice = createSlice({
 export const { checkAuthState, checkTokenExpiration, setTokenExpiration } =
   authSlice.actions;
 
-// Селекторы
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectUser = (state) => state.auth.user;
 export const selectAuthStatus = (state) => state.auth.status;

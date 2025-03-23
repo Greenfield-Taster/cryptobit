@@ -1,6 +1,5 @@
 import * as signalR from "@microsoft/signalr";
 import authService from "./auth.service";
-import { selectUser } from "../store/slices/authSlice";
 
 const API_URL = "https://chat-service-dev.azurewebsites.net";
 const HUB_URL = `${API_URL}/chatHub`;
@@ -20,7 +19,6 @@ class ChatService {
     }
 
     const token = authService.getToken();
-    const user = selectUser;
 
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
@@ -215,18 +213,12 @@ class ChatService {
 
   async getUserChatRooms(userId) {
     try {
-      console.log(`Fetching chat rooms for user: ${userId}`);
-
       if (!userId) {
         console.warn("getUserChatRooms called with empty userId");
         return [];
       }
 
-      const url = `${API_URL}/api/ChatRooms/user/${userId}`;
-      console.log("Request URL:", url);
-
-      const response = await fetch(url);
-      console.log("Response status:", response.status);
+      const response = await fetch(`${API_URL}/api/ChatRooms/user/${userId}`);
 
       if (response.status === 404) {
         console.log("No chat rooms found (404), returning empty array");
@@ -238,7 +230,6 @@ class ChatService {
         return [];
       }
 
-      // Проверим текст ответа перед преобразованием в JSON
       const text = await response.text();
       if (!text || text.trim() === "") {
         console.log("Empty response, returning empty array");
@@ -247,7 +238,6 @@ class ChatService {
 
       try {
         const data = JSON.parse(text);
-        console.log("Chat rooms loaded:", data.length);
         return data;
       } catch (parseError) {
         console.error("Error parsing JSON:", parseError);
@@ -262,12 +252,7 @@ class ChatService {
 
   async createChatRoom(adminId, userId, nickname) {
     try {
-      console.log(`Creating chat room: adminId=${adminId}, userId=${userId},`);
-
       const roomName = `Chat with ${nickname}`;
-
-      console.log("Request URL:", `${API_URL}/api/ChatRooms`);
-      console.log("Room name:", roomName);
 
       const response = await fetch(`${API_URL}/api/ChatRooms`, {
         method: "POST",
@@ -280,8 +265,6 @@ class ChatService {
           name: roomName,
         }),
       });
-
-      console.log("Response status:", response.status);
 
       if (!response.ok) {
         console.error("Response not OK:", response.status, response.statusText);
@@ -296,7 +279,6 @@ class ChatService {
 
       try {
         const data = JSON.parse(text);
-        console.log("Chat room created:", data);
         return data;
       } catch (parseError) {
         console.error("Error parsing JSON:", parseError);
@@ -311,7 +293,6 @@ class ChatService {
 
   async authenticateUser(userData) {
     try {
-      console.log("Attempting to authenticate user:", userData.Id);
       const response = await fetch(`${API_URL}/api/Users/auth`, {
         method: "POST",
         headers: {
@@ -330,7 +311,6 @@ class ChatService {
       }
 
       const user = await response.json();
-      console.log("User authenticated successfully:", user);
       return user;
     } catch (error) {
       console.error("Failed to authenticate user:", error);

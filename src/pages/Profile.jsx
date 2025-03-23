@@ -25,6 +25,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [savedWallets, setSavedWallets] = useState([]);
   const [displayCount, setDisplayCount] = useState(3);
+  const [walletDisplayCount, setWalletDisplayCount] = useState(3);
 
   useEffect(() => {
     const loadData = async () => {
@@ -92,6 +93,10 @@ const Profile = () => {
     setDisplayCount((prevCount) => prevCount + 4);
   };
 
+  const loadMoreWallets = () => {
+    setWalletDisplayCount((prevCount) => prevCount + 3);
+  };
+
   if (isLoading || authStatus === "loading" || !user) {
     return <ProfileSkeleton />;
   }
@@ -106,6 +111,9 @@ const Profile = () => {
 
   const displayedOrders = orders.slice(0, displayCount);
   const hasMoreOrders = orders.length > displayCount;
+
+  const displayedWallets = savedWallets.slice(0, walletDisplayCount);
+  const hasMoreWallets = savedWallets.length > walletDisplayCount;
 
   return (
     <div className="profile-page">
@@ -159,25 +167,36 @@ const Profile = () => {
               {t("profile.savedWallets")}
             </h2>
             {savedWallets && savedWallets.length > 0 ? (
-              <div className="wallets-list">
-                {savedWallets.map((wallet, index) => (
-                  <div key={index} className="wallet-item">
-                    <div className="wallet-icon">
-                      <img
-                        src={walletIcon}
-                        alt={wallet.currency}
-                        onError={(e) => {
-                          e.target.src = "/assets/images/wallet.png";
-                        }}
-                      />
+              <>
+                <div className="wallets-list">
+                  {displayedWallets.map((wallet, index) => (
+                    <div key={index} className="wallet-item">
+                      <div className="wallet-icon">
+                        <img
+                          src={walletIcon}
+                          alt={wallet.currency}
+                          onError={(e) => {
+                            e.target.src = "/assets/images/wallet.png";
+                          }}
+                        />
+                      </div>
+                      <div className="wallet-details">
+                        <span className="wallet-currency">
+                          {wallet.currency}
+                        </span>
+                        <span className="wallet-address">{wallet.address}</span>
+                      </div>
                     </div>
-                    <div className="wallet-details">
-                      <span className="wallet-currency">{wallet.currency}</span>
-                      <span className="wallet-address">{wallet.address}</span>
-                    </div>
+                  ))}
+                </div>
+                {hasMoreWallets && (
+                  <div className="load-more-container">
+                    <button className="load-more-btn" onClick={loadMoreWallets}>
+                      {t("profile.loadMore")}
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             ) : (
               <div className="no-wallets-message">
                 {t("profile.noSavedWallets")}

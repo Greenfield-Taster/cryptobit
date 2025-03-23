@@ -41,7 +41,6 @@ const AuthService = {
       return { success: false, message: "Не авторизован", statusCode: 401 };
     }
 
-    // Добавляем заголовок авторизации
     const headers = {
       ...options.headers,
       Authorization: `Bearer ${token}`,
@@ -51,15 +50,12 @@ const AuthService = {
       const response = await fetch(url, { ...options, headers });
       const data = await response.json();
 
-      // Проверяем, истек ли токен (код 403 и признак expired)
       if (!response.ok && response.status === 403 && data.expired) {
         console.log("Токен истек, пробуем обновить");
 
-        // Пробуем обновить токен
         const refreshResult = await this.refreshToken(token);
 
         if (refreshResult.success) {
-          // Повторяем запрос с новым токеном
           const newHeaders = {
             ...options.headers,
             Authorization: `Bearer ${refreshResult.token}`,
@@ -71,7 +67,6 @@ const AuthService = {
           });
           return await newResponse.json();
         } else {
-          // Если не удалось обновить токен, выходим из системы
           this.logout();
           return {
             success: false,
