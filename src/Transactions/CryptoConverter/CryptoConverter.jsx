@@ -16,12 +16,10 @@ import {
 } from "../../store/slices/authSlice";
 import {
   setCurrentExchange,
-  selectCurrentExchange,
   selectExchangeStatus,
   selectExchangeError,
   getUserPromoCodes,
   selectUserPromoCodes,
-  selectUserPromoCodesStatus,
 } from "../../store/slices/exchangeSlice";
 import AuthModal from "./components/AuthModal";
 import "./CryptoConverter.scss";
@@ -36,13 +34,19 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const exchangeStatus = useSelector(selectExchangeStatus) || "idle";
   const exchangeError = useSelector(selectExchangeError) || null;
-  const userOrders = useSelector(selectUserOrders) || [];
+  const userOrdersFromStore = useSelector(selectUserOrders);
   const user = useSelector(selectUser);
   const userPromoCodes = useSelector(selectUserPromoCodes);
-  const userPromoCodesStatus = useSelector(selectUserPromoCodesStatus);
 
-  // Проверяем, есть ли у пользователя доступные промокоды
-  const hasAvailablePromoCodes = userPromoCodes && userPromoCodes.length > 0;
+  const userOrders = useMemo(
+    () => userOrdersFromStore || [],
+    [userOrdersFromStore]
+  );
+
+  const hasAvailablePromoCodes = useMemo(
+    () => userPromoCodes && userPromoCodes.length > 0,
+    [userPromoCodes]
+  );
 
   const [formData, setFormData] = useState({
     fromCrypto: null,
@@ -68,6 +72,8 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   const toDropdownRef = useRef(null);
   const authModalRef = useRef(null);
   const savedWalletsRef = useRef(null);
+  const savedWalletsButtonRef = useRef(null);
+  const promoCodeFieldRef = useRef(null);
 
   const { fromCrypto, toCrypto, amount, senderWallet, saveFromWallet } =
     formData;
@@ -156,6 +162,13 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
+        savedWalletsButtonRef.current &&
+        savedWalletsButtonRef.current.contains(event.target)
+      ) {
+        return;
+      }
+
+      if (
         fromDropdownRef.current &&
         !fromDropdownRef.current.contains(event.target)
       ) {
@@ -175,9 +188,20 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
       }
       if (
         savedWalletsRef.current &&
-        !savedWalletsRef.current.contains(event.target)
+        !savedWalletsRef.current.contains(event.target) &&
+        savedWalletsButtonRef.current &&
+        !savedWalletsButtonRef.current.contains(event.target)
       ) {
         setIsSavedWalletsDropdownOpen(false);
+      }
+
+      if (
+        promoCodeFieldRef.current &&
+        !promoCodeFieldRef.current.contains(event.target)
+      ) {
+        if (promoCodeFieldRef.current.closeDropdown) {
+          promoCodeFieldRef.current.closeDropdown();
+        }
       }
     };
 
@@ -187,7 +211,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     };
   }, []);
 
-  const getAvailableToOptions = useCallback(() => {
+  const getAvailableToOptions = useMemo(() => {
     if (!fromCrypto || !cryptos) return [];
     return cryptos.filter((crypto) => crypto.id !== fromCrypto?.id);
   }, [fromCrypto, cryptos]);
@@ -255,6 +279,14 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
     },
     [cryptos]
   );
+
+  const toggleSavedWalletsDropdown = useCallback((e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setIsSavedWalletsDropdownOpen((prev) => !prev);
+  }, []);
 
   const handleSelectSavedWallet = useCallback((wallet) => {
     setFormData((prev) => ({ ...prev, senderWallet: wallet.address }));
@@ -406,7 +438,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
             {isToDropdownOpen && (
               <div className="crypto-selector__dropdown">
-                {getAvailableToOptions().map((crypto) => (
+                {getAvailableToOptions.map((crypto) => (
                   <div
                     key={crypto.id}
                     className="crypto-selector__option"
@@ -463,14 +495,20 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
             />
             {isAuthenticated && filteredWallets.length > 0 && (
               <button
-                className="wallet-input__saved-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsSavedWalletsDropdownOpen(!isSavedWalletsDropdownOpen);
-                }}
-                title={t("transaction.selectSavedWallet")}
+                ref={savedWalletsButtonRef}
+                className={`wallet-input__saved-button ${
+                  isSavedWalletsDropdownOpen
+                    ? "wallet-input__saved-button--open"
+                    : ""
+                }`}
+                onClick={toggleSavedWalletsDropdown}
+                title={
+                  isSavedWalletsDropdownOpen
+                    ? t("transaction.closeSavedWallet")
+                    : t("transaction.selectSavedWallet")
+                }
               >
-                ↓
+                {isSavedWalletsDropdownOpen ? "↑" : "↓"}
               </button>
             )}
           </div>
@@ -532,7 +570,10 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
 
       {isAuthenticated && hasAvailablePromoCodes && (
         <div className="crypto-converter__promo-code">
-          <PromoCodeField onApplyPromoCode={handleApplyPromoCode} />
+          <PromoCodeField
+            ref={promoCodeFieldRef}
+            onApplyPromoCode={handleApplyPromoCode}
+          />
         </div>
       )}
 

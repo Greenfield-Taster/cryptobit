@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -13,7 +13,7 @@ import {
 } from "../../../store/slices/exchangeSlice.js";
 import "./PromoCodeField.scss";
 
-const PromoCodeField = ({ onApplyPromoCode }) => {
+const PromoCodeField = forwardRef(({ onApplyPromoCode }, ref) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -26,13 +26,26 @@ const PromoCodeField = ({ onApplyPromoCode }) => {
   const userPromoCodes = useSelector(selectUserPromoCodes);
   const userPromoCodesStatus = useSelector(selectUserPromoCodesStatus);
 
+  const containerRef = useRef(null);
+  const dropdownButtonRef = useRef(null);
+
+  React.useImperativeHandle(ref, () => ({
+    contains: (element) => {
+      return (
+        containerRef.current?.contains(element) ||
+        dropdownButtonRef.current?.contains(element)
+      );
+    },
+    closeDropdown: () => {
+      setDropdownVisible(false);
+    },
+  }));
+
   useEffect(() => {
-    // Загружаем промокоды пользователя при монтировании компонента
     dispatch(getUserPromoCodes());
   }, [dispatch]);
 
   useEffect(() => {
-    // Если промокод успешно проверен, передаем его родительскому компоненту
     if (promoCodeStatus === "succeeded" && promoCode) {
       onApplyPromoCode(promoCode);
     }
@@ -56,7 +69,11 @@ const PromoCodeField = ({ onApplyPromoCode }) => {
     dispatch(validatePromoCode(selectedCode.code));
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setDropdownVisible(!dropdownVisible);
   };
 
@@ -67,7 +84,7 @@ const PromoCodeField = ({ onApplyPromoCode }) => {
   const isLoadingPromoCodes = userPromoCodesStatus === "loading";
 
   return (
-    <div className="promo-code-container">
+    <div className="promo-code-container" ref={containerRef}>
       <div
         className={`promo-code-field ${isValidated ? "validated" : ""} ${
           hasError ? "error" : ""
@@ -84,12 +101,13 @@ const PromoCodeField = ({ onApplyPromoCode }) => {
 
         {hasAvailablePromoCodes && !isValidated && (
           <button
+            ref={dropdownButtonRef}
             className="promo-code-saved-btn"
             onClick={toggleDropdown}
             title={t("promoCode.selectSaved")}
             disabled={isLoading || isLoadingPromoCodes}
           >
-            ↓
+            {dropdownVisible ? "↑" : "↓"}
           </button>
         )}
 
@@ -141,6 +159,6 @@ const PromoCodeField = ({ onApplyPromoCode }) => {
       )}
     </div>
   );
-};
+});
 
 export default PromoCodeField;
