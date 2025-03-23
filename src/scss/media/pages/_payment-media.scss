@@ -29,6 +29,23 @@
     padding: 12px;
   }
 
+  .payment__exchange .exchange-icon {
+    min-width: 48px;
+    min-height: 48px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .payment__exchange .exchange-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
   .payment-success .payment__content {
     padding: 24px;
   }
@@ -54,6 +71,8 @@
   }
 
   .payment__exchange .exchange-icon {
+    min-width: 40px;
+    min-height: 40px;
     width: 40px;
     height: 40px;
   }
