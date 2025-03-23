@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { selectUser } from "../../store/slices/authSlice";
 import { useSignalR } from "../../contexts/SignalRContext";
 import "./ChatWidget.scss";
+import paperPlane from "../../assets/images/paper-plane.png";
+import chatWidget from "../../assets/images/chat-widget.png";
 
 const ChatWidget = () => {
   const user = useSelector(selectUser);
@@ -28,7 +30,6 @@ const ChatWidget = () => {
   useEffect(() => {
     const loadUserRooms = async () => {
       if (!user || !user.id || !isConnected) return;
-
       try {
         setLoading(true);
         const rooms = await chatService.getUserChatRooms(user.id);
@@ -53,7 +54,6 @@ const ChatWidget = () => {
     }
   }, [isConnected, user, currentRoomId, chatService]);
 
-  // Обработка сообщений SignalR
   useEffect(() => {
     if (!isConnected) return;
 
@@ -64,7 +64,7 @@ const ChatWidget = () => {
         return [...prev, message];
       });
 
-      if (!isOpen && message.senderId !== user.id) {
+      if (!isOpen && message.sender?.id !== user.id) {
         setHasNewMessages(true);
       }
     };
@@ -90,14 +90,12 @@ const ChatWidget = () => {
       chatService.joinRoom(roomId);
     };
 
-    // Регистрация обработчиков событий
     chatService.on("ReceiveMessage", handleReceiveMessage);
     chatService.on("ReceiveMessageHistory", handleReceiveMessageHistory);
     chatService.on("MessagesRead", handleMessagesRead);
     chatService.on("RoomCreated", handleRoomCreated);
 
     return () => {
-      // Удаление обработчиков при размонтировании
       chatService.off("ReceiveMessage", handleReceiveMessage);
       chatService.off("ReceiveMessageHistory", handleReceiveMessageHistory);
       chatService.off("MessagesRead", handleMessagesRead);
@@ -105,7 +103,6 @@ const ChatWidget = () => {
     };
   }, [isConnected, currentRoomId, isOpen, user, chatService]);
 
-  // Обновление статуса сообщений при открытии чата
   useEffect(() => {
     const updateMessageStatuses = async () => {
       if (
@@ -118,11 +115,10 @@ const ChatWidget = () => {
         return;
 
       const unreadMessages = messages.filter(
-        (msg) => msg.senderId !== user.id && msg.status !== "Read"
+        (msg) => msg.sender?.id !== user.id && msg.status !== "Read"
       );
 
       if (unreadMessages.length > 0) {
-        // Обновляем статус каждого непрочитанного сообщения
         for (const msg of unreadMessages) {
           try {
             await fetch(
@@ -145,7 +141,6 @@ const ChatWidget = () => {
     updateMessageStatuses();
   }, [messages, currentRoomId, isOpen, user, isConnected]);
 
-  // Обработка прокрутки при загрузке сообщений
   useEffect(() => {
     const messagesDiv = messagesDivRef.current;
 
@@ -164,35 +159,29 @@ const ChatWidget = () => {
     }
   }, [messages, loadingMore, lastScrollHeight, initialLoadComplete, isOpen]);
 
-  // Открытие/закрытие чата
   const toggleChat = useCallback(() => {
     setIsOpen(!isOpen);
     if (!isOpen) {
       setHasNewMessages(false);
-      // При открытии чата прокручиваем к последнему сообщению
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     }
   }, [isOpen]);
 
-  // Закрытие чата
   const closeChat = useCallback(() => {
     setIsOpen(false);
   }, []);
 
-  // Создание нового чата и отправка первого сообщения
   const createNewChatAndSendMessage = async (message) => {
     try {
       setCreatingNewChat(true);
-      console.log("Creating new chat with message:", message);
 
       if (!user || !user.id) {
         throw new Error("User not available");
       }
 
       try {
-        console.log("Authenticating user:", user.id);
         await chatService.authenticateUser({
           Id: user.id,
           Email: user.email,
@@ -200,12 +189,10 @@ const ChatWidget = () => {
           Nickname: user.nickname,
           Role: user.role || "user",
         });
-        console.log("User authenticated successfully");
       } catch (authError) {
         console.warn("User authentication error:", authError);
       }
 
-      console.log("Fetching admin users");
       const users = await fetch(
         `${
           process.env.REACT_APP_API_URL ||
@@ -224,27 +211,21 @@ const ChatWidget = () => {
         });
 
       const admins = users.filter((u) => u.role === "admin");
-      console.log(`Found ${admins.length} admins`);
 
       if (admins.length === 0) {
         throw new Error("No available administrators for chat creation");
       }
 
       const adminId = admins[0].id;
-      console.log("Selected admin:", adminId);
 
       try {
-        console.log("Creating chat room via API");
         const newRoom = await chatService.createChatRoom(
           adminId,
           user.id,
           user.nickname
         );
-        console.log("Chat room created:", newRoom);
 
-        // Обновляем список чатов
         const updatedRooms = await chatService.getUserChatRooms(user.id);
-        console.log("Updated rooms:", updatedRooms);
         setUserRooms(Array.isArray(updatedRooms) ? updatedRooms : []);
 
         setCurrentRoomId(newRoom.id);
@@ -253,7 +234,6 @@ const ChatWidget = () => {
         await chatService.joinRoom(newRoom.id);
 
         await chatService.sendMessage(newRoom.id, message);
-        console.log("Message sent successfully");
 
         return true;
       } catch (apiError) {
@@ -264,14 +244,12 @@ const ChatWidget = () => {
 
         try {
           const roomId = await chatService.createRoom(user.id);
-          console.log("Chat room created via SignalR:", roomId);
 
           await chatService.joinRoom(roomId);
 
           setCurrentRoomId(roomId);
 
           await chatService.sendMessage(roomId, message);
-          console.log("Message sent successfully via SignalR");
 
           return true;
         } catch (signalRError) {
@@ -377,23 +355,21 @@ const ChatWidget = () => {
           className={`user-chat-toggle ${hasNewMessages ? "new-message" : ""}`}
           onClick={toggleChat}
         >
-          <i className={`fas ${isOpen ? "fa-times" : "fa-comments"}`}></i>
+          <img src={chatWidget} alt="chat-widget" />
         </div>
         <div className={`user-chat ${isOpen ? "visible" : "hidden"}`}>
           <div className="user-chat__header">
             <h3>Чат с поддержкой</h3>
             <div className="user-chat__close" onClick={closeChat}>
-              <i className="fas fa-times"></i>
+              ×
             </div>
           </div>
           <div className="user-chat__connection-error">
-            <div className="user-chat__error-icon">
-              <i className="fas fa-exclamation-triangle"></i>
-            </div>
+            <div className="user-chat__error-icon"></div>
             <h3>Ошибка подключения</h3>
             <p>{connectionError}</p>
             <button onClick={() => window.location.reload()}>
-              <i className="fas fa-sync-alt"></i> Повторить попытку
+              Повторить попытку
             </button>
           </div>
         </div>
@@ -407,23 +383,16 @@ const ChatWidget = () => {
         className={`user-chat-toggle ${hasNewMessages ? "new-message" : ""}`}
         onClick={toggleChat}
       >
-        <i className={`fas ${isOpen ? "fa-times" : "fa-comments"}`}></i>
+        <img src={chatWidget} alt="chat-widget" />
         {hasNewMessages && <span className="user-chat-badge"></span>}
       </div>
 
       <div className={`user-chat ${isOpen ? "visible" : "hidden"}`}>
         <div className="user-chat__header">
           <h3>Чат с поддержкой</h3>
-          {currentRoom && currentRoom.admin && (
-            <div className="user-chat__admin-info">
-              <span className="user-chat__admin-label">Ваш консультант:</span>
-              <span className="user-chat__admin-name">
-                {currentRoom.admin.name}
-              </span>
-            </div>
-          )}
+
           <div className="user-chat__close" onClick={closeChat}>
-            <i className="fas fa-times"></i>
+            ×
           </div>
         </div>
 
@@ -436,9 +405,7 @@ const ChatWidget = () => {
           ) : !currentRoomId && userRooms.length === 0 ? (
             <div className="user-chat__new-chat">
               <div className="user-chat__welcome-message">
-                <div className="user-chat__welcome-icon">
-                  <i className="fas fa-comments"></i>
-                </div>
+                <div className="user-chat__welcome-icon"></div>
                 <h3>Добро пожаловать в чат поддержки</h3>
                 <p>
                   Напишите ваше сообщение, и мы ответим вам в ближайшее время
@@ -470,8 +437,8 @@ const ChatWidget = () => {
               )}
 
               {messages.map((msg, index) => {
-                const isSentByMe = msg.senderId === user.id;
-                const isAdmin = msg.senderRole === "admin";
+                const isSentByMe = msg.sender?.id === user.id;
+                const isAdmin = msg.sender?.role === "admin";
                 const prevMsg = index > 0 ? messages[index - 1] : null;
                 const showDateHeader = !isSameDay(
                   msg.timestamp,
@@ -479,14 +446,14 @@ const ChatWidget = () => {
                 );
                 const isConsecutive =
                   prevMsg &&
-                  prevMsg.senderId === msg.senderId &&
+                  prevMsg.sender?.id === msg.sender?.id &&
                   !showDateHeader;
 
                 return (
                   <React.Fragment key={msg.id}>
                     {showDateHeader && (
                       <div className="user-chat__date-header">
-                        {new Date(msg.timestamp).toLocaleDateString()}
+                        {formatDate(msg.timestamp)}
                       </div>
                     )}
                     <div
@@ -498,13 +465,13 @@ const ChatWidget = () => {
                     >
                       {!isSentByMe && !isConsecutive && (
                         <div className="user-chat__message-avatar admin">
-                          {msg.senderName?.charAt(0).toUpperCase() || "A"}
+                          {msg.sender?.name?.charAt(0).toUpperCase() || "A"}
                         </div>
                       )}
                       <div className="user-chat__message-wrapper">
                         {!isConsecutive && !isSentByMe && (
                           <div className="user-chat__message-sender">
-                            {isAdmin ? "Поддержка" : msg.senderName}
+                            {isAdmin ? "Поддержка" : msg.sender?.name}
                           </div>
                         )}
                         <div className="user-chat__message">
@@ -517,15 +484,7 @@ const ChatWidget = () => {
                             </span>
                             {isSentByMe && (
                               <span className="user-chat__message-status">
-                                {msg.status === "Sent" && (
-                                  <i className="fas fa-check"></i>
-                                )}
-                                {msg.status === "Delivered" && (
-                                  <i className="fas fa-check-double"></i>
-                                )}
-                                {msg.status === "Read" && (
-                                  <i className="fas fa-check-double read"></i>
-                                )}
+                                {msg.status === "Read" ? "✓✓" : "✓"}
                               </span>
                             )}
                           </div>
@@ -538,17 +497,6 @@ const ChatWidget = () => {
               <div ref={messagesEndRef} />
             </>
           )}
-        </div>
-
-        <div className="user-chat__connection-status">
-          <span
-            className={`user-chat__status-indicator ${
-              isConnected ? "connected" : "disconnected"
-            }`}
-          ></span>
-          <span className="user-chat__status-text">
-            {isConnected ? "Подключено" : "Отключено"}
-          </span>
         </div>
 
         <form className="user-chat__input-form" onSubmit={handleSendMessage}>
@@ -579,7 +527,9 @@ const ChatWidget = () => {
             {sendingMessage || creatingNewChat ? (
               <div className="user-chat__loading-spinner small"></div>
             ) : (
-              <i className="fas fa-paper-plane"></i>
+              <div className="paperPlane">
+                <img src={paperPlane} alt="paperPlane" />
+              </div>
             )}
           </button>
         </form>
