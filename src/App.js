@@ -134,7 +134,8 @@ function App() {
           </Routes>
         </div>
         <Footer />
-        {location.pathname === "/cryptobit" &&
+        {(location.pathname === "/cryptobit" ||
+          location.pathname === "/cryptobit/") &&
           isAuthenticated &&
           user &&
           user.role !== "admin" && <ChatWidget />}
