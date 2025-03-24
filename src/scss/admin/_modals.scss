@@ -325,22 +325,50 @@
     .detail-row {
       display: flex;
       margin-bottom: 8px;
+      align-items: center;
 
       .detail-label {
         width: 180px;
         font-weight: 500;
         color: #666;
+        flex-shrink: 0;
       }
 
       .detail-value {
         flex: 1;
-        word-break: break-word;
+        position: relative;
+        overflow: hidden;
 
         &.wallet-address {
-          font-family: monospace;
-          background-color: #f5f5f5;
-          padding: 2px 5px;
+          font-family: "Courier New", Courier, monospace;
+          background-color: #f0f0f0;
+          padding: 5px 8px;
+          border-radius: 4px;
+          font-size: 14px;
+          max-width: 100%;
+          white-space: nowrap;
+          overflow-x: auto;
+          display: inline-block;
+          width: 100%;
+          text-overflow: clip;
+        }
+
+        .wallet-address::-webkit-scrollbar {
+          height: 3px;
+        }
+
+        .wallet-address::-webkit-scrollbar-track {
+          background: #f1f1f1;
           border-radius: 3px;
+        }
+
+        .wallet-address::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 3px;
+        }
+
+        .wallet-address::-webkit-scrollbar-thumb:hover {
+          background: #555;
         }
       }
     }
