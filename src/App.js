@@ -34,7 +34,6 @@ import "./scss/app.scss";
 
 function App() {
   const aboutRef = useRef(null);
-  const contactRef = useRef(null);
   const transactionRef = useRef(null);
   const homeRef = useRef(null);
   const testimonialRef = useRef(null);
@@ -93,7 +92,6 @@ function App() {
         <Header
           onNavigate={(section) => {
             if (section === "about") handleScroll(aboutRef);
-            if (section === "contact") handleScroll(contactRef);
             if (section === "transaction") handleScroll(transactionRef);
             if (section === "home") handleScroll(homeRef);
             if (section === "testimonial") handleScroll(testimonialRef);
@@ -108,7 +106,6 @@ function App() {
                 <Home
                   homeRef={homeRef}
                   aboutRef={aboutRef}
-                  contactRef={contactRef}
                   transactionRef={transactionRef}
                   testimonialRef={testimonialRef}
                   frequentlyQARef={frequentlyQARef}

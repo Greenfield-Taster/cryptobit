@@ -130,14 +130,6 @@ const Header = ({ onNavigate }) => {
                   {t("header.frequentlyQA")}
                 </button>
               </li>
-              <li className="header__nav-item">
-                <button
-                  onClick={() => onNavigate("contact")}
-                  className="header__nav-link"
-                >
-                  {t("header.contact")}
-                </button>
-              </li>
             </ul>
           </nav>
         )}
