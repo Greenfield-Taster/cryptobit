@@ -89,16 +89,30 @@ class ChatService {
       this.invokeEvent("onClose", error);
     });
 
+    this.connection.on("NewRoomCreated", (room) => {
+      console.log("ChatService отримав подію NewRoomCreated:", room);
+      this.invokeEvent("NewRoomCreated", room);
+    });
+
+    this.connection.on("ChatUpdated", (room) => {
+      console.log("ChatService отримав подію ChatUpdated:", room);
+      this.invokeEvent("ChatUpdated", room);
+    });
+
     const events = [
       "ReceiveMessage",
       "ReceiveMessageHistory",
       "UserTyping",
       "MessagesRead",
+      "MessageStatusUpdated",
+      "MessagesStatusUpdated",
+      "MessageDeleted",
       "NewRoomCreated",
       "RoomCreated",
       "ReceiveAllChats",
       "UserOnline",
       "UserOffline",
+      "ChatUpdated",
       "Error",
     ];
 
