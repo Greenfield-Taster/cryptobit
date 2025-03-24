@@ -130,6 +130,7 @@
     flex: 1;
     padding: 16px;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: #181818;
     display: flex;
     flex-direction: column;
@@ -160,6 +161,11 @@
 
     &.received {
       justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    &.received.consecutive {
+      margin-left: 40px;
     }
 
     &.consecutive {
