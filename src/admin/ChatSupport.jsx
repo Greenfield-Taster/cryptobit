@@ -1111,13 +1111,56 @@ const ChatSupport = () => {
                                     className={`message-status ${message.status.toLowerCase()}`}
                                   >
                                     {message.status === "Sent" && (
-                                      <span className="message-status-sent"></span>
+                                      <span className="message-status-sent">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        >
+                                          <path d="M20 6l-11 11-5-5"></path>
+                                        </svg>
+                                      </span>
                                     )}
                                     {message.status === "Delivered" && (
-                                      <span className="message-status-delivered"></span>
+                                      <span className="message-status-delivered">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        >
+                                          <path d="M20 6l-11 11-5-5"></path>
+                                        </svg>
+                                      </span>
                                     )}
                                     {message.status === "Read" && (
-                                      <span className="message-status-read"></span>
+                                      <span className="message-status-read">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        >
+                                          <path d="M18 7l-8 8-4-4"></path>
+                                          <path d="M9 11l-4 4-4-4"></path>
+                                        </svg>
+                                      </span>
                                     )}
                                   </span>
                                 )}
