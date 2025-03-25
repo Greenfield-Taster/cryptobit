@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/cryptobit/static/css/main.21f59834.css",
-    "main.js": "/cryptobit/static/js/main.24029246.js",
+    "main.css": "/cryptobit/static/css/main.8832d3b1.css",
+    "main.js": "/cryptobit/static/js/main.07bcdb83.js",
     "static/media/about-main-img.png": "/cryptobit/static/media/about-main-img.110193fa71af4413677b.png",
     "static/media/main-img.png": "/cryptobit/static/media/main-img.641575cdeab25b9e62ad.png",
     "static/media/monobank-logo.png": "/cryptobit/static/media/monobank-logo.eee905e45a15b0f6e52e.png",
@@ -15,11 +15,11 @@
     "static/media/round.png": "/cryptobit/static/media/round.75e7221e9d5d0fc42565.png",
     "static/media/team3.png": "/cryptobit/static/media/team3.a4488badbad910dc56fe.png",
     "index.html": "/cryptobit/index.html",
-    "main.21f59834.css.map": "/cryptobit/static/css/main.21f59834.css.map",
-    "main.24029246.js.map": "/cryptobit/static/js/main.24029246.js.map"
+    "main.8832d3b1.css.map": "/cryptobit/static/css/main.8832d3b1.css.map",
+    "main.07bcdb83.js.map": "/cryptobit/static/js/main.07bcdb83.js.map"
   },
   "entrypoints": [
-    "static/css/main.21f59834.css",
-    "static/js/main.24029246.js"
+    "static/css/main.8832d3b1.css",
+    "static/js/main.07bcdb83.js"
   ]
 }
