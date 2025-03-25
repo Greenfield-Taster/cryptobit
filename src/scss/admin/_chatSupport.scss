@@ -469,6 +469,20 @@
     color: rgba(255, 255, 255, 0.8);
   }
 
+  .message-status-sent svg,
+  .message-status-read svg {
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .message-status-sent svg {
+    color: #a0a0a0;
+  }
+
+  .message-status-read svg {
+    color: #2196f3;
+  }
+
   &__connection-status {
     display: flex;
     align-items: center;
