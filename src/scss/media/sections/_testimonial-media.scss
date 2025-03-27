@@ -29,7 +29,7 @@
         margin: 0 auto;
 
         img {
-          left: 50%; // центрирование изображения
+          left: 50%;
           transform: translateX(-50%);
         }
       }
@@ -44,6 +44,10 @@
   .client-story__title {
     font-size: 36px;
     margin-bottom: 48px;
+  }
+
+  .testimonial__content {
+    padding: 24px;
   }
 }
 
@@ -71,6 +75,8 @@
 
   .testimonial {
     &__header {
+      flex-direction: column;
+      align-items: flex-start;
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -82,9 +88,11 @@
 
     &__name {
       font-size: 20px;
-      flex-direction: column;
+      flex-direction: row;
+      display: flex;
+      justify-content: space-between;
       align-items: flex-start;
-      gap: 8px;
+      gap: 13px;
     }
 
     &__text {
@@ -92,13 +100,9 @@
       line-height: 1.6;
       margin-bottom: 24px;
     }
-  }
 
-  .nav-dot {
-    width: 32px;
-
-    &.active {
-      width: 48px;
+    &__content {
+      padding: 20px;
     }
   }
 
