@@ -35,13 +35,18 @@
   &__links {
     display: flex;
     gap: 24px;
+    cursor: pointer;
 
-    p {
+    button {
       color: #ffffff;
       text-decoration: none;
       font-size: 14px;
       transition: all 0.3s ease;
       position: relative;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
 
       &:after {
         content: "";

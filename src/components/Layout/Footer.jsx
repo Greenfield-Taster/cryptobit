@@ -1,5 +1,6 @@
-import React from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import PrivacyPolicyModal from "../modals/PrivacyPolicy";
 import "../../scss/main.scss";
 import logo2 from "../../assets/images/logo2.png";
 import bybitLogo from "../../assets/images/Bybit-Logo.png";
@@ -9,6 +10,10 @@ import monoLogo from "../../assets/images/monobank-logo.png";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <footer className="footer">
@@ -18,16 +23,12 @@ const Footer = () => {
             <img src={logo2} alt="logo" />
           </div>
           <div className="footer__links">
-            <p>{t("footer.privacyPolicy")}</p>
-            <p>{t("footer.termsAndConditions")}</p>
+            <button onClick={openModal}>{t("footer.privacyPolicy")}</button>
           </div>
         </div>
 
         <div className="footer__bottom">
-          <div className="footer__copyright">
-            © 2025 Cryptobit. {t("footer.developedBy")}{" "}
-            <span>GreenTeaTaster</span>
-          </div>
+          <div className="footer__copyright">© 2025 Cryptobit</div>
           <div className="footer__payments">
             <img src={bybitLogo} alt="ByBit" />
             <img src={binanceLogo} alt="Binance" />
@@ -36,6 +37,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <PrivacyPolicyModal isOpen={isModalOpen} onClose={closeModal} />
     </footer>
   );
 };

@@ -10,8 +10,6 @@ const enTranslations = {
   },
   footer: {
     privacyPolicy: "Privacy Policy",
-    termsAndConditions: "Terms & Conditions",
-    developedBy: "Developed by",
   },
   home: {
     title: "Ability to buy & cash cryptocurrency",
@@ -200,6 +198,75 @@ const enTranslations = {
     backToChats: "Back to Chats",
     send: "Send",
     minimize: "Minimize",
+  },
+  privacyPolicy: {
+    title: "Privacy Policy",
+    section1: {
+      title: "1. General Provisions",
+      content:
+        'This Privacy Policy (hereinafter referred to as the "Policy") regulates the processing and protection of personal data of users (hereinafter referred to as the "User") of the cryptocurrency exchange service (hereinafter referred to as the "Service"). By using the Service, the User agrees to this Policy.',
+    },
+    section2: {
+      title: "2. Collection and Use of Personal Data",
+      intro: "The Service may request and collect the following personal data:",
+      dataTypes: {
+        name: "Full name or pseudonym;",
+        contact: "Contact information (email, phone number);",
+        payment: "Payment information (cryptocurrency wallets, details);",
+        technical: "IP address and device data.",
+      },
+      usageIntro: "This data is used for:",
+      usageTypes: {
+        service: "Ensuring the operation of the Service;",
+        support: "User support;",
+        legal: "Compliance with legal requirements (e.g., AML/KYC);",
+        improvement: "Improving service quality.",
+      },
+    },
+    section3: {
+      title: "3. Data Protection",
+      content:
+        "The Service applies modern information security measures, including data encryption and limited employee access to personal data.",
+    },
+    section4: {
+      title: "4. Disclosure to Third Parties",
+      intro:
+        "The Service does not transfer personal data to third parties, except in cases of:",
+      cases: {
+        legal: "Compliance with legal requirements;",
+        amlKyc: "Conducting AML/KYC procedures;",
+        payments: "Processing payments through partners.",
+      },
+    },
+    section5: {
+      title: "5. Data Storage",
+      content:
+        "Personal data is stored for the period necessary to fulfill the purposes of processing, but not less than the period established by law.",
+    },
+    section6: {
+      title: "6. User Rights",
+      intro: "The User has the right to:",
+      rights: {
+        access: "Request access to their data;",
+        modify: "Request correction or deletion of data;",
+        withdraw: "Withdraw consent to data processing.",
+      },
+    },
+    section7: {
+      title: "7. Service Fee",
+      content:
+        "When exchanging cryptocurrencies, the Service charges a fee from the buyer, the amount of which is indicated when making a transaction.",
+    },
+    section8: {
+      title: "8. Changes to the Policy",
+      content:
+        "The Service reserves the right to change this Policy. The updated version takes effect from the moment of publication.",
+    },
+    section9: {
+      title: "9. Contact Information",
+      content:
+        "For issues related to this Policy, the User can contact the Service support through email or messengers indicated on the website.",
+    },
   },
 };
 
