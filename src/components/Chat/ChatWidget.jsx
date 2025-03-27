@@ -11,6 +11,7 @@ const ChatWidget = () => {
   const { isConnected, connectionError, chatService } = useSignalR();
 
   const [messages, setMessages] = useState([]);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [currentRoomId, setCurrentRoomId] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(null);
   const [messageText, setMessageText] = useState("");
@@ -23,9 +24,11 @@ const ChatWidget = () => {
   const [userRooms, setUserRooms] = useState([]);
   const [lastScrollHeight, setLastScrollHeight] = useState(0);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [pendingMessages, setPendingMessages] = useState(new Set());
 
   const messagesEndRef = useRef(null);
   const messagesDivRef = useRef(null);
+  const newMessagesBadgeRef = useRef(null);
 
   useEffect(() => {
     const loadUserRooms = async () => {
@@ -55,23 +58,178 @@ const ChatWidget = () => {
   }, [isConnected, user, currentRoomId, chatService]);
 
   useEffect(() => {
+    const checkUnreadMessages = async () => {
+      if (!user || !user.id || !isConnected || !userRooms.length) return;
+
+      try {
+        let totalUnread = 0;
+
+        for (const roomId of userRooms.map((room) => room.id)) {
+          if (!roomId) continue;
+
+          try {
+            const response = await fetch(
+              `${
+                process.env.REACT_APP_API_URL ||
+                "https://chat-service-dev.azurewebsites.net"
+              }/api/ChatMessages/room/${roomId}`
+            );
+
+            if (!response.ok) continue;
+
+            const roomMessages = await response.json();
+
+            const unreadInRoom = roomMessages.filter(
+              (msg) => msg.senderId !== user.id && msg.status !== "Read"
+            ).length;
+
+            totalUnread += unreadInRoom;
+          } catch (roomError) {
+            console.error(`Error checking room ${roomId} messages:`, roomError);
+          }
+        }
+
+        setUnreadMessages(totalUnread);
+        setHasNewMessages(totalUnread > 0);
+
+        if (totalUnread > 0 && newMessagesBadgeRef.current && !isOpen) {
+          newMessagesBadgeRef.current.classList.add("pulse");
+          setTimeout(() => {
+            if (newMessagesBadgeRef.current) {
+              newMessagesBadgeRef.current.classList.remove("pulse");
+            }
+          }, 1000);
+        }
+      } catch (error) {
+        console.error("Failed to check unread messages:", error);
+      }
+    };
+
+    checkUnreadMessages();
+
+    const intervalId = setInterval(checkUnreadMessages, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [isConnected, user, userRooms, isOpen]);
+
+  useEffect(() => {
     if (!isConnected) return;
 
     const handleReceiveMessage = (message) => {
+      const normalizedMessage = {
+        id: message.id || message.Id,
+        message: message.message || message.Message || message.content,
+        timestamp: message.timestamp || message.Timestamp,
+        status: message.status || message.Status,
+        roomId:
+          message.roomId ||
+          message.RoomId ||
+          message.chatRoomId ||
+          message.ChatRoomId,
+        senderId:
+          message.senderId ||
+          message.SenderId ||
+          (message.sender ? message.sender.id : null),
+        sender: message.sender || message.Sender || null,
+      };
+
       setMessages((prev) => {
-        const exists = prev.some((msg) => msg.id === message.id);
-        if (exists) return prev;
-        return [...prev, message];
+        const existingMessageIndex = prev.findIndex(
+          (msg) =>
+            msg.id === normalizedMessage.id ||
+            (msg.isPending &&
+              msg.message === normalizedMessage.message &&
+              msg.sender?.id === normalizedMessage.senderId)
+        );
+
+        if (existingMessageIndex !== -1) {
+          return prev.map((msg, index) =>
+            index === existingMessageIndex
+              ? {
+                  ...msg,
+                  id: normalizedMessage.id || msg.id,
+                  status: normalizedMessage.status || msg.status,
+                  isPending: false,
+                }
+              : msg
+          );
+        }
+
+        return [...prev, normalizedMessage];
       });
 
-      if (!isOpen && message.sender?.id !== user.id) {
+      if (
+        normalizedMessage.senderId !== user.id &&
+        (!isOpen || normalizedMessage.roomId !== currentRoomId)
+      ) {
         setHasNewMessages(true);
+        setUnreadMessages((prev) => prev + 1);
+
+        if (newMessagesBadgeRef.current) {
+          newMessagesBadgeRef.current.classList.add("pulse");
+          setTimeout(() => {
+            if (newMessagesBadgeRef.current) {
+              newMessagesBadgeRef.current.classList.remove("pulse");
+            }
+          }, 1000);
+        }
       }
     };
 
     const handleReceiveMessageHistory = (roomId, messageHistory) => {
       if (roomId === currentRoomId) {
-        setMessages(messageHistory);
+        const normalizedMessages = Array.isArray(messageHistory)
+          ? messageHistory.map((msg) => ({
+              id: msg.id || msg.Id,
+              message: msg.message || msg.Message || msg.content,
+              timestamp: msg.timestamp || msg.Timestamp,
+              status: msg.status || msg.Status,
+              roomId:
+                msg.roomId || msg.RoomId || msg.chatRoomId || msg.ChatRoomId,
+              senderId:
+                msg.senderId ||
+                msg.SenderId ||
+                (msg.sender ? msg.sender.id : null),
+              sender: msg.sender || msg.Sender || null,
+            }))
+          : [];
+
+        const uniqueMessages = [];
+        const messageIds = new Set();
+
+        for (const msg of normalizedMessages) {
+          if (!messageIds.has(msg.id)) {
+            messageIds.add(msg.id);
+            uniqueMessages.push(msg);
+          }
+        }
+
+        setMessages(uniqueMessages);
+
+        const notFromUser = uniqueMessages.filter(
+          (msg) => msg.senderId !== user.id
+        );
+
+        if (notFromUser.length > 0 && isOpen) {
+          fetch(
+            `${
+              process.env.REACT_APP_API_URL ||
+              "https://chat-service-dev.azurewebsites.net"
+            }/api/ChatMessages/room/${roomId}/status`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                status: "Read",
+                userId: user.id,
+              }),
+            }
+          ).catch((error) =>
+            console.error("Failed to update message statuses:", error)
+          );
+        }
       }
     };
 
@@ -85,6 +243,32 @@ const ChatWidget = () => {
       }
     };
 
+    const handleMessageStatusUpdated = (messageId, status, userId) => {
+      setMessages((prev) => {
+        return prev.map((msg) => {
+          if (msg.id === messageId) {
+            return { ...msg, status: status };
+          }
+          return msg;
+        });
+      });
+    };
+
+    const handleMessagesStatusUpdated = (
+      roomId,
+      messageIds,
+      status,
+      userId
+    ) => {
+      if (roomId === currentRoomId) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            messageIds.includes(msg.id) ? { ...msg, status: status } : msg
+          )
+        );
+      }
+    };
+
     const handleRoomCreated = (roomId) => {
       setCurrentRoomId(roomId);
       chatService.joinRoom(roomId);
@@ -93,12 +277,16 @@ const ChatWidget = () => {
     chatService.on("ReceiveMessage", handleReceiveMessage);
     chatService.on("ReceiveMessageHistory", handleReceiveMessageHistory);
     chatService.on("MessagesRead", handleMessagesRead);
+    chatService.on("MessageStatusUpdated", handleMessageStatusUpdated);
+    chatService.on("MessagesStatusUpdated", handleMessagesStatusUpdated);
     chatService.on("RoomCreated", handleRoomCreated);
 
     return () => {
       chatService.off("ReceiveMessage", handleReceiveMessage);
       chatService.off("ReceiveMessageHistory", handleReceiveMessageHistory);
       chatService.off("MessagesRead", handleMessagesRead);
+      chatService.off("MessageStatusUpdated", handleMessageStatusUpdated);
+      chatService.off("MessagesStatusUpdated", handleMessagesStatusUpdated);
       chatService.off("RoomCreated", handleRoomCreated);
     };
   }, [isConnected, currentRoomId, isOpen, user, chatService]);
@@ -119,26 +307,41 @@ const ChatWidget = () => {
       );
 
       if (unreadMessages.length > 0) {
-        for (const msg of unreadMessages) {
-          try {
-            await fetch(
-              `${process.env.REACT_APP_API_URL}/api/ChatMessages/${msg.id}/status`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ status: "Read", userId: user.id }),
-              }
-            );
-          } catch (error) {
-            console.error("Failed to update message status:", error);
-          }
+        try {
+          await fetch(
+            `${
+              process.env.REACT_APP_API_URL ||
+              "https://chat-service-dev.azurewebsites.net"
+            }/api/ChatMessages/room/${currentRoomId}/status`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                status: "Read",
+                userId: user.id,
+              }),
+            }
+          );
+
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.sender?.id !== user.id ? { ...msg, status: "Read" } : msg
+            )
+          );
+
+          setUnreadMessages(0);
+          setHasNewMessages(false);
+        } catch (error) {
+          console.error("Failed to update message statuses:", error);
         }
       }
     };
 
-    updateMessageStatuses();
+    if (isOpen) {
+      updateMessageStatuses();
+    }
   }, [messages, currentRoomId, isOpen, user, isConnected]);
 
   useEffect(() => {
@@ -146,23 +349,57 @@ const ChatWidget = () => {
 
     if (messagesDiv && isOpen) {
       if (loadingMore) {
-        // Сохраняем текущее положение прокрутки перед загрузкой дополнительных сообщений
         setLastScrollHeight(messagesDiv.scrollHeight);
       } else if (lastScrollHeight > 0) {
-        // После загрузки сохраняем относительное положение прокрутки
         messagesDiv.scrollTop = messagesDiv.scrollHeight - lastScrollHeight;
         setLastScrollHeight(0);
       } else if (initialLoadComplete && !loadingMore) {
-        // Прокручиваем вниз только при первоначальной загрузке или при новых сообщениях
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+
+        const isAtBottom =
+          messagesDiv.scrollHeight -
+            messagesDiv.scrollTop -
+            messagesDiv.clientHeight <
+          50;
+
+        if (isAtBottom) {
+          setHasNewMessages(false);
+        }
       }
     }
   }, [messages, loadingMore, lastScrollHeight, initialLoadComplete, isOpen]);
 
+  useEffect(() => {
+    const messagesDiv = messagesDivRef.current;
+
+    const handleScroll = () => {
+      if (!messagesDiv) return;
+
+      const isAtBottom =
+        messagesDiv.scrollHeight -
+          messagesDiv.scrollTop -
+          messagesDiv.clientHeight <
+        50;
+
+      if (isAtBottom && isOpen) {
+        setHasNewMessages(false);
+      }
+    };
+
+    if (messagesDiv) {
+      messagesDiv.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (messagesDiv) {
+        messagesDiv.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [isOpen]);
+
   const toggleChat = useCallback(() => {
     setIsOpen(!isOpen);
     if (!isOpen) {
-      setHasNewMessages(false);
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 300);
@@ -282,6 +519,25 @@ const ChatWidget = () => {
     try {
       setSendingMessage(true);
 
+      const localId = `local_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 9)}`;
+
+      const tempMessage = {
+        id: localId,
+        localId: localId,
+        message: message,
+        sender: user,
+        senderId: user.id,
+        timestamp: new Date().toISOString(),
+        status: "Sending",
+        isPending: true,
+      };
+
+      setMessages((prev) => [...prev, tempMessage]);
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       if (!currentRoomId) {
         await createNewChatAndSendMessage(message);
       } else {
@@ -289,9 +545,26 @@ const ChatWidget = () => {
       }
     } catch (error) {
       console.error("Failed to send message:", error);
-      setMessageText(message);
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.isPending && msg.message === message
+            ? { ...msg, status: "Error" }
+            : msg
+        )
+      );
     } finally {
       setSendingMessage(false);
+    }
+  };
+
+  const handleRetryMessage = async (msg) => {
+    try {
+      setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+
+      setMessageText(msg.message);
+    } catch (error) {
+      console.error("Failed to retry message:", error);
     }
   };
 
@@ -302,7 +575,8 @@ const ChatWidget = () => {
 
         const response = await fetch(
           `${
-            process.env.REACT_APP_API_URL
+            process.env.REACT_APP_API_URL ||
+            "https://chat-service-dev.azurewebsites.net"
           }/api/PaginatedMessages/room/${currentRoomId}?page=${
             Math.floor(messages.length / 20) + 1
           }&pageSize=20`
@@ -382,9 +656,22 @@ const ChatWidget = () => {
       <div
         className={`user-chat-toggle ${hasNewMessages ? "new-message" : ""}`}
         onClick={toggleChat}
+        title={
+          hasNewMessages
+            ? `У вас ${unreadMessages} непрочитанных сообщений`
+            : "Открыть чат"
+        }
       >
         <img src={chatWidget} alt="chat-widget" />
-        {hasNewMessages && <span className="user-chat-badge"></span>}
+        {hasNewMessages && (
+          <span className="user-chat-badge" ref={newMessagesBadgeRef}>
+            {unreadMessages > 0 && unreadMessages <= 99
+              ? unreadMessages
+              : unreadMessages > 99
+              ? "99+"
+              : ""}
+          </span>
+        )}
       </div>
 
       <div className={`user-chat ${isOpen ? "visible" : "hidden"}`}>
@@ -437,7 +724,12 @@ const ChatWidget = () => {
               )}
 
               {messages.map((msg, index) => {
-                const isSentByMe = msg.sender?.id === user.id;
+                const isDuplicate =
+                  messages.findIndex((m) => m.id === msg.id) !== index;
+                if (isDuplicate) return null;
+
+                const isSentByMe =
+                  msg.sender?.id === user.id || msg.senderId === user.id;
                 const isAdmin = msg.sender?.role === "admin";
                 const prevMsg = index > 0 ? messages[index - 1] : null;
                 const showDateHeader = !isSameDay(
@@ -446,11 +738,14 @@ const ChatWidget = () => {
                 );
                 const isConsecutive =
                   prevMsg &&
-                  prevMsg.sender?.id === msg.sender?.id &&
+                  (prevMsg.sender?.id === msg.sender?.id ||
+                    prevMsg.senderId === msg.senderId) &&
                   !showDateHeader;
+                const isPending = msg.isPending;
+                const hasError = msg.status === "Error";
 
                 return (
-                  <React.Fragment key={msg.id}>
+                  <React.Fragment key={msg.id || index}>
                     {showDateHeader && (
                       <div className="user-chat__date-header">
                         {formatDate(msg.timestamp)}
@@ -461,6 +756,8 @@ const ChatWidget = () => {
                         isSentByMe ? "sent" : "received"
                       } ${isAdmin ? "admin" : "user"} ${
                         isConsecutive ? "consecutive" : ""
+                      } ${isPending ? "pending" : ""} ${
+                        hasError ? "error" : ""
                       }`}
                     >
                       {!isSentByMe && !isConsecutive && (
@@ -484,7 +781,21 @@ const ChatWidget = () => {
                             </span>
                             {isSentByMe && (
                               <span className="user-chat__message-status">
-                                {msg.status === "Read" ? "✓✓" : "✓"}
+                                {hasError ? (
+                                  <span
+                                    className="user-chat__retry-button"
+                                    onClick={() => handleRetryMessage(msg)}
+                                    title="Повторить отправку"
+                                  >
+                                    ↻
+                                  </span>
+                                ) : isPending ? (
+                                  "⋯"
+                                ) : msg.status === "Read" ? (
+                                  "✓✓"
+                                ) : (
+                                  "✓"
+                                )}
                               </span>
                             )}
                           </div>
