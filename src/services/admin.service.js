@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL =
-  "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net";
+const API_URL = process.env.REACT_APP_API_BOT_URL;
 
 axios.defaults.baseURL = API_URL;
 

@@ -1,7 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import authService from "./auth.service";
 
-const API_URL = "https://chat-service-dev.azurewebsites.net";
+const API_URL = process.env.REACT_APP_API_URL;
 const HUB_URL = `${API_URL}/chatHub`;
 
 class ChatService {

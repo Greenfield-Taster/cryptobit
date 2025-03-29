@@ -8,10 +8,9 @@ const CryptocurrenciesList = ({ cryptos, loading, error, onCryptoSelect }) => {
   return (
     <div className="crypto-list-container">
       <h1 className="title">{t("transaction.cryptocurrencies")}</h1>
-      {error && <div className="error">{error}</div>}
 
       {loading ? (
-        <div className="loader">{t("transaction.loader")}</div>
+        <div className="loader">{t("transaction.loading")}</div>
       ) : (
         <div className="crypto-list">
           {cryptos.map((crypto, index) => (

@@ -319,7 +319,7 @@ const CryptoConverter = ({ cryptos, selectedFromList }) => {
         amount: parseFloat(amount),
         calculatedAmount: parseFloat(calculateConversion()),
         senderWallet,
-        recipientWallet: "vlad`s-wallet",
+        recipientWallet: process.env.REACT_APP_RECIPIENT_WALLET,
         saveFromWallet: Boolean(saveFromWallet),
         orderId,
         promoCode: appliedPromoCode ? appliedPromoCode.code : null,

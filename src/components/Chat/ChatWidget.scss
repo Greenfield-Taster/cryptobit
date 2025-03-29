@@ -35,35 +35,32 @@
     background-color: #e5a900;
   }
 
-  /* Постоянная пульсация, когда есть непрочитанные сообщения */
   &.new-message {
     animation: continuous-pulse 2s infinite;
   }
 }
 
-/* Красная точка непрочитанных сообщений */
 .user-chat-badge {
   position: absolute;
   top: -8px;
   right: -8px;
   min-width: 20px;
   height: 20px;
-  background-color: #ff3b30; /* Яркий красный цвет */
+  background-color: #ff3b30;
   color: white;
   font-size: 12px;
   line-height: 20px;
   text-align: center;
   border-radius: 50%;
-  border: 2px solid #ffffff; /* Белая обводка для контраста */
+  border: 2px solid #ffffff;
   font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Усиленная тень */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   z-index: 10;
   transform: scale(1);
   transition: transform 0.2s ease;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Анимация постоянной пульсации */
 @keyframes continuous-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(255, 189, 0, 0.6);
@@ -76,7 +73,6 @@
   }
 }
 
-/* Анимация пульсации для значка уведомления */
 .user-chat-badge.pulse {
   animation: badgeBounce 1s ease infinite;
 }
@@ -216,12 +212,10 @@
       margin-top: -4px;
     }
 
-    /* Стили для сообщений в процессе отправки */
     &.pending {
       opacity: 0.7;
     }
 
-    /* Стили для сообщений с ошибкой отправки */
     &.error .user-chat__message {
       border-color: #ff3b30;
       border-width: 2px;
@@ -571,7 +565,6 @@
   }
 }
 
-/* Анимация для нового сообщения */
 @keyframes newMessage {
   0% {
     transform: translateY(10px);

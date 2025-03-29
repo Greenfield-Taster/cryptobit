@@ -24,7 +24,6 @@ const ChatWidget = () => {
   const [userRooms, setUserRooms] = useState([]);
   const [lastScrollHeight, setLastScrollHeight] = useState(0);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [pendingMessages, setPendingMessages] = useState(new Set());
 
   const messagesEndRef = useRef(null);
   const messagesDivRef = useRef(null);
@@ -69,10 +68,7 @@ const ChatWidget = () => {
 
           try {
             const response = await fetch(
-              `${
-                process.env.REACT_APP_API_URL ||
-                "https://chat-service-dev.azurewebsites.net"
-              }/api/ChatMessages/room/${roomId}`
+              `${process.env.REACT_APP_API_URL}/api/ChatMessages/room/${roomId}`
             );
 
             if (!response.ok) continue;
@@ -212,10 +208,7 @@ const ChatWidget = () => {
 
         if (notFromUser.length > 0 && isOpen) {
           fetch(
-            `${
-              process.env.REACT_APP_API_URL ||
-              "https://chat-service-dev.azurewebsites.net"
-            }/api/ChatMessages/room/${roomId}/status`,
+            `${process.env.REACT_APP_API_URL}/api/ChatMessages/room/${roomId}/status`,
             {
               method: "PUT",
               headers: {
@@ -309,10 +302,7 @@ const ChatWidget = () => {
       if (unreadMessages.length > 0) {
         try {
           await fetch(
-            `${
-              process.env.REACT_APP_API_URL ||
-              "https://chat-service-dev.azurewebsites.net"
-            }/api/ChatMessages/room/${currentRoomId}/status`,
+            `${process.env.REACT_APP_API_URL}/api/ChatMessages/room/${currentRoomId}/status`,
             {
               method: "PUT",
               headers: {
@@ -430,12 +420,7 @@ const ChatWidget = () => {
         console.warn("User authentication error:", authError);
       }
 
-      const users = await fetch(
-        `${
-          process.env.REACT_APP_API_URL ||
-          "https://chat-service-dev.azurewebsites.net"
-        }/api/Users`
-      )
+      const users = await fetch(`${process.env.REACT_APP_API_URL}/api/Users`)
         .then((res) => {
           if (!res.ok) {
             throw new Error(`Failed to fetch users: ${res.status}`);
@@ -575,8 +560,7 @@ const ChatWidget = () => {
 
         const response = await fetch(
           `${
-            process.env.REACT_APP_API_URL ||
-            "https://chat-service-dev.azurewebsites.net"
+            process.env.REACT_APP_API_URL
           }/api/PaginatedMessages/room/${currentRoomId}?page=${
             Math.floor(messages.length / 20) + 1
           }&pageSize=20`
