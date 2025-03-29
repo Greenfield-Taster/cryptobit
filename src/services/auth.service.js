@@ -133,6 +133,7 @@ const AuthService = {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("userWallets");
+    localStorage.removeItem("cryptoData");
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
