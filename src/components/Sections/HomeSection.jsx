@@ -8,6 +8,7 @@ import guarentedImage from "../../assets/images/style-2.png";
 import cross1 from "../../assets/images/cross.png";
 import cross2 from "../../assets/images/cross-2.png";
 import halfCircle from "../../assets/images/half-circle.png";
+import shapeImg from "../../assets/images/shape.png";
 
 function HomeSection({ onNavigate }) {
   const { t } = useTranslation();
@@ -17,8 +18,15 @@ function HomeSection({ onNavigate }) {
       <div className="section__home">
         <div className="section__home-container">
           <div className="section__home__content">
-            <div className="section__home__content-oval"></div>
             <h1 className="section__home__title">{t("home.title")}</h1>
+            <div className="section__home__content-logo-container">
+              <img
+                src={shapeImg}
+                alt="shape"
+                className="section__home__shape-image"
+              />
+              <h1 className="section__home__titleLogo">CRYPTOBIT</h1>
+            </div>
             <p className="section__home__description">
               {t("home.description")}
             </p>

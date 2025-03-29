@@ -12,9 +12,9 @@ const enTranslations = {
     privacyPolicy: "Privacy Policy",
   },
   home: {
-    title: "Ability to buy & cash cryptocurrency",
+    title: "Safe and secure cryptocurrency transactions",
     description:
-      " Secure cryptocurrency operations: buy, sell and exchange using modern encryption technologies.",
+      "Buy, sell and exchange using advanced encryption technologies. Fast transaction processing and high level of protection guarantee your financial security.",
     getStarted: "Get Started Now",
   },
   transaction: {
