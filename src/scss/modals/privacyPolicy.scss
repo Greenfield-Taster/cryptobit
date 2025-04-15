@@ -1,10 +1,12 @@
+@use "sass:color";
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: color.change(#000000, $alpha: 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +22,7 @@
   max-width: 800px;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px color.change(#000000, $alpha: 0.3);
   color: #ffffff;
   border: 1px solid #333333;
 }
@@ -53,64 +55,64 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-}
 
-.close-button:hover {
-  color: #f7b614;
-  background-color: rgba(247, 182, 20, 0.1);
+  &:hover {
+    color: #f7b614;
+    background-color: color.change(#f7b614, $alpha: 0.1);
+  }
 }
 
 .modal-content {
   padding: 24px;
   overflow-y: auto;
   max-height: calc(90vh - 80px);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #222222;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+
+    &:hover {
+      background: color.adjust(#444444, $lightness: 7%);
+    }
+  }
 }
 
 .policy-section {
   margin-bottom: 24px;
-}
 
-.policy-section h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 12px;
-  color: #f7b614;
-}
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #f7b614;
+  }
 
-.policy-section p {
-  margin: 0 0 16px;
-  line-height: 1.6;
-  color: #e0e0e0;
-}
+  p {
+    margin: 0 0 16px;
+    line-height: 1.6;
+    color: #e0e0e0;
+  }
 
-.policy-section ul {
-  margin: 0 0 16px;
-  padding-left: 20px;
-}
+  ul {
+    margin: 0 0 16px;
+    padding-left: 20px;
+  }
 
-.policy-section li {
-  margin-bottom: 8px;
-  line-height: 1.6;
-  color: #e0e0e0;
-}
-
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: #222222;
-  border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: #444444;
-  border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #555555;
+  li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: #e0e0e0;
+  }
 }
 
 @media (max-width: 768px) {

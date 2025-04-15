@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .footer {
   background-color: #000000;
   width: 100%;
@@ -74,7 +76,7 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgb(255 255 255 / 0.1);
   }
 
   &__copyright {
