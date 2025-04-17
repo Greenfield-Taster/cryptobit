@@ -66,17 +66,6 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [fetchStatistics]);
 
-  const getStatusName = (status) => {
-    const statusMap = {
-      pending: "Ожидающие",
-      processing: "В обработке",
-      completed: "Завершенные",
-      failed: "Неудачные",
-    };
-
-    return statusMap[status] || status;
-  };
-
   if (loading) {
     return (
       <div className="dashboard-container loading">
@@ -84,13 +73,6 @@ const Dashboard = () => {
       </div>
     );
   }
-
-  const statusData = Object.entries(stats.statusCounts || {}).map(
-    ([status, count]) => ({
-      name: getStatusName(status),
-      value: count,
-    })
-  );
 
   const cryptoData = (stats.cryptoStats || []).map((item) => ({
     name: item._id,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import UserEditModal from "./Modals/UserEditModal";
 import UserDetailModal from "./Modals/UserDetailModal";
 import ConfirmModal from "./Modals/ConfirmModal";
@@ -24,11 +24,7 @@ const UserManagement = () => {
 
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [pagination.page, pagination.limit, search]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await adminService.userService.getUsers(
@@ -39,11 +35,11 @@ const UserManagement = () => {
 
       if (response.data.success) {
         setUsers(response.data.data.users);
-        setPagination({
-          ...pagination,
+        setPagination((prev) => ({
+          ...prev,
           total: response.data.data.pagination.total,
           pages: response.data.data.pagination.pages,
-        });
+        }));
       } else {
         console.error("Не удалось загрузить список пользователей");
       }
@@ -52,7 +48,11 @@ const UserManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, search]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);

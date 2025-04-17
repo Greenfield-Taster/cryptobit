@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import LoginForm from "../auth/components/LoginForm";
 import RegisterForm from "../auth/components/RegisterForm";

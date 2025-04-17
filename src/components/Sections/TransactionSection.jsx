@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import "../../scss/main.scss";
 import CryptocurrenciesList from "../../Transactions/CryptocurrenciesList/CryptocurrenciesList";
@@ -44,7 +44,7 @@ const TransactionSection = () => {
     return null;
   };
 
-  const fetchCryptos = async () => {
+  const fetchCryptos = useCallback(async () => {
     const cachedData = getCachedData();
     if (cachedData) {
       setCryptos(cachedData);
@@ -93,13 +93,13 @@ const TransactionSection = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCryptos();
     const interval = setInterval(fetchCryptos, 300000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchCryptos]);
 
   const handleCryptoSelect = (crypto) => {
     setSelectedFromListCrypto(crypto);
