@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import adminService from "../services/admin.service";
 import ConfirmModal from "./Modals/ConfirmModal";
@@ -33,44 +33,7 @@ const ExchangeRequests = () => {
   const viewDropdownRef = useRef(null);
   const actionDropdownRef = useRef(null);
 
-  useEffect(() => {
-    fetchRequests();
-    console.log(selectedRequest);
-  }, [pagination.page, pagination.limit, filters]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        viewDropdownRef.current &&
-        !viewDropdownRef.current.contains(event.target)
-      ) {
-        setActiveViewDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [viewDropdownRef]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        actionDropdownRef.current &&
-        !actionDropdownRef.current.contains(event.target)
-      ) {
-        setActiveActionDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [actionDropdownRef]);
-
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -117,7 +80,43 @@ const ExchangeRequests = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, filters]);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        viewDropdownRef.current &&
+        !viewDropdownRef.current.contains(event.target)
+      ) {
+        setActiveViewDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [viewDropdownRef]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        actionDropdownRef.current &&
+        !actionDropdownRef.current.contains(event.target)
+      ) {
+        setActiveActionDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [actionDropdownRef]);
 
   const handleStatusChange = (e) => {
     setFilters({ ...filters, status: e.target.value });

@@ -1,36 +1,36 @@
-@import "sections/home";
-@import "sections/transaction";
-@import "sections/about";
-@import "sections/contact";
-@import "sections/testimonial";
-@import "sections/frequentlyQA";
-@import "sections/animations";
+@use "./sections/home";
+@use "./sections/transaction";
+@use "./sections/about";
+@use "./sections/contact";
+@use "./sections/testimonial";
+@use "./sections/frequentlyQA";
+@use "./sections/animations";
 
-@import "media/sections/about-media";
-@import "media/sections/contact-media";
-@import "media/sections/frequentlyQA-media";
-@import "media/sections/home-media";
-@import "media/sections/testimonial-media";
-@import "media/sections/transaction-media";
+@use "./media/sections/about-media";
+@use "./media/sections/contact-media";
+@use "./media/sections/frequentlyQA-media";
+@use "./media/sections/home-media";
+@use "./media/sections/testimonial-media";
+@use "./media/sections/transaction-media";
 
-@import "header.scss";
-@import "media/header";
+@use "./header.scss";
+@use "./media/header-media";
 
-@import "footer.scss";
-@import "media/footer";
+@use "./footer.scss";
+@use "./media/footer-media";
 
-@import "./auth/auth.scss";
-@import "./auth/login-form";
-@import "./auth/register-form";
+@use "./auth/auth";
+@use "./auth/login-form";
+@use "./auth/register-form";
 
-@import "./pages/profile.scss";
-@import "./media//pages/profile-media";
+@use "./pages/profile.scss";
+@use "./media/pages/profile-media";
 
-@import "./pages/payment.scss";
-@import "./media//pages/payment-media";
+@use "./pages/payment.scss";
+@use "./media/pages/payment-media";
 
-@import "./pages/admin.scss";
-@import "./media//pages/admin-media";
+@use "./pages/admin.scss";
+@use "./media/pages/admin-media";
 
 .section {
   font-family: "Montserrat", sans-serif;

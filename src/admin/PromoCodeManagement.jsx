@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -39,10 +39,21 @@ const PromoCodeManagement = () => {
 
   const dropdownRef = useRef(null);
 
+  const loadPromoCodes = useCallback(() => {
+    dispatch(
+      getPromoCodes({
+        page: pagination.page,
+        limit: pagination.limit,
+        status,
+        search,
+      })
+    );
+  }, [dispatch, pagination.page, pagination.limit, status, search]);
+
   useEffect(() => {
     dispatch(resetPromoCodeStatuses());
     loadPromoCodes();
-  }, [dispatch, pagination.page, status, search]);
+  }, [dispatch, pagination.page, status, search, loadPromoCodes]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -56,17 +67,6 @@ const PromoCodeManagement = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const loadPromoCodes = () => {
-    dispatch(
-      getPromoCodes({
-        page: pagination.page,
-        limit: pagination.limit,
-        status,
-        search,
-      })
-    );
-  };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.pages) {

@@ -29,7 +29,7 @@ const ChatSupport = () => {
 
   const messagesEndRef = useRef(null);
   const messagesDivRef = useRef(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [setRetryCount] = useState(0);
 
   const normalizeMessageFormat = useCallback((message) => {
     if (!message || typeof message !== "object") return message;
@@ -699,7 +699,13 @@ const ChatSupport = () => {
         clearInterval(intervalId);
       };
     }
-  }, [isConnected, chatRooms.length, user, syncUnreadCountWithMessages]);
+  }, [
+    isConnected,
+    chatRooms,
+    chatRooms.length,
+    user,
+    syncUnreadCountWithMessages,
+  ]);
 
   const handleChatSelect = useCallback(
     (chatRoomId) => {
@@ -812,7 +818,7 @@ const ChatSupport = () => {
   const retryConnection = useCallback(() => {
     console.log("Спроба повторного підключення...");
     setRetryCount((prevCount) => prevCount + 1);
-  }, []);
+  }, [setRetryCount]);
 
   const formatTime = (timestamp) => {
     if (!timestamp) return "";

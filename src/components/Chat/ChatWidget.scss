@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .user-chat-container {
   position: fixed;
   right: 20px;
@@ -342,7 +344,7 @@
       }
 
       &:disabled {
-        background-color: darken(#181818, 5%);
+        background-color: color.scale(#181818, $lightness: -5%);
         cursor: not-allowed;
       }
 
@@ -366,12 +368,12 @@
       transition: all 0.3s ease;
 
       &:hover:not(:disabled) {
-        background-color: darken(#ffbd00, 10%);
+        background-color: color.scale(#ffbd00, $lightness: -10%);
         transform: scale(1.05);
       }
 
       &:disabled {
-        background-color: darken(#181818, 10%);
+        background-color: color.scale(#181818, $lightness: -10%);
         color: #808080;
         cursor: not-allowed;
       }
@@ -460,7 +462,7 @@
       transition: all 0.3s ease;
 
       &:hover {
-        background-color: darken(#ffbd00, 10%);
+        background-color: color.scale(#ffbd00, $lightness: -10%);
       }
     }
   }

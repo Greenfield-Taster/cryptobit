@@ -1,12 +1,14 @@
+@use "sass:color";
+
 .header {
   background-color: #000000;
   padding: 1rem 0;
   font-family: "Montserrat", sans-serif;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.2);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
 
   &__container {
     max-width: 1200px;
@@ -126,7 +128,7 @@
         }
 
         &:not(:last-child) {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: 1px solid rgb(255 255 255 / 0.1);
         }
       }
     }
@@ -145,7 +147,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background-color: darken(#ffb800, 10%);
+      background-color: color.scale(#ffb800, $lightness: -10%);
     }
   }
 
@@ -189,7 +191,7 @@
     overflow: hidden;
 
     &:hover {
-      background-color: darken(#ffb800, 10%);
+      background-color: color.scale(#ffb800, $lightness: -10%);
       transform: scale(1.05);
     }
 

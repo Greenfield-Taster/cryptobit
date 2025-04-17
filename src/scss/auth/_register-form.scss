@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .register-form {
   width: 100%;
 
@@ -12,7 +14,7 @@
   }
 
   input[type="tel"]::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: color.change(#ffffff, $alpha: 0.3);
   }
 
   .submit-button {
@@ -20,8 +22,12 @@
     transition: all 0.3s ease;
 
     &:hover {
-      background: linear-gradient(45deg, #f59e0b, #d97706);
-      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+      background: linear-gradient(
+        45deg,
+        #f59e0b,
+        color.adjust(#f59e0b, $lightness: -10%)
+      );
+      box-shadow: 0 4px 12px color.change(#fbbf24, $alpha: 0.3);
     }
   }
 
@@ -42,7 +48,7 @@
       transition: color 0.25s ease;
 
       &:hover {
-        color: #f59e0b;
+        color: color.adjust(#fbbf24, $lightness: -5%);
       }
     }
   }

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .section {
   &__testimonial {
     padding: 80px 20px;
@@ -123,13 +125,13 @@
   &__content {
     padding: 32px 0;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgb(255 255 255 / 0.05);
     backdrop-filter: blur(10px);
     padding: 32px;
     transition: all 0.3s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgb(255 255 255 / 0.08);
     }
   }
 
@@ -190,14 +192,14 @@
           top: 0;
           width: 50%;
           overflow: hidden;
-          color: rgba(255, 184, 0, 0.3);
+          color: rgb(255 184 0 / 0.3);
         }
       }
     }
   }
 
   &__role {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(255 255 255 / 0.6);
     font-size: 16px;
     margin-top: 2px;
   }
@@ -205,7 +207,7 @@
   &__text {
     font-size: 18px;
     line-height: 1.8;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(255 255 255 / 0.8);
     font-style: italic;
     margin-bottom: 0;
     max-width: 100%;

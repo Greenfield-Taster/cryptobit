@@ -13,7 +13,7 @@ const ChatWidget = () => {
   const [messages, setMessages] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [currentRoomId, setCurrentRoomId] = useState(null);
-  const [currentRoom, setCurrentRoom] = useState(null);
+  const [setCurrentRoom] = useState(null);
   const [messageText, setMessageText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
@@ -54,7 +54,7 @@ const ChatWidget = () => {
     if (isConnected && user) {
       loadUserRooms();
     }
-  }, [isConnected, user, currentRoomId, chatService]);
+  }, [isConnected, user, currentRoomId, chatService, setCurrentRoom]);
 
   useEffect(() => {
     const checkUnreadMessages = async () => {

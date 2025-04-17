@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AuthService from "../../services/auth.service";
 
-const API_URL =
-  "https://cryptobit-telegram-bot-hxa2gdhufnhtfbfs.germanywestcentral-01.azurewebsites.net/api";
+const API_URL = `${process.env.REACT_APP_API_BOT_URL}/api`;
 
 export const createExchangeRequest = createAsyncThunk(
   "exchange/createExchangeRequest",
