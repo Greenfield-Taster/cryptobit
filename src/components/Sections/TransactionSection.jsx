@@ -17,29 +17,10 @@ const CRYPTO_IDS = [
   "staked-ether",
   "avalanche-2",
   "tron",
-  "the-open-network",
+  "ton-token",
   "stellar",
   "shiba-inu",
 ];
-
-// Создаем отображение id CoinGecko на id CoinCap
-const CRYPTO_ID_MAPPING = {
-  bitcoin: "bitcoin",
-  tether: "tether",
-  ethereum: "ethereum",
-  solana: "solana",
-  ripple: "xrp",
-  binancecoin: "binance-coin",
-  dogecoin: "dogecoin",
-  "usd-coin": "usd-coin",
-  cardano: "cardano",
-  "staked-ether": "ethereum", // Используем обычный ethereum как замену
-  "avalanche-2": "avalanche",
-  tron: "tron",
-  "the-open-network": "tontoken",
-  stellar: "stellar",
-  "shiba-inu": "shiba-inu",
-};
 
 const TransactionSection = () => {
   const [cryptos, setCryptos] = useState([]);
@@ -78,36 +59,20 @@ const TransactionSection = () => {
     setError(null);
 
     try {
-      const coinCapIds = Object.values(CRYPTO_ID_MAPPING).join(",");
+      const idsParam = CRYPTO_IDS.join(",");
+
       const response = await fetch(
-        `https://api.coincap.io/v2/assets?ids=${coinCapIds}`
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${idsParam}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`
       );
 
       if (!response.ok) {
         throw new Error("Ошибка при загрузке данных");
       }
 
-      const responseData = await response.json();
-
-      const mappedData = responseData.data.map((coin) => {
-        const originalId = Object.keys(CRYPTO_ID_MAPPING).find(
-          (key) => CRYPTO_ID_MAPPING[key] === coin.id
-        );
-
-        return {
-          id: originalId || coin.id,
-          symbol: coin.symbol,
-          name: coin.name,
-          image: `https://assets.coincap.io/assets/icons/${coin.symbol.toLowerCase()}@2x.png`,
-          current_price: parseFloat(coin.priceUsd),
-          market_cap: parseFloat(coin.marketCapUsd),
-          price_change_percentage_24h: parseFloat(coin.changePercent24Hr),
-          total_volume: parseFloat(coin.volumeUsd24Hr),
-        };
-      });
+      const data = await response.json();
 
       const sortedData = CRYPTO_IDS.map((id) =>
-        mappedData.find((coin) => coin.id === id)
+        data.find((coin) => coin.id === id)
       ).filter(Boolean);
 
       setCryptos(sortedData);
