@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/cryptobit/static/css/main.1a4f2056.css",
-    "main.js": "/cryptobit/static/js/main.26331276.js",
+    "main.css": "/cryptobit/static/css/main.fff1e531.css",
+    "main.js": "/cryptobit/static/js/main.0e2d6366.js",
     "static/media/about-main-img.png": "/cryptobit/static/media/about-main-img.110193fa71af4413677b.png",
     "static/media/main-img.png": "/cryptobit/static/media/main-img.641575cdeab25b9e62ad.png",
     "static/media/user-icon.png": "/cryptobit/static/media/user-icon.28e64809a743d7ab0c82.png",
@@ -13,11 +13,11 @@
     "static/media/about-coin.png": "/cryptobit/static/media/about-coin.ddabec26787f54466ace.png",
     "static/media/round.png": "/cryptobit/static/media/round.75e7221e9d5d0fc42565.png",
     "index.html": "/cryptobit/index.html",
-    "main.1a4f2056.css.map": "/cryptobit/static/css/main.1a4f2056.css.map",
-    "main.26331276.js.map": "/cryptobit/static/js/main.26331276.js.map"
+    "main.fff1e531.css.map": "/cryptobit/static/css/main.fff1e531.css.map",
+    "main.0e2d6366.js.map": "/cryptobit/static/js/main.0e2d6366.js.map"
   },
   "entrypoints": [
-    "static/css/main.1a4f2056.css",
-    "static/js/main.26331276.js"
+    "static/css/main.fff1e531.css",
+    "static/js/main.0e2d6366.js"
   ]
 }
