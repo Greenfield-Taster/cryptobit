@@ -82,7 +82,7 @@ const Header = ({ onNavigate }) => {
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          <Link to="/cryptobit" onClick={() => window.scrollTo(0, 0)}>
+          <Link to="/" onClick={() => window.scrollTo(0, 0)}>
             <img src={logo2} alt="logo" />
           </Link>
         </div>

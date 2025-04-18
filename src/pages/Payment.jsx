@@ -53,7 +53,7 @@ function Payment() {
   }, [orderId, navigate, paymentData]);
 
   const closeRequest = () => {
-    navigate("/cryptobit", { replace: true });
+    navigate("/", { replace: true });
     window.scrollTo(0, 0);
   };
 
@@ -122,7 +122,7 @@ function Payment() {
         <p>{t("payment.textError")}</p>
         <button
           className="btn-primary"
-          onClick={() => navigate("/cryptobit", { replace: true })}
+          onClick={() => navigate("/", { replace: true })}
         >
           {t("payment.goHome")}
         </button>

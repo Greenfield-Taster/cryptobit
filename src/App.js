@@ -101,7 +101,7 @@ function App() {
         <div className="content">
           <Routes>
             <Route
-              path="/cryptobit"
+              path="/"
               element={
                 <Home
                   homeRef={homeRef}
@@ -131,8 +131,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
-        {(location.pathname === "/cryptobit" ||
-          location.pathname === "/cryptobit/") &&
+        {location.pathname === "/" &&
           isAuthenticated &&
           user &&
           user.role !== "admin" && <ChatWidget />}
