@@ -28,11 +28,47 @@ jobs:
       - name: Set legacy peer deps
         run: echo "NPM_CONFIG_LEGACY_PEER_DEPS=true" >> $GITHUB_ENV
         
+      - name: Create web.config
+        run: |
+          cat > ./public/web.config << EOL
+          <?xml version="1.0"?>
+          <configuration>
+            <system.webServer>
+              <rewrite>
+                <rules>
+                  <rule name="React Routes" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                      <add input="{REQUEST_URI}" pattern="^/(api)" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="/" />
+                  </rule>
+                </rules>
+              </rewrite>
+              <staticContent>
+                <mimeMap fileExtension=".json" mimeType="application/json" />
+                <mimeMap fileExtension=".woff" mimeType="application/font-woff" />
+                <mimeMap fileExtension=".woff2" mimeType="application/font-woff2" />
+              </staticContent>
+            </system.webServer>
+          </configuration>
+          EOL
+        
       - name: Install dependencies
         run: npm ci
         
       - name: Build
         run: npm run build
+        
+      - name: Verify build directory
+        run: ls -la ./build
+        
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
         
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -40,7 +76,6 @@ jobs:
         with:
           app-name: 'cryptobit'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./build
           
   close_pull_request_job:
